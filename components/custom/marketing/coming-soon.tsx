@@ -39,24 +39,12 @@ const pageTitles = {
 };
 
 export const ComingSoon = ({ page }: ComingSoonProps) => {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
   const content = pageTitles[page];
 
 
   return (
     <>
       <div className="min-h-screen bg-background">
-        {/* Simple back link */}
-        <div className="absolute top-6 left-6">
-          <Link href="/">
-            <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="h-4 w-4" />
-              Back
-            </Button>
-          </Link>
-        </div>
-
         <div className="container mx-auto max-w-md px-4 min-h-screen flex items-center justify-center">
           <motion.div
             initial={{ opacity: 0, y: 10 }}

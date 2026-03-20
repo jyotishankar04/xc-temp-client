@@ -50,7 +50,7 @@ const Navbar = () => {
     } else if (windowWidth < 1024) { // tablets
       return "85%";
     } else { // desktop
-      return "70%";
+      return "80%";
     }
   };
 
@@ -81,12 +81,12 @@ const Navbar = () => {
             ? windowWidth < 640
               ? "min(600px, 98%)" // smaller max width on mobile
               : windowWidth < 1024
-                ? "min(800px, 95%)" // medium max width on tablet
-                : "min(900px, 95%)" // normal max width on desktop
+                ? "min(850px, 95%)" // medium max width on tablet
+                : "min(950px, 95%)" // normal max width on desktop
             : "min(1280px, 98%)",
         }}
       >
-        <div className="8 mx-auto flex h-16 items-center justify-between px-3 sm:px-4 md:px-6">
+        <div className="mx-auto flex h-16 items-center justify-between px-3 sm:px-4 md:px-6">
           <div className="flex items-center gap-4 sm:gap-6 md:gap-8">
             <Link href="/" className="flex items-center gap-2">
               <Logo className="h-10 w-10 rounded-full" />
