@@ -9,7 +9,6 @@ import ProductPositioning from "@/components/custom/marketing/landing/positionin
 import Problem from "@/components/custom/marketing/landing/problem-section";
 import SupportedTechnologies from "@/components/custom/marketing/landing/supported-technologies";
 
-
 export default function Page() {
   return (
     <>
