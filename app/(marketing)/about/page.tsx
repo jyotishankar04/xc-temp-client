@@ -1,6 +1,6 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
-import { motion, useInView } from "motion/react";
+import { useState, } from "react";
+import { motion } from "motion/react";
 import {
   ArrowUpRight,
   Brain,
@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/custom/marketing/landing/logo";
-import { Card } from "@/components/ui/card";
+import Link from "next/link";
 
 /* ─── FADE-IN WRAPPER using motion/react ─── */
 function FadeUp({ children, delay = 0, className = "" }: { children: React.ReactNode, delay?: number, className?: string }) {
@@ -89,27 +89,37 @@ const PRINCIPLES = [
   },
 ];
 
-const TEAM = [
+/* ─── TEAM DATA ─── */
+const teamMembers = [
   {
-    initials: "XC",
-    name: "Alex Chen",
-    role: "Founder & Backend Engineer",
-    desc: "Focused on building scalable systems and solving real-world production failures. Previously worked on backend architecture, event-driven systems, and developer tooling.",
-    joining: false,
+    name: "Sravesh Nandan",
+    role: "Founder & CEO",
+    description:
+      "Backend architect with a passion for scalable systems and real-world production failures. Works on event-driven systems and developer tooling.",
+    image: "/sn.jpg",
+    github: "https://github.com/sraveshnandan",
+    linkedin: "https://linkedin.com/in/sravesh-nandan",
+    avatarColor: "bg-violet-50 text-violet-800",
   },
   {
-    initials: "XC",
-    name: "Sarah Kumar",
-    role: "Co-Founder & Frontend Engineer",
-    desc: "Designs intuitive interfaces for complex systems and focuses on developer experience. Works on dashboards, interaction design, and system visualization.",
-    joining: false,
+    name: "Jyotishankar Patra",
+    role: "Co-Founder & CTO",
+    description:
+      "Frontend architect building event-driven systems and developer tooling. Brings reliability thinking to the entire stack from UI to infra.",
+    image: "/jp.jpg",
+    github: "https://github.com/jyotishankar04",
+    linkedin: "https://linkedin.com/in/jyotishankar-patra",
+    avatarColor: "bg-teal-50 text-teal-800",
   },
   {
-    initials: "+",
-    name: "Future Team Member",
-    role: "Joining soon",
-    desc: "We're building a small, focused team. If you care about reliability and systems, we'd love to talk.",
-    joining: true,
+    name: "Snehashree Dash",
+    role: "Co-Founder · Marketing & Frontend",
+    description:
+      "Bridges engineering and growth. Builds interfaces that convert and narratives that resonate — at the same time.",
+    image: "/sd.jpg",
+    github: "https://github.com/snehashree-das",
+    linkedin: "https://linkedin.com/in/snehashree-das",
+    avatarColor: "bg-pink-50 text-pink-800",
   },
 ];
 
@@ -223,7 +233,6 @@ function Problem() {
                   key={text}
                   initial={{ opacity: 0, x: -12 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
                   transition={{ delay: 0.08 * i, duration: 0.45 }}
                   className="flex items-center gap-3 text-sm"
                 >
@@ -465,63 +474,179 @@ function WhyNow() {
 /* ─── TEAM ─── */
 function Team() {
   return (
-    <section id="team" className="py-24 px-6 ">
-      <div className="max-w-5xl mx-auto">
-        <SectionHeader
-          label="06 — The team"
-          title="The people building XecureCode"
-          subtitle="Engineers focused on solving real production problems — building systems that make reliability simpler and safer."
-        />
+    <section className="py-24 px-4">
+      <div className="container max-w-6xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-16"
+        >
+          <Badge
+            variant="outline"
+            className="mb-4 rounded-full text-xs tracking-widest uppercase"
+          >
+            The team
+          </Badge>
+          <h2 className="text-3xl md:text-4xl font-medium mb-4">
+            The people building <span className="text-primary">XecureCode</span>
+          </h2>
+          <p className="text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
+            Engineers focused on solving real production problems —
+            building systems that make reliability simpler and safer.
+          </p>
+        </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
-          {TEAM.map((m, i) => (
-            <FadeUp key={m.name} delay={i * 90}>
-              <Card className="group flex flex-col h-full rounded-2xl border border-border bg-card overflow-hidden hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1">
-                {/* Image Section - Portrait Aspect Ratio (4:5) */}
-                <div className="aspect-[4/5] w-full bg-muted/30 relative overflow-hidden flex items-center justify-center border-b border-border/50">
-                  {/* Decorative dot pattern */}
-                  <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px] dark:bg-[radial-gradient(#fff_1px,transparent_1px)]" />
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-xl overflow-hidden border border-border">
+          {teamMembers.map((member, index) => {
+            const initials = member.name
+              .split(" ")
+              .filter(Boolean)
+              .slice(0, 2)
+              .map((p) => p[0].toUpperCase())
+              .join("");
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                  {m.joining ? (
-                    <div className="w-20 h-20 rounded-full border-2 border-dashed border-border flex items-center justify-center text-muted-foreground/40 text-3xl font-light">
-                      +
-                    </div>
-                  ) : (
-                    <div className="font-mono text-8xl font-bold tracking-tighter text-muted-foreground/10 group-hover:scale-110 group-hover:text-muted-foreground/20 transition-all duration-500">
-                      {m.initials}
-                    </div>
-                  )}
-                </div>
-
-                {/* Content Section */}
-                <div className="p-6 md:p-8 flex flex-col flex-1">
-                  <h3 className="text-xl font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">{m.name}</h3>
-                  <p className="text-sm font-medium text-primary mb-4">{m.role}</p>
-                  <p className="text-sm text-muted-foreground leading-relaxed flex-1">{m.desc}</p>
-
-                  <div className="mt-6 pt-6 border-t border-border/50 flex items-center justify-between">
-                    {!m.joining ? (
-                      <div className="flex items-center gap-4">
-                        <a href="#" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="GitHub">
-                          <Github className="w-5 h-5" />
-                        </a>
-                        <a href="#" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="LinkedIn">
-                          <Linkedin className="w-5 h-5" />
-                        </a>
-                      </div>
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.08 }}
+                className="group bg-background hover:bg-muted/60 transition-all duration-300 p-6 flex flex-col gap-4"
+              >
+                {/* Avatar + Name block */}
+                <div className="flex flex-col items-start gap-2">
+                  {/* Image */}
+                  <div className="relative rounded-[10px] overflow-hidden border border-border/50 shrink-0 transition-all duration-300 ease-in-out w-16 h-16 group-hover:w-40 group-hover:h-40">
+                    {member.image ? (
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        className="object-cover"
+                      />
                     ) : (
-                      <Badge variant="secondary" className="px-3 py-1 font-mono text-xs">
-                        We're hiring
-                      </Badge>
+                      <div
+                        className={cn(
+                          "absolute inset-0 flex items-center justify-center text-base font-medium",
+                          member.avatarColor
+                        )}
+                      >
+                        {initials}
+                      </div>
                     )}
                   </div>
+
+                  {/* Name + Role — beside image by default, below on hover */}
+                  <div className="flex flex-col transition-all duration-300 group-hover:mt-1">
+                    <h3 className="text-sm font-medium leading-snug">{member.name}</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5 leading-snug">
+                      {member.role}
+                    </p>
+                  </div>
                 </div>
-              </Card>
-            </FadeUp>
-          ))}
+
+                {/* Description — always visible */}
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {member.description}
+                </p>
+
+                {/* Hover-revealed section */}
+                <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-all duration-300">
+                  <div className="overflow-hidden">
+                    <div className="flex flex-col gap-3 pt-1">
+
+                      {/* Links */}
+                      <div className="flex gap-2 pt-2 border-t border-border/50">
+                        <Link
+                          href={member.github}
+                          className="w-7 h-7 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
+                          aria-label={`${member.name} GitHub`}
+                        >
+                          <Github className="w-3.5 h-3.5" />
+                        </Link>
+                        <Link
+                          href={member.linkedin}
+                          className="w-7 h-7 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
+                          aria-label={`${member.name} LinkedIn`}
+                        >
+                          <Linkedin className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </motion.div>
+            );
+          })}
         </div>
+
+        {/* Join / Opportunities Card */}
+        {/* <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="mt-12"
+        >
+          <div className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-r from-primary/5 via-background to-primary/5 p-8 md:p-12">
+            <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:32px_32px]" />
+            <div className="relative flex flex-col items-center text-center gap-6">
+              <div className="space-y-2">
+                <h3 className="text-2xl md:text-3xl font-medium">
+                  Join the team
+                </h3>
+                <p className="text-muted-foreground max-w-lg mx-auto">
+                  We're always looking for passionate engineers who want to build
+                  the future of secure, reliable code.
+                </p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button 
+                  size="lg" 
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                  asChild
+                >
+                  <Link href="/careers">
+                    View open positions
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  asChild
+                >
+                  <Link href="/contact">
+                    Send spontaneous application
+                  </Link>
+                </Button>
+              </div>
+
+              <div className="flex flex-wrap justify-center gap-6 pt-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  <span>Remote-first culture</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  <span>Flexible work hours</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  <span>Competitive compensation</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div> */}
+
+        <p className="text-center text-xs text-muted-foreground tracking-wide mt-6">
+          {teamMembers.length} co-founders · remote-first · flexible work hours
+        </p>
       </div>
     </section>
   );

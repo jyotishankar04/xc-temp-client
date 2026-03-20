@@ -2,7 +2,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -11,9 +10,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { motion } from "motion/react";
-import Link from "next/link";
 import { useState } from "react";
-import { ArrowLeft, Mail, CheckCircle2, User, Phone } from "lucide-react";
+import { CheckCircle2, Mail, User, Phone } from "lucide-react";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 
 const WaitlistPage = () => {
@@ -24,16 +22,50 @@ const WaitlistPage = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [contactNumber, setContactNumber] = useState("");
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email && teamSize && useCase && firstName && lastName) {
+    setSubmitError(null);
+
+    if (!email || !teamSize || !useCase || !firstName || !lastName || !contactNumber) {
+      setSubmitError("Please complete all fields.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          contactNumber,
+          teamSize,
+          useCase,
+        }),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        setSubmitError(body?.error || "Failed to submit. Please try again.");
+        return;
+      }
+
       setSubmitted(true);
       setEmail("");
       setTeamSize("");
       setUseCase("");
       setFirstName("");
       setLastName("");
+      setContactNumber("");
+    } catch {
+      setSubmitError("Network error. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -140,17 +172,21 @@ const WaitlistPage = () => {
                     <SelectValue placeholder="Primary use case" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="kubernetes">Kubernetes / containers</SelectItem>
-                    <SelectItem value="microservices">Microservices</SelectItem>
-                    <SelectItem value="monolith">Monolith reliability</SelectItem>
-                    <SelectItem value="serverless">Serverless / cloud</SelectItem>
+                    <SelectItem value="Backend">Backend</SelectItem>
+                    <SelectItem value="Frontend">Frontend</SelectItem>
+                    <SelectItem value="CloudInfrastructure">Cloud Infrastructure</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
                 Join waitlist
               </Button>
+
+              {submitError ? (
+                <p className="text-sm text-red-500 text-center">{submitError}</p>
+              ) : null}
 
               <p className="text-xs text-center text-muted-foreground">
                 No spam. Only product updates.
@@ -163,9 +199,9 @@ const WaitlistPage = () => {
               className="p-6 bg-muted/30 border border-border rounded-lg text-center"
             >
               <CheckCircle2 className="h-8 w-8 text-green-500 mx-auto mb-3" />
-              <h3 className="font-medium mb-1">You're on the list!</h3>
+              <h3 className="font-medium mb-1">You&#39;re on the list!</h3>
               <p className="text-sm text-muted-foreground">
-                Thanks for joining. We'll reach out when we're ready to onboard new users.
+                Thanks for joining. We&#39;ll reach out when we&#39;re ready to onboard new users.
               </p>
             </motion.div>
           )}

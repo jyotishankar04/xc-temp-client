@@ -1,6 +1,9 @@
 import {
+  ArrowUpRight,
   DribbbleIcon,
   GithubIcon,
+  InstagramIcon,
+  LinkedinIcon,
   TwitchIcon,
   TwitterIcon,
 } from "lucide-react";
@@ -14,26 +17,26 @@ const footerColumns = [
   {
     title: "Product",
     links: [
-      { title: "Features", href: "#" },
-      { title: "Solutions", href: "#" },
-      { title: "How It Works", href: "#" },
+      { title: "Product", href: "/product" },
+      { title: "Solutions", href: "/solutions" },
+      { title: "How It Works", href: "/how-it-works" },
     ],
   },
   {
     title: "Company",
     links: [
-      { title: "About", href: "#" },
-      { title: "Blog", href: "#" },
-      { title: "Contact", href: "#" },
+      { title: "About", href: "/about" },
+      { title: "Blog", href: "/blogs" },
+      { title: "Contact", href: "/contact" },
     ],
   },
-  {
-    title: "Legal",
-    links: [
-      { title: "Privacy Policy", href: "#" },
-      { title: "Terms", href: "#" },
-    ],
-  },
+  // {
+  //   title: "Legal",
+  //   links: [
+  //     { title: "Privacy Policy", href: "#" },
+  //     { title: "Terms", href: "#" },
+  //   ],
+  // },
 ];
 
 const Footer = () => {
@@ -65,25 +68,22 @@ const Footer = () => {
               ))}
             </div>
 
-            {/* Subscribe Newsletter */}
-            <div className="w-full max-w-xs">
-              <h6 className="font-semibold text-foreground">Stay up to date</h6>
+            {/* Early Access with waitlist button */}
+            <div className="w-full max-w-xs flex flex-col gap-2">
+              <h6 className="font-semibold text-foreground">Early Access</h6>
               <p className="mt-2 text-sm text-muted-foreground">
-                Get product updates and industry news
+                Get early access to our product
               </p>
-              <form className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
-                <Input
-                  placeholder="Enter your email"
-                  type="email"
-                  className="h-10"
-                />
-                <Button size="sm" className="whitespace-nowrap">
-                  Subscribe
+              <Link href="/waitlist" passHref legacyBehavior>
+                <Button className="w-full">
+                  Join Early Access
+                  <ArrowUpRight className="ml-1 h-5 w-5" />
                 </Button>
-              </form>
+              </Link>
             </div>
-          </div>
+            
 
+         </div>
           <Separator />
 
           {/* Bottom Bar */}
@@ -95,18 +95,15 @@ const Footer = () => {
 
             {/* Social Links */}
             <div className="flex items-center gap-5 text-muted-foreground">
-              <Link href="#" target="_blank" className="transition-colors hover:text-foreground">
+              <a href="https://x.com/xecurecode" target="_blank" className="transition-colors hover:text-foreground">
                 <TwitterIcon className="h-5 w-5" />
-              </Link>
-              <Link href="#" target="_blank" className="transition-colors hover:text-foreground">
-                <DribbbleIcon className="h-5 w-5" />
-              </Link>
-              <Link href="#" target="_blank" className="transition-colors hover:text-foreground">
-                <TwitchIcon className="h-5 w-5" />
-              </Link>
-              <Link href="#" target="_blank" className="transition-colors hover:text-foreground">
-                <GithubIcon className="h-5 w-5" />
-              </Link>
+              </a>
+              <a href="https://www.linkedin.com/company/xecurecode/" target="_blank" className="transition-colors hover:text-foreground">
+                <LinkedinIcon className="h-5 w-5" />
+                </a>
+              <a href="https://www.instagram.com/xecurecode/" target="_blank" className="transition-colors hover:text-foreground">
+                <InstagramIcon className="h-5 w-5" />
+              </a>
             </div>
           </div>
           <TextHoverEffect text="XECURECODE" />
