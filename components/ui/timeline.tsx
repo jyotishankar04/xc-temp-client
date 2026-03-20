@@ -121,7 +121,6 @@ const TimelineSeparator = React.forwardRef<HTMLDivElement, TimelineSeparatorProp
         <div
           className={cn(
             orientation === "vertical" ? "w-0.5 h-full" : "w-full h-0.5",
-            variantStyles[variant],
             "rounded-full"
           )}
         />
@@ -132,7 +131,7 @@ const TimelineSeparator = React.forwardRef<HTMLDivElement, TimelineSeparatorProp
 TimelineSeparator.displayName = "TimelineSeparator";
 
 // Timeline Icon
-export interface TimelineIconProps extends React.HTMLAttributes<HTMLDivElement> { }
+export type TimelineIconProps = React.HTMLAttributes<HTMLDivElement>
 
 const TimelineIcon = React.forwardRef<HTMLDivElement, TimelineIconProps>(
   ({ className, children, ...props }, ref) => {
@@ -150,7 +149,6 @@ const TimelineIcon = React.forwardRef<HTMLDivElement, TimelineIconProps>(
         ref={ref}
         className={cn(
           "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border",
-          variantStyles[variant],
           className
         )}
         {...props}
