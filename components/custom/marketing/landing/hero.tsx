@@ -1,9 +1,9 @@
 import { ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import AnimatedGridPattern from "@/components/custom/marketing/landing/background-grid-pattern";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -35,21 +35,15 @@ export default function Hero() {
           observability tools and recovery actions.
         </p>
 
-        {/* Waitlist Form */}
-        <div className="mt-12 max-w-md mx-auto">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Input
-              type="email"
-              placeholder="Enter your work email"
-              className="h-12 rounded-full bg-background border-input px-6 text-base"
-            />
+        <div className="mt-12">
+          <Link href="/waitlist">
             <Button
               className="rounded-full text-base h-12 px-8 whitespace-nowrap"
               size="lg"
             >
               Join Early Access <ArrowUpRight className="ml-1 h-5 w-5" />
             </Button>
-          </div>
+          </Link>
 
           {/* Social Proof */}
           <p className="mt-4 text-sm text-foreground/60">
