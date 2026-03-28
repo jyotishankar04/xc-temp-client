@@ -6,7 +6,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { TextHoverEffect } from "@/components/ui/text-hover-effect";
 

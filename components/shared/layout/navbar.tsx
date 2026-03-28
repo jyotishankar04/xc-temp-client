@@ -1,104 +1,122 @@
+// navbar.tsx
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { NAV_LINKS, ROUTES } from "@/lib/constants";
+import { motion } from "motion/react";
+import { useEffect, useState } from "react";
+import { Logo } from "@/components/shared/branding/logo";
+import { NavMenu } from "./nav-menu";
+import { NavigationSheet } from "../../marketing/landing/navigation-sheet";
+import { ThemeToggle } from "@/components/theme-toggle";
+import Link from "next/link";
 
-export function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+const Navbar = () => {
+  const [scrolled, setScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(0);
 
   useEffect(() => {
+    // Simple fade in after mount
+    setIsVisible(true);
+    setWindowWidth(window.innerWidth);
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      setScrolled(window.scrollY > 20);
     };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
+  // Calculate squeeze percentage based on screen width
+  const getSqueezeWidth = () => {
+    if (!scrolled) return "95%";
+
+    // Less squeeze on smaller screens
+    if (windowWidth < 640) { // mobile
+      return "92%";
+    } else if (windowWidth < 768) { // small tablets
+      return "90%";
+    } else if (windowWidth < 1024) { // tablets
+      return "85%";
+    } else { // desktop
+      return "80%";
+    }
+  };
+
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-background/80 backdrop-blur-lg shadow-sm border-b"
-          : "bg-transparent"
-      }`}
+    <motion.div
+      className="fixed top-0 z-50 w-full flex justify-center px-2 sm:px-4 py-4"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{
+        opacity: isVisible ? 1 : 0,
+        y: isVisible ? 0 : -20
+      }}
+      transition={{ duration: 0.3 }}
     >
-      <nav className="container mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href={ROUTES.HOME} className="flex items-center gap-2">
-          <Image
-            src="/xc.jpeg"
-            alt="XecureCode"
-            width={32}
-            height={32}
-            className="rounded-full"
-          />
-          <span className="font-semibold text-lg tracking-tight">XecureCode</span>
-        </Link>
-
-        <div className="hidden md:flex items-center gap-8">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {link.label}
+      <motion.header
+        animate={{
+          width: getSqueezeWidth(),
+        }}
+        transition={{
+          duration: 0.2,
+          ease: "easeInOut"
+        }}
+        className={`mx-auto transition-all duration-200 w-full ${scrolled
+          ? "border border-border/40 bg-background/80 backdrop-blur-xl shadow-lg rounded-full"
+          : "border border-border/10 bg-background/40 backdrop-blur-md shadow-sm rounded-2xl"
+          }`}
+        style={{
+          maxWidth: scrolled
+            ? windowWidth < 640
+              ? "min(600px, 98%)" // smaller max width on mobile
+              : windowWidth < 1024
+                ? "min(850px, 95%)" // medium max width on tablet
+                : "min(950px, 95%)" // normal max width on desktop
+            : "min(1280px, 98%)",
+        }}
+      >
+        <div className="mx-auto flex h-16 items-center justify-between px-3 sm:px-4 md:px-6">
+          <div className="flex items-center gap-4 sm:gap-6 md:gap-8">
+            <Link href="/" className="flex items-center gap-2">
+              <Logo className="h-10 w-10 rounded-full" />
+              <span className="text-xl font-bold">XecureCode</span>
             </Link>
-          ))}
-        </div>
 
-        <div className="flex items-center gap-4">
-          <Link href={ROUTES.WAITLIST}>
-            <Button size="sm" className="hidden md:inline-flex">
-              Join Waitlist
-            </Button>
-          </Link>
+            {/* Desktop Menu - Hidden on mobile/tablet */}
+            <NavMenu className="hidden lg:block" />
+          </div>
 
-          <button
-            className="md:hidden p-2"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {isMobileMenuOpen ? (
-              <X className="w-5 h-5" />
-            ) : (
-              <Menu className="w-5 h-5" />
-            )}
-          </button>
-        </div>
-      </nav>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <ThemeToggle />
 
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-background border-b"
-          >
-            <div className="container mx-auto px-6 py-4 flex flex-col gap-4">
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <Link href={ROUTES.WAITLIST} onClick={() => setIsMobileMenuOpen(false)}>
-                <Button className="w-full">Join Waitlist</Button>
-              </Link>
+            <Link href="/waitlist">
+              <Button
+                size="sm"
+                className="rounded-full hidden lg:block bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 text-xs sm:text-sm px-3 sm:px-4"
+              >
+                Join Waitlist
+              </Button>
+            </Link>
+
+            {/* Mobile Menu - Visible on medium screens and below */}
+            <div className="lg:hidden">
+              <NavigationSheet />
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </header>
+          </div>
+        </div>
+      </motion.header>
+    </motion.div>
   );
-}
+};
+
+export default Navbar;

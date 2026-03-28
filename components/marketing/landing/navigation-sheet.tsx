@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect, useRef } from "react";
 import { Logo } from "@/components/shared/branding/logo";
-import { NavMenu } from "./nav-menu";
+import { NavMenu } from "../../shared/layout/nav-menu";
 
 
 
