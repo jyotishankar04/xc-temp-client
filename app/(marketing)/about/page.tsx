@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { Logo } from "@/components/custom/marketing/landing/logo";
+import { Logo } from "@/components/shared/branding/logo";
 import Link from "next/link";
 
 /* ─── FADE-IN WRAPPER using motion/react ─── */

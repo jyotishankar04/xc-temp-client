@@ -2,7 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import AnimatedGridPattern from "@/components/custom/marketing/landing/background-grid-pattern";
+import AnimatedGridPattern from "@/components/marketing/landing/background-grid-pattern";
 import Link from "next/link";
 
 export default function Hero() {

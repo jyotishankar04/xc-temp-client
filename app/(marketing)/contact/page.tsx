@@ -12,7 +12,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { Logo } from "@/components/custom/marketing/landing/logo";
+import { Logo } from "@/components/shared/branding/logo";
 
 type FormValues = {
   name: string;

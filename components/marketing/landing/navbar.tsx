@@ -2,10 +2,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
-import { Logo } from "./logo";
+import { Logo } from "@/components/shared/branding/logo";
 import { NavMenu } from "./nav-menu";
 import { NavigationSheet } from "./navigation-sheet";
 import { ThemeToggle } from "@/components/theme-toggle";

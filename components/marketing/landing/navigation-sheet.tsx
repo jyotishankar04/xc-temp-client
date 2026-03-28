@@ -5,7 +5,7 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect, useRef } from "react";
-import { Logo } from "./logo";
+import { Logo } from "@/components/shared/branding/logo";
 import { NavMenu } from "./nav-menu";
 
 

@@ -1,11 +1,11 @@
-import { ComingSoon } from "@/components/custom/marketing/coming-soon"
+import { ComingSoon } from "@/components/marketing/coming-soon";
 
-const page = () => {
+const SolutionsPage = () => {
   return (
     <div>
       <ComingSoon page="solutions" />
     </div>
-  )
-}
+  );
+};
 
-export default page;
+export default SolutionsPage;

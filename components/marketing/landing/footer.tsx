@@ -1,10 +1,7 @@
 import {
   ArrowUpRight,
-  DribbbleIcon,
-  GithubIcon,
   InstagramIcon,
   LinkedinIcon,
-  TwitchIcon,
   TwitterIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -74,7 +71,7 @@ const Footer = () => {
               <p className="mt-2 text-sm text-muted-foreground">
                 Get early access to our product
               </p>
-              <Link href="/waitlist" passHref legacyBehavior>
+              <Link href="/waitlist" >
                 <Button className="w-full">
                   Join Early Access
                   <ArrowUpRight className="ml-1 h-5 w-5" />
