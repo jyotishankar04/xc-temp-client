@@ -19,6 +19,8 @@ export const ROUTES = {
   AUTH_SIGNUP: "/auth/signup",
   AUTH_FORGOT_PASSWORD: "/auth/forgot-password",
   AUTH_VERIFY_EMAIL: "/auth/verify-email",
+
+  ONBOARD: "/onboard",
 } as const;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];
