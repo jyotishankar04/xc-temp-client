@@ -35,20 +35,13 @@ export type ContactInput = z.infer<typeof contactSchema>;
 export type WaitlistInput = z.infer<typeof waitlistSchema>;
 
 export const onboardingSchema = z.object({
-  // Step 1 - Organization
   orgName: z.string().min(1, "Organization name is required"),
   orgSlug: z
     .string()
     .min(1, "Slug is required")
     .regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens"),
   teamSize: z.string().optional(),
-  // Step 2 - Role + Setup
   role: z.string().min(1, "Please select your role"),
-  stack: z.array(z.string()),
-  environment: z.string().optional(),
-  // Step 3 - Pain + Intent
-  pain: z.string().min(1, "Please select your biggest pain"),
-  priority: z.string().optional(),
   notes: z.string().optional(),
 });
 

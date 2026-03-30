@@ -4,8 +4,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { GitHubLogo } from "@/components/shared/branding";
 import { ROUTES } from "@/lib/constants/routes";
+import { useAuth } from "@/lib/hooks/use-auth";
+import { appConfig } from "@/lib/config/app";
 
 export default function LoginPage() {
+  const { login } = useAuth();
+
   return (
     <>
       <p className="mt-4 font-semibold text-xl tracking-tight">
@@ -15,7 +19,7 @@ export default function LoginPage() {
       <Button
         className="mt-8 w-full gap-3"
         onClick={() => {
-          window.location.href = "/api/auth/github";
+          window.location.href = `${appConfig.apiUrl}/api/v1/auth/github`;
         }}
       >
         <GitHubLogo className="size-4" />

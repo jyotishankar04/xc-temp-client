@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import DashboardNavigation from "./nav-main";
 import { NotificationsPopover } from "./nav-notifications";
+import { useTheme } from "next-themes";
 
 const sampleNotifications = [
   {
@@ -84,6 +85,10 @@ export function DashboardSidebar() {
   const isCollapsed = state === "collapsed";
   const [activeTeam, setActiveTeam] = React.useState(defaultTeams[0]);
   const [theme, setTheme] = React.useState<"light" | "dark">("dark");
+  const  {theme: currentTheme,setTheme: setCurrentTheme}= useTheme();
+  React.useEffect(() => {
+    setCurrentTheme(currentTheme as "light" | "dark");
+  }, [theme, setCurrentTheme  ]);
 
   return (
     <Sidebar variant="floating" collapsible="icon" className="border-r-0">
@@ -211,10 +216,10 @@ export function DashboardSidebar() {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="gap-2 p-2 cursor-pointer"
-                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  onClick={() => setCurrentTheme(currentTheme === "dark" ? "light" : "dark")}
                 >
-                  {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
-                  {theme === "dark" ? "Light Mode" : "Dark Mode"}
+                  {currentTheme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+                  {currentTheme === "dark" ? "Light Mode" : "Dark Mode"}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="gap-2 p-2 cursor-pointer">

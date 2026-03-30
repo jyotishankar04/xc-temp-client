@@ -1,45 +1,59 @@
-import { apiClient } from "./client";
+import { apiClient, handleApiError } from "./client";
 
-export interface LoginCredentials {
+export interface User {
+  id: string;
   email: string;
-  password: string;
-}
-
-export interface RegisterData {
-  email: string;
-  password: string;
   firstName: string;
   lastName: string;
+  avatar?: string;
 }
 
-export interface AuthResponse {
-  user: {
+export interface OnboardingData {
+  orgName: string;
+  orgSlug: string;
+  teamSize?: string;
+  role: string;
+  notes?: string;
+}
+
+export interface OnboardingResponse {
+  organization: {
     id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
+    name: string;
+    slug: string;
   };
-  token: string;
+  user: User;
 }
 
+const AUTH_ENDPOINT = "/api/v1/auth";
+const ORGS_ENDPOINT = "/api/v1/orgs";
+const USER_ENDPOINT = "/api/v1/users";
 export const authApi = {
-  login: (credentials: LoginCredentials) =>
-    apiClient.post<AuthResponse>("/api/auth/login", credentials),
+  loginWithGitHub: () => {
+    window.location.href = `${AUTH_ENDPOINT}/github?redirect_url=${window.location.origin}`;
+  },
 
-  register: (data: RegisterData) =>
-    apiClient.post<AuthResponse>("/api/auth/register", data),
+  logout: async (): Promise<void> => {
+    await apiClient.post(`${AUTH_ENDPOINT}/logout`);
+  },
 
-  logout: () => apiClient.post<{ success: boolean }>("/api/auth/logout"),
+  onboard: async (data: OnboardingData): Promise<OnboardingResponse> => {
+    const response = await apiClient.post<OnboardingResponse>(
+      `${ORGS_ENDPOINT}/onboard`,
+      data
+    );
+    return response.data;
+  },
 
-  verifyEmail: (token: string) =>
-    apiClient.get<{ verified: boolean }>(`/api/auth/verify/${token}`),
+  getCurrentUser: async (): Promise<User> => {
+    const response = await apiClient.get(`${USER_ENDPOINT}/me`);
+    return response.data;
+  },
 
-  requestPasswordReset: (email: string) =>
-    apiClient.post<{ success: boolean }>("/api/auth/password-reset", { email }),
-
-  resetPassword: (token: string, newPassword: string) =>
-    apiClient.post<{ success: boolean }>("/api/auth/password-reset/confirm", {
-      token,
-      newPassword,
-    }),
+  checkAuth: async (): Promise<{ authenticated: boolean; user?: User }> => {
+    const response = await apiClient.get(`${USER_ENDPOINT}/me`);
+    return { authenticated: true, user: response.data };
+  },
 };
+
+export { handleApiError };

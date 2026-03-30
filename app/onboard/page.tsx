@@ -1,35 +1,24 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Logo } from "@/components/shared/branding";
 import { cn } from "@/lib/utils";
 import { onboardingSchema, type OnboardingInput } from "@/lib/utils/validators";
+import { useAuth } from "@/lib/hooks/use-auth";
 import {
   ROUTES,
   ONBOARDING_ROLES,
-  ONBOARDING_STACKS,
-  ONBOARDING_ENVIRONMENTS,
-  ONBOARDING_PAINS,
-  ONBOARDING_PRIORITIES,
   ONBOARDING_TEAM_SIZES,
 } from "@/lib/constants";
 
@@ -72,10 +61,11 @@ const gridStyle: React.CSSProperties = {
 };
 
 export default function OnboardPage() {
-  const router = useRouter();
+  const { onboard, isLoading: isAuthLoading } = useAuth();
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1);
   const [slugAuto, setSlugAuto] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -91,10 +81,6 @@ export default function OnboardPage() {
       orgSlug: "",
       teamSize: "",
       role: "",
-      stack: [],
-      environment: "",
-      pain: "",
-      priority: "",
       notes: "",
     },
   });
@@ -103,10 +89,6 @@ export default function OnboardPage() {
   const orgSlug = watch("orgSlug");
   const teamSize = watch("teamSize");
   const role = watch("role");
-  const stack = watch("stack");
-  const environment = watch("environment");
-  const pain = watch("pain");
-  const priority = watch("priority");
 
   useEffect(() => {
     if (slugAuto && orgName) {
@@ -114,30 +96,32 @@ export default function OnboardPage() {
     }
   }, [orgName, slugAuto, setValue]);
 
-  const toggleStack = useCallback(
-    (value: string) => {
-      const current = getValues("stack");
-      if (current.includes(value)) {
-        setValue(
-          "stack",
-          current.filter((s) => s !== value)
-        );
-      } else {
-        setValue("stack", [...current, value]);
-      }
-    },
-    [getValues, setValue]
-  );
-
   const goNext = async () => {
     let valid = false;
     if (step === 1) valid = await trigger(["orgName", "orgSlug"]);
     else if (step === 2) valid = await trigger(["role"]);
-    else if (step === 3) valid = await trigger(["pain"]);
 
-    if (valid && step <= TOTAL_STEPS) {
-      setDirection(1);
-      setStep(step + 1);
+    if (valid) {
+      if (step === TOTAL_STEPS) {
+        setIsSubmitting(true);
+        try {
+          const values = getValues();
+          await onboard({
+            orgName: values.orgName,
+            orgSlug: values.orgSlug,
+            teamSize: values.teamSize,
+            role: values.role,
+            notes: values.notes,
+          });
+        } catch (error) {
+          console.error("Onboarding failed:", error);
+        } finally {
+          setIsSubmitting(false);
+        }
+      } else {
+        setDirection(1);
+        setStep(step + 1);
+      }
     }
   };
 
@@ -205,13 +189,10 @@ export default function OnboardPage() {
                   transition={{ duration: 0.2, ease: "easeInOut" }}
                 >
                   <Step2
+                    register={register}
                     role={role}
-                    stack={stack}
-                    environment={environment}
                     errors={errors}
                     onRole={(val) => setValue("role", val)}
-                    onToggleStack={toggleStack}
-                    onEnvironment={(val) => setValue("environment", val)}
                   />
                 </motion.div>
               )}
@@ -226,28 +207,7 @@ export default function OnboardPage() {
                   exit="exit"
                   transition={{ duration: 0.2, ease: "easeInOut" }}
                 >
-                  <Step3
-                    register={register}
-                    errors={errors}
-                    pain={pain}
-                    priority={priority}
-                    onPain={(val) => setValue("pain", val)}
-                    onPriority={(val) => setValue("priority", val)}
-                  />
-                </motion.div>
-              )}
-
-              {step === 4 && (
-                <motion.div
-                  key="step4"
-                  custom={direction}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: 0.2, ease: "easeInOut" }}
-                >
-                  <Step4 />
+                  <Step3 />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -259,20 +219,29 @@ export default function OnboardPage() {
               <Button
                 variant="outline"
                 onClick={goBack}
-                disabled={step === 1}
+                disabled={step === 1 || isSubmitting}
               >
                 <ChevronLeft className="size-4" />
                 Previous
               </Button>
               {step < TOTAL_STEPS ? (
-                <Button onClick={goNext}>
+                <Button onClick={goNext} disabled={isSubmitting}>
                   Continue
                   <ChevronRight className="size-4" />
                 </Button>
               ) : (
-                <Button onClick={goNext}>
-                  Finish Setup
-                  <Check className="size-4" />
+                <Button onClick={goNext} disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Setting up...
+                    </>
+                  ) : (
+                    <>
+                      Finish Setup
+                      <Check className="size-4" />
+                    </>
+                  )}
                 </Button>
               )}
             </div>
@@ -383,23 +352,17 @@ function Step1({
 // ─── Step 2: Role + Setup ───────────────────────────────────────────────────
 
 interface Step2Props {
+  register: ReturnType<typeof useForm<OnboardingInput>>["register"];
   role: string;
-  stack: string[];
-  environment: string | undefined;
   errors: Record<string, { message?: string }>;
   onRole: (val: string) => void;
-  onToggleStack: (val: string) => void;
-  onEnvironment: (val: string) => void;
 }
 
 function Step2({
+  register,
   role,
-  stack,
-  environment,
   errors,
   onRole,
-  onToggleStack,
-  onEnvironment,
 }: Step2Props) {
   return (
     <div className="space-y-6">
@@ -443,136 +406,10 @@ function Step2({
         </div>
 
         <div>
-          <Label className="text-base">Tech Stack</Label>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            Select all that apply
-          </p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {ONBOARDING_STACKS.map((s) => (
-              <button
-                key={s.value}
-                type="button"
-                onClick={() => onToggleStack(s.value)}
-                className={cn(
-                  "rounded-lg border-2 px-4 py-2 text-sm transition-all",
-                  stack.includes(s.value)
-                    ? "border-primary bg-primary/5 text-primary"
-                    : "border-border text-muted-foreground hover:border-foreground/20"
-                )}
-              >
-                {s.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <Label>Deployment Environment</Label>
-          <Select value={environment} onValueChange={onEnvironment}>
-            <SelectTrigger className="mt-2 w-full">
-              <SelectValue placeholder="Select your environment" />
-            </SelectTrigger>
-            <SelectContent>
-              {ONBOARDING_ENVIRONMENTS.map((env) => (
-                <SelectItem key={env.value} value={env.value}>
-                  {env.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Step 3: Pain + Intent ──────────────────────────────────────────────────
-
-interface Step3Props {
-  register: ReturnType<typeof useForm<OnboardingInput>>["register"];
-  errors: Record<string, { message?: string }>;
-  pain: string;
-  priority: string | undefined;
-  onPain: (val: string) => void;
-  onPriority: (val: string) => void;
-}
-
-function Step3({
-  register,
-  errors,
-  pain,
-  priority,
-  onPain,
-  onPriority,
-}: Step3Props) {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="font-semibold text-xl tracking-tight">
-          What are you trying to improve?
-        </h2>
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          Help us understand your priorities so we can personalize your
-          experience.
-        </p>
-      </div>
-
-      <div className="space-y-5">
-        <div>
-          <Label className="text-base">Biggest Pain</Label>
-          <RadioGroup
-            value={pain}
-            onValueChange={onPain}
-            className="mt-2 space-y-2"
-          >
-            {ONBOARDING_PAINS.map((p) => (
-              <label
-                key={p.value}
-                className={cn(
-                  "flex cursor-pointer items-center gap-3 rounded-lg border p-3.5 transition-all",
-                  pain === p.value
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:border-foreground/20"
-                )}
-              >
-                <RadioGroupItem value={p.value} />
-                <span className="text-sm">{p.label}</span>
-              </label>
-            ))}
-          </RadioGroup>
-          {errors.pain && (
-            <p className="mt-1 text-sm text-destructive">
-              {errors.pain.message}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <Label className="text-base">Priority</Label>
-          <div className="mt-2 grid grid-cols-3 gap-2">
-            {ONBOARDING_PRIORITIES.map((p) => (
-              <button
-                key={p.value}
-                type="button"
-                onClick={() => onPriority(p.value)}
-                className={cn(
-                  "rounded-lg border-2 px-3 py-2.5 text-center text-sm transition-all",
-                  priority === p.value
-                    ? "border-primary bg-primary/5 text-primary"
-                    : "border-border text-muted-foreground hover:border-foreground/20"
-                )}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <Label htmlFor="notes">Describe your biggest issue</Label>
+          <Label htmlFor="notes">Anything else?</Label>
           <Textarea
             id="notes"
-            placeholder="Optional — tell us more about what you're dealing with..."
+            placeholder="Optional — tell us more about yourself..."
             className="mt-2 min-h-[80px] resize-none"
             {...register("notes")}
           />
@@ -582,9 +419,9 @@ function Step3({
   );
 }
 
-// ─── Step 4: Success ────────────────────────────────────────────────────────
+// ─── Step 3: Success ──────────────────────────────────────────────────────
 
-function Step4() {
+function Step3() {
   return (
     <div className="space-y-6 text-center">
       <div>

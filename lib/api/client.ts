@@ -1,3 +1,6 @@
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { appConfig } from "@/lib/config/app";
+
 export class ApiError extends Error {
   constructor(
     public message: string,
@@ -15,121 +18,64 @@ export interface ApiResponse<T = unknown> {
   code?: string;
 }
 
-export interface RequestConfig extends RequestInit {
-  timeout?: number;
-}
+const API_URL = appConfig.apiUrl;
 
-const DEFAULT_TIMEOUT = 10000;
+const axiosInstance = axios.create({
+  baseURL: API_URL,
+  timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: true,
+});
 
-class ApiClient {
-  private baseUrl: string;
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
 
-  constructor(baseUrl: string = "") {
-    this.baseUrl = baseUrl;
-  }
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
 
-  private async handleResponse<T>(response: Response): Promise<T> {
-    const data = await response.json().catch(() => null);
-
-    if (!response.ok) {
-      const errorData = data as { error?: string; code?: string } | null;
-      throw new ApiError(
-        errorData?.error || `Request failed with status ${response.status}`,
-        response.status,
-        errorData?.code
-      );
+      try {
+        await axios.post(
+          `${API_URL}/api/v1/auth/refresh`,
+          {},
+          { withCredentials: true }
+        );
+        return axiosInstance(originalRequest);
+      } catch {
+        // Let the calling code handle the error (useAuth will redirect)
+      }
     }
 
-    return data as T;
+    return Promise.reject(error);
   }
+);
 
-  async request<T>(
-    endpoint: string,
-    options: RequestConfig = {}
-  ): Promise<T> {
-    const { timeout = DEFAULT_TIMEOUT, ...fetchOptions } = options;
+export const apiClient = axiosInstance;
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
+export const isApiError = (error: unknown): error is ApiError => {
+  return error instanceof ApiError;
+};
 
-    try {
-      const url = endpoint.startsWith("http")
-        ? endpoint
-        : `${this.baseUrl}${endpoint}`;
-
-      const response = await fetch(url, {
-        ...fetchOptions,
-        signal: controller.signal,
-        headers: {
-          "Content-Type": "application/json",
-          ...fetchOptions.headers,
-        },
-      });
-
-      clearTimeout(timeoutId);
-      return this.handleResponse<T>(response);
-    } catch (error) {
-      clearTimeout(timeoutId);
-
-      if (error instanceof ApiError) {
-        throw error;
-      }
-
-      if (error instanceof Error) {
-        if (error.name === "AbortError") {
-          throw new ApiError("Request timeout", 408);
-        }
-        throw new ApiError(error.message, 0);
-      }
-
-      throw new ApiError("Unknown error", 0);
+export const handleApiError = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    const axiosError = error as AxiosError<{ message?: string; error?: string }>;
+    if (axiosError.response?.data?.message) {
+      return axiosError.response.data.message;
+    }
+    if (axiosError.response?.data?.error) {
+      return axiosError.response.data.error;
+    }
+    if (axiosError.message) {
+      return axiosError.message;
     }
   }
-
-  async get<T>(endpoint: string, options?: RequestConfig): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: "GET" });
+  if (error instanceof Error) {
+    return error.message;
   }
-
-  async post<T>(
-    endpoint: string,
-    data?: unknown,
-    options?: RequestConfig
-  ): Promise<T> {
-    return this.request<T>(endpoint, {
-      ...options,
-      method: "POST",
-      body: data ? JSON.stringify(data) : undefined,
-    });
-  }
-
-  async put<T>(
-    endpoint: string,
-    data?: unknown,
-    options?: RequestConfig
-  ): Promise<T> {
-    return this.request<T>(endpoint, {
-      ...options,
-      method: "PUT",
-      body: data ? JSON.stringify(data) : undefined,
-    });
-  }
-
-  async patch<T>(
-    endpoint: string,
-    data?: unknown,
-    options?: RequestConfig
-  ): Promise<T> {
-    return this.request<T>(endpoint, {
-      ...options,
-      method: "PATCH",
-      body: data ? JSON.stringify(data) : undefined,
-    });
-  }
-
-  async delete<T>(endpoint: string, options?: RequestConfig): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: "DELETE" });
-  }
-}
-
-export const apiClient = new ApiClient();
-export { ApiClient };
+  return "An unexpected error occurred";
+};

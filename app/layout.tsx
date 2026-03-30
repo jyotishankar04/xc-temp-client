@@ -4,6 +4,8 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { QueryProvider } from "@/lib/providers/query-provider";
+import { AuthProvider } from "@/lib/hooks/use-auth";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -35,11 +37,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider defaultTheme="dark" attribute="class">
-          <TooltipProvider delayDuration={0}>
-            {children}
-          </TooltipProvider>
-        </ThemeProvider>
+        <QueryProvider>
+          <AuthProvider>
+            <ThemeProvider defaultTheme="dark" attribute="class">
+              <TooltipProvider delayDuration={0}>
+                {children}
+              </TooltipProvider>
+            </ThemeProvider>
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );
