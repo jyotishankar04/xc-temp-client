@@ -490,20 +490,25 @@ export const CodeBlockCopyButton = ({
   const code = data.find((item) => item.language === value)?.code;
 
   const copyToClipboard = () => {
-    if (
-      typeof window === "undefined" ||
-      !navigator.clipboard.writeText ||
-      !code
-    ) {
-      return;
-    }
-
-    navigator.clipboard.writeText(code).then(() => {
+    if (!code) return;
+    
+    if (typeof window !== "undefined" && window.navigator?.clipboard?.writeText) {
+      window.navigator.clipboard.writeText(code).then(() => {
+        setIsCopied(true);
+        onCopy?.();
+        setTimeout(() => setIsCopied(false), timeout);
+      }, onError);
+    } else {
+      const textarea = document.createElement("textarea");
+      textarea.value = code;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
       setIsCopied(true);
       onCopy?.();
-
       setTimeout(() => setIsCopied(false), timeout);
-    }, onError);
+    }
   };
 
   if (asChild) {
