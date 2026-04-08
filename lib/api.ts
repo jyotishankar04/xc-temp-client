@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 interface ApiResponse<T> {
   success: boolean;
@@ -10,7 +10,7 @@ async function fetchApi<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
-  const url = `${API_BASE_URL}${endpoint}`;
+  const url = `${API_BASE_URL}/api/v1${endpoint}`;
   
   const headers: HeadersInit = {
     "Content-Type": "application/json",
@@ -49,8 +49,8 @@ export const api = {
 };
 
 export const authApi = {
-  getGithubAuthUrl: () => `${API_BASE_URL}/auth/github`,
-  refreshToken: () => api.post<{ accessToken: string }>("/auth/refresh"),
+  getMe: () => fetch(`${API_BASE_URL}/api/auth/me`, { credentials: "include" }),
+  signOut: () => fetch(`${API_BASE_URL}/api/auth/signout`, { method: "POST", credentials: "include" }),
 };
 
 export const onboardingApi = {
