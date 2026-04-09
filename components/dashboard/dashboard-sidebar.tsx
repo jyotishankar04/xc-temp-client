@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { useSidebar } from "@/components/ui/sidebar";
 import {
   Sidebar,
@@ -34,118 +35,35 @@ import {
   Settings,
   Sun,
   User,
+  Loader2,
 } from "lucide-react";
 import DashboardNavigation from "./nav-main";
 import { NotificationsPopover } from "./nav-notifications";
 import { useTheme } from "next-themes";
-
-const sampleNotifications = [
-  {
-    id: "1",
-    fallback: "AI",
-    text: "AI analysis completed for Case #142",
-    time: "2 min ago",
-  },
-  {
-    id: "2",
-    fallback: "SY",
-    text: "System health score dropped to 82%",
-    time: "5 min ago",
-  },
-  {
-    id: "3",
-    fallback: "RP",
-    text: "Recovery action approved: Rollback",
-    time: "10 min ago",
-  },
-];
-
-type Team = {
-  id: string;
-  name: string;
-  slug: string;
-  plan: string;
-};
-
-const defaultTeams: Team[] = [
-  { id: "1", name: "Acme Inc.", slug: "acme", plan: "Free" },
-  { id: "2", name: "Beta Corp.", slug: "beta", plan: "Free" },
-  { id: "3", name: "Gamma Tech", slug: "gamma", plan: "Pro" },
-];
-
-const currentUser = {
-  name: "Rahul Verma",
-  role: "Founder",
-  email: "rahul@acme.com",
-  initials: "RV",
-};
+import { useAuth } from "@/lib/hooks/use-auth";
+import { OrgSwitcher } from "./org-switcher";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export function DashboardSidebar() {
+  const router = useRouter();
   const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed";
-  const [activeTeam, setActiveTeam] = React.useState(defaultTeams[0]);
-  const [theme, setTheme] = React.useState<"light" | "dark">("dark");
-  const  {theme: currentTheme,setTheme: setCurrentTheme}= useTheme();
-  React.useEffect(() => {
-    setCurrentTheme(currentTheme as "light" | "dark");
-  }, [theme, setCurrentTheme  ]);
+  const { user } = useAuth();
+  const { theme: currentTheme, setTheme } = useTheme();
+
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   return (
     <Sidebar variant="floating" collapsible="icon" className="border-r-0">
       <SidebarHeader className="flex flex-row items-center justify-between px-3 pt-3">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="flex items-center gap-2 h-auto p-1.5 hover:bg-sidebar-accent w-full justify-start data-[state=open]:bg-sidebar-accent"
-            >
-              <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-accent text-sidebar-accent-foreground">
-                <Building2 className="size-4" />
-              </div>
-              {!isCollapsed && (
-                <>
-                  <div className="flex flex-col items-start min-w-0 flex-1">
-                    <span className="text-sm font-semibold truncate max-w-[120px]">
-                      {activeTeam.name}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground truncate max-w-[120px]">
-                      {activeTeam.plan}
-                    </span>
-                  </div>
-                  <ChevronDown className="size-3.5 shrink-0 text-muted-foreground" />
-                </>
-              )}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-64 rounded-lg" align="start">
-            <DropdownMenuLabel className="text-xs text-muted-foreground">
-              Switch organization
-            </DropdownMenuLabel>
-            {defaultTeams.map((team) => (
-              <DropdownMenuItem
-                key={team.id}
-                onClick={() => setActiveTeam(team)}
-                className="gap-2 p-2 cursor-pointer"
-              >
-                <div className="flex size-6 items-center justify-center rounded-sm border bg-background shrink-0">
-                  <Building2 className="size-3.5" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm">{team.name}</span>
-                  <span className="text-[10px] text-muted-foreground">{team.plan}</span>
-                </div>
-              </DropdownMenuItem>
-            ))}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2 cursor-pointer">
-              <div className="flex size-6 items-center justify-center rounded-md border bg-background shrink-0">
-                <Plus className="size-3.5" />
-              </div>
-              <span className="text-sm text-muted-foreground">Create new org</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
+        <OrgSwitcher isCollapsed={isCollapsed} />
       </SidebarHeader>
 
       <SidebarContent className="gap-4 px-3 py-4">
@@ -181,16 +99,19 @@ export function DashboardSidebar() {
                   size="lg"
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-auto py-2"
                 >
-                  <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-bold">
-                    {currentUser.initials}
-                  </div>
+                  <Avatar className="size-8 shrink-0">
+                    <AvatarImage src={user?.avatarUrl} alt={user?.name || user?.email || "User"} />
+                    <AvatarFallback>
+                      {user?.name ? getInitials(user.name) : user?.email?.[0]?.toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
                   {!isCollapsed && (
                     <div className="grid flex-1 text-left text-sm leading-tight min-w-0">
                       <span className="truncate font-medium">
-                        {currentUser.name}
+                        {user?.name || user?.username || "User"}
                       </span>
                       <span className="truncate text-xs text-muted-foreground">
-                        {currentUser.role}
+                        {user?.email || ""}
                       </span>
                     </div>
                   )}
@@ -203,7 +124,7 @@ export function DashboardSidebar() {
                 sideOffset={8}
               >
                 <DropdownMenuLabel className="text-xs text-muted-foreground">
-                  {currentUser.email}
+                  {user?.email || ""}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="gap-2 p-2 cursor-pointer">
@@ -216,7 +137,7 @@ export function DashboardSidebar() {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="gap-2 p-2 cursor-pointer"
-                  onClick={() => setCurrentTheme(currentTheme === "dark" ? "light" : "dark")}
+                  onClick={() => setTheme(currentTheme === "dark" ? "light" : "dark")}
                 >
                   {currentTheme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
                   {currentTheme === "dark" ? "Light Mode" : "Dark Mode"}

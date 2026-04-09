@@ -10,11 +10,30 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { useRouter, usePathname } from "next/navigation";
 import { authApi, type User } from "@/lib/api";
+import { ROUTES } from "@/lib/constants/routes";
+
+const PUBLIC_ROUTES = [
+  ROUTES.HOME,
+  ROUTES.ABOUT,
+  ROUTES.PRODUCT,
+  ROUTES.HOW_IT_WORKS,
+  ROUTES.BLOG,
+  ROUTES.SOLUTIONS,
+  ROUTES.CONTACT,
+  ROUTES.WAITLIST,
+];
+
+const AUTH_ROUTES = [ROUTES.AUTH_LOGIN, ROUTES.AUTH_SIGNUP, ROUTES.AUTH_FORGOT_PASSWORD, ROUTES.AUTH_VERIFY_EMAIL];
+
+const PROTECTED_ROUTES = Object.values(ROUTES).filter(
+  (route) => route.startsWith("/app") || route.startsWith("/onboard")
+);
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  requiresOnboarding: boolean;
   login: () => void;
   logout: () => Promise<void>;
   onboard: (data: {
@@ -33,40 +52,56 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [requiresOnboarding, setRequiresOnboarding] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { user: userData } = await authApi.checkAuth();
-        setUser(userData ?? null);
+        const res = await authApi.checkAuth();
+        
+        if (res.requirement === "/onboard") {
+          setUser(res.user ?? null);
+          setRequiresOnboarding(true);
+        } else {
+          setUser(res.user ?? null);
+          setRequiresOnboarding(false);
+        }
       } catch {
         setUser(null);
+        setRequiresOnboarding(false);
       } finally {
         setIsLoading(false);
       }
     };
 
     checkAuth();
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     if (isLoading) return;
 
-    const isAuthRoute = pathname?.startsWith("/auth");
-    const isPublicRoute =
-      pathname === "/" ||
-      pathname?.startsWith("/about") ||
-      pathname?.startsWith("/product") ||
-      pathname?.startsWith("/how-it-works");
+    const isPublicRoute = PUBLIC_ROUTES.some((route) => pathname === route || pathname?.startsWith(route));
+    const isAuthRoute = AUTH_ROUTES.some((route) => pathname === route || pathname?.startsWith(route));
+    const isOnboardingRoute = pathname === ROUTES.ONBOARD;
+    const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname === route || pathname?.startsWith(route));
 
     const isAuth = !!user;
 
-    if (!isAuth && !isAuthRoute && !isPublicRoute) {
-      router.push("/auth/login");
-    } else if (isAuth && isAuthRoute) {
-      router.push("/onboard");
+    if (!isAuth && isProtectedRoute && !isOnboardingRoute) {
+      router.push(ROUTES.AUTH_LOGIN);
+      return;
     }
-  }, [isLoading, user, pathname, router]);
+
+    if (isAuth && requiresOnboarding && isProtectedRoute && !isOnboardingRoute) {
+      router.replace(ROUTES.ONBOARD);
+      return;
+    }
+
+    if (isAuth && isOnboardingRoute && !requiresOnboarding) {
+      router.replace(ROUTES.DASHBOARD);
+      return;
+    }
+  }, [isLoading, user, requiresOnboarding, pathname, router]);
 
   const login = () => {
     authApi.loginWithGitHub();
@@ -76,6 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     mutationFn: () => authApi.logout(),
     onSuccess: () => {
       setUser(null);
+      setRequiresOnboarding(false);
       router.push("/auth/login");
     },
   });
@@ -90,6 +126,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }) => authApi.onboard(data),
     onSuccess: (data) => {
       setUser(data.user);
+      setRequiresOnboarding(false);
       router.push("/app/dashboard");
     },
   });
@@ -114,6 +151,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         isLoading,
         isAuthenticated: !!user,
+        requiresOnboarding,
         login,
         logout,
         onboard,

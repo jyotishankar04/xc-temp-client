@@ -20,6 +20,10 @@ export const ROUTES = {
   DASHBOARD_AUDIT: "/app/dashboard/audit",
   DASHBOARD_SETTINGS: "/app/dashboard/settings",
 
+  ORGS: "/app/orgs",
+  ORGS_CREATE: "/app/orgs/create",
+  ORGS_MANAGE: "/app/orgs/manage",
+
   AUTH_LOGIN: "/auth/login",
   AUTH_SIGNUP: "/auth/signup",
   AUTH_FORGOT_PASSWORD: "/auth/forgot-password",

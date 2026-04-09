@@ -18,7 +18,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, LayoutDashboard, AlertTriangle, Brain, Zap, Boxes, Settings2, Users, FileText, Cog } from "lucide-react";
+import { ChevronDown, ChevronRight, LayoutDashboard, AlertTriangle, Brain, Zap, Boxes, Settings2, Users, FileText, Cog, Activity, FileSearch } from "lucide-react";
 
 export type Route = {
   id: string;
@@ -45,7 +45,6 @@ const defaultRoutes: Route[] = [
     title: "Failures",
     icon: <AlertTriangle className="size-4" />,
     link: "/app/dashboard/failures",
-    badge: "12",
   },
   {
     id: "analysis",
@@ -58,19 +57,27 @@ const defaultRoutes: Route[] = [
     title: "Actions",
     icon: <Zap className="size-4" />,
     link: "/app/dashboard/actions",
-    badge: "2",
   },
   {
     id: "services",
     title: "Services",
     icon: <Boxes className="size-4" />,
     link: "/app/dashboard/services",
+    subs: [
+      { title: "All Services", link: "/app/dashboard/services" },
+    ],
   },
   {
-    id: "setup",
-    title: "Setup",
-    icon: <Settings2 className="size-4" />,
-    link: "/app/dashboard/setup",
+    id: "events",
+    title: "Events",
+    icon: <Activity className="size-4" />,
+    link: "/app/dashboard/events",
+  },
+  {
+    id: "rca",
+    title: "RCA",
+    icon: <FileSearch className="size-4" />,
+    link: "/app/dashboard/rca",
   },
   {
     id: "team",
@@ -83,6 +90,12 @@ const defaultRoutes: Route[] = [
     title: "Audit Log",
     icon: <FileText className="size-4" />,
     link: "/app/dashboard/audit",
+  },
+  {
+    id: "setup",
+    title: "Setup",
+    icon: <Settings2 className="size-4" />,
+    link: "/app/dashboard/setup",
   },
 ];
 

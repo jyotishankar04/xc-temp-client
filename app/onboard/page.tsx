@@ -97,30 +97,37 @@ export default function OnboardPage() {
   }, [orgName, slugAuto, setValue]);
 
   const goNext = async () => {
-    let valid = false;
-    if (step === 1) valid = await trigger(["orgName", "orgSlug"]);
-    else if (step === 2) valid = await trigger(["role"]);
+    if (step === 1) {
+      const valid = await trigger(["orgName", "orgSlug"]);
+      if (!valid) return;
+      setDirection(1);
+      setStep(2);
+      return;
+    }
 
-    if (valid) {
-      if (step === TOTAL_STEPS) {
-        setIsSubmitting(true);
-        try {
-          const values = getValues();
-          await onboard({
-            orgName: values.orgName,
-            orgSlug: values.orgSlug,
-            teamSize: values.teamSize,
-            role: values.role,
-            notes: values.notes,
-          });
-        } catch (error) {
-          console.error("Onboarding failed:", error);
-        } finally {
-          setIsSubmitting(false);
-        }
-      } else {
-        setDirection(1);
-        setStep(step + 1);
+    if (step === 2) {
+      const valid = await trigger(["role"]);
+      if (!valid) return;
+      setDirection(1);
+      setStep(3);
+      return;
+    }
+
+    if (step === TOTAL_STEPS) {
+      setIsSubmitting(true);
+      try {
+        const values = getValues();
+        await onboard({
+          orgName: values.orgName,
+          orgSlug: values.orgSlug,
+          teamSize: values.teamSize,
+          role: values.role,
+          notes: values.notes,
+        });
+      } catch (error) {
+        console.error("Onboarding failed:", error);
+      } finally {
+        setIsSubmitting(false);
       }
     }
   };

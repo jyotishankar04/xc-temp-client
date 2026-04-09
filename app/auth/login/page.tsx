@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { GitHubLogo } from "@/components/shared/branding";
@@ -9,6 +10,13 @@ import { appConfig } from "@/lib/config/app";
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogin = () => {
+    if (isLoading) return;
+    setIsLoading(true);
+    login();
+  };
 
   return (
     <>
@@ -18,12 +26,11 @@ export default function LoginPage() {
 
       <Button
         className="mt-8 w-full gap-3"
-        onClick={() => {
-          window.location.href = `${appConfig.apiUrl}/api/v1/auth/github`;
-        }}
+        onClick={handleLogin}
+        disabled={isLoading}
       >
         <GitHubLogo className="size-4" />
-        Continue with GitHub
+        {isLoading ? "Redirecting..." : "Continue with GitHub"}
       </Button>
 
       <p className="mt-5 text-center text-sm">

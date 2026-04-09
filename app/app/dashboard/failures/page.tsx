@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,100 +20,37 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  AlertTriangle,
-  SearchIcon,
-  SlidersHorizontal,
-} from "lucide-react";
+import { useCases, useServices } from "@/lib/hooks";
+import { SearchIcon, Loader2, Boxes } from "lucide-react";
 import Link from "next/link";
 import { ROUTES } from "@/lib/constants/routes";
 
-type FailureCase = {
-  id: string;
-  caseId: string;
-  title: string;
-  service: string;
-  severity: "high" | "medium" | "low";
-  status: "open" | "resolved";
-  lastSeen: string;
-  occurrences: number;
-  confidence: number;
-  environment: "production" | "staging";
+const severityVariants: Record<string, "destructive" | "secondary" | "outline"> = {
+  HIGH: "destructive",
+  MEDIUM: "secondary",
+  LOW: "outline",
 };
 
-const cases: FailureCase[] = [
-  {
-    id: "142",
-    caseId: "#142",
-    title: "Database Connection Timeout",
-    service: "payments-api",
-    severity: "high",
-    status: "open",
-    lastSeen: "2 min ago",
-    occurrences: 37,
-    confidence: 72,
-    environment: "production",
-  },
-  {
-    id: "141",
-    caseId: "#141",
-    title: "API Gateway Timeout",
-    service: "api-gateway",
-    severity: "medium",
-    status: "open",
-    lastSeen: "15 min ago",
-    occurrences: 12,
-    confidence: 85,
-    environment: "production",
-  },
-  {
-    id: "140",
-    caseId: "#140",
-    title: "Auth Service Latency",
-    service: "auth-service",
-    severity: "low",
-    status: "open",
-    lastSeen: "1 hr ago",
-    occurrences: 5,
-    confidence: 91,
-    environment: "production",
-  },
-  {
-    id: "139",
-    caseId: "#139",
-    title: "Order Processing Delay",
-    service: "orders-service",
-    severity: "medium",
-    status: "resolved",
-    lastSeen: "3 hrs ago",
-    occurrences: 8,
-    confidence: 78,
-    environment: "staging",
-  },
-  {
-    id: "138",
-    caseId: "#138",
-    title: "Redis Cache Miss Rate",
-    service: "cache-service",
-    severity: "low",
-    status: "resolved",
-    lastSeen: "5 hrs ago",
-    occurrences: 22,
-    confidence: 65,
-    environment: "production",
-  },
-];
-
-const severityVariants = {
-  high: "destructive" as const,
-  medium: "secondary" as const,
-  low: "outline" as const,
+const statusVariants: Record<string, "default" | "outline"> = {
+  OPEN: "default",
+  RESOLVED: "outline",
+  MERGED: "outline",
 };
 
-const statusVariants = {
-  open: "default" as const,
-  resolved: "outline" as const,
-};
+function formatRelativeTime(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHrs = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHrs / 24);
+
+  if (diffMins < 1) return "Just now";
+  if (diffMins < 60) return `${diffMins} min ago`;
+  if (diffHrs < 24) return `${diffHrs} hr ago`;
+  if (diffDays < 7) return `${diffDays} days ago`;
+  return date.toLocaleDateString();
+}
 
 export default function FailuresPage() {
   const [search, setSearch] = useState("");
@@ -121,17 +58,27 @@ export default function FailuresPage() {
   const [severity, setSeverity] = useState<string>("all");
   const [status, setStatus] = useState<string>("all");
 
-  const filtered = cases.filter((c) => {
-    const matchesSearch =
-      c.title.toLowerCase().includes(search.toLowerCase()) ||
-      c.service.toLowerCase().includes(search.toLowerCase()) ||
-      c.caseId.toLowerCase().includes(search.toLowerCase());
-    const matchesEnv =
-      environment === "all" || c.environment === environment;
-    const matchesSev = severity === "all" || c.severity === severity;
-    const matchesStatus = status === "all" || c.status === status;
-    return matchesSearch && matchesEnv && matchesSev && matchesStatus;
+  const { data: cases = [], isLoading } = useCases({
+    search: search || undefined,
+    environment: environment === "all" ? undefined : environment,
+    severity: severity === "all" ? undefined : severity,
+    status: status === "all" ? undefined : status,
   });
+
+  const { data: services = [] } = useServices();
+
+  const getServiceName = (serviceId: string) => {
+    const service = services.find((s) => s.id === serviceId);
+    return service?.name || serviceId.slice(0, 8);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-96">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -169,9 +116,9 @@ export default function FailuresPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All severity</SelectItem>
-              <SelectItem value="high">High</SelectItem>
-              <SelectItem value="medium">Medium</SelectItem>
-              <SelectItem value="low">Low</SelectItem>
+              <SelectItem value="HIGH">High</SelectItem>
+              <SelectItem value="MEDIUM">Medium</SelectItem>
+              <SelectItem value="LOW">Low</SelectItem>
             </SelectContent>
           </Select>
           <Select value={status} onValueChange={setStatus}>
@@ -180,8 +127,9 @@ export default function FailuresPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All status</SelectItem>
-              <SelectItem value="open">Open</SelectItem>
-              <SelectItem value="resolved">Resolved</SelectItem>
+              <SelectItem value="OPEN">Open</SelectItem>
+              <SelectItem value="RESOLVED">Resolved</SelectItem>
+              <SelectItem value="MERGED">Merged</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -192,24 +140,23 @@ export default function FailuresPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-20">Case ID</TableHead>
-                  <TableHead>Title</TableHead>
                   <TableHead>Service</TableHead>
                   <TableHead>Severity</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Environment</TableHead>
                   <TableHead>Last Seen</TableHead>
-                  <TableHead className="text-right">Occurrences</TableHead>
-                  <TableHead className="text-right">Confidence</TableHead>
+                  <TableHead className="text-right">Events</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.length === 0 ? (
+                {cases.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                       No cases found matching your filters.
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filtered.map((c) => (
+                  cases.map((c) => (
                     <TableRow
                       key={c.id}
                       className="cursor-pointer hover:bg-muted/50"
@@ -219,35 +166,37 @@ export default function FailuresPage() {
                           href={`${ROUTES.DASHBOARD_FAILURES}/${c.id}`}
                           className="font-mono text-sm font-semibold text-primary hover:underline"
                         >
-                          {c.caseId}
+                          {c.id.slice(0, 8)}...
                         </Link>
                       </TableCell>
-                      <TableCell className="text-sm max-w-48 truncate">
-                        {c.title}
+                      <TableCell>
+                        <Link
+                          href={`/app/dashboard/services/${c.service.id}/overview`}
+                          className="text-sm hover:underline flex items-center gap-1"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Boxes className="size-3.5" />
+                          {c.service.name}
+                        </Link>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="text-xs font-normal">
-                          {c.service}
+                        <Badge variant={severityVariants[c.severity] || "outline"} className="text-xs capitalize">
+                          {c.severity.toLowerCase()}
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={severityVariants[c.severity]} className="text-xs capitalize">
-                          {c.severity}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={statusVariants[c.status]} className="text-xs capitalize">
-                          {c.status}
+                        <Badge variant={statusVariants[c.status] || "outline"} className="text-xs capitalize">
+                          {c.status.toLowerCase()}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
-                        {c.lastSeen}
+                        {c.environment || "-"}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {formatRelativeTime(c.createdAt)}
                       </TableCell>
                       <TableCell className="text-right text-sm">
-                        {c.occurrences}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <span className="text-sm font-medium">{c.confidence}%</span>
+                        {c._count?.events || 0}
                       </TableCell>
                     </TableRow>
                   ))

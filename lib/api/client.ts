@@ -12,10 +12,22 @@ export class ApiError extends Error {
   }
 }
 
+export interface UserResponse {
+  id: string;
+  name?: string;
+  username?: string;
+  email: string;
+  avatarUrl?: string;
+  status?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface ApiResponse<T = unknown> {
+  success: boolean;
   data?: T;
-  error?: string;
-  code?: string;
+  message?: string;
+  requirement?: string;
 }
 
 const API_URL = appConfig.apiUrl;
@@ -28,6 +40,13 @@ const axiosInstance = axios.create({
   },
   withCredentials: true,
 });
+
+export class OnboardingRequiredError extends Error {
+  constructor(public requirement: string) {
+    super("Onboarding required");
+    this.name = "OnboardingRequiredError";
+  }
+}
 
 axiosInstance.interceptors.response.use(
   (response) => response,
@@ -47,7 +66,7 @@ axiosInstance.interceptors.response.use(
         );
         return axiosInstance(originalRequest);
       } catch {
-        // Let the calling code handle the error (useAuth will redirect)
+        // Let the calling code handle the error
       }
     }
 
