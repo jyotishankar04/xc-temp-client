@@ -12,6 +12,8 @@
 
 # testing
 /coverage
+BACKEND_CONTEXT.md
+AGENTS.md
 
 # next.js
 /.next/
