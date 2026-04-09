@@ -1,0 +1,66 @@
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+const PUBLIC_ROUTES = ["/", "/about", "/product", "/-how-it-works", "/blog", "/solutions", "/contact", "/waitlist"];
+const AUTH_ROUTES = ["/auth/login", "/auth/signup", "/auth/forgot-password", "/auth/verify-email"];
+const PROTECTED_ROUTE_PREFIXES = ["/app", "/onboard"];
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const isPublicRoute = PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`));
+  const isAuthRoute = AUTH_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`));
+  const isProtectedRoute = PROTECTED_ROUTE_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+
+  if (!isProtectedRoute && !isAuthRoute) {
+    return NextResponse.next();
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/api/v1/users/me`, {
+      method: "GET",
+      headers: {
+        Cookie: request.headers.get("cookie") || "",
+      },
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      if (isProtectedRoute) {
+        const loginUrl = new URL("/auth/login", request.url);
+        return NextResponse.redirect(loginUrl);
+      }
+      return NextResponse.next();
+    }
+
+    const data = await response.json();
+
+    if (isAuthRoute && data.success) {
+      const dashboardUrl = new URL("/app/dashboard", request.url);
+      return NextResponse.redirect(dashboardUrl);
+    }
+
+    if (data.requirement === "/onboard" && !pathname.startsWith("/onboard")) {
+      const onboardUrl = new URL("/onboard", request.url);
+      return NextResponse.redirect(onboardUrl);
+    }
+
+    if (pathname.startsWith("/onboard") && data.requirement !== "/onboard") {
+      const dashboardUrl = new URL("/app/dashboard", request.url);
+      return NextResponse.redirect(dashboardUrl);
+    }
+
+    return NextResponse.next();
+  } catch (error) {
+    console.error("Middleware auth check failed:", error);
+    if (isProtectedRoute) {
+      const loginUrl = new URL("/auth/login", request.url);
+      return NextResponse.redirect(loginUrl);
+    }
+    return NextResponse.next();
+  }
+}
+
+export const config = {
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|public).*)"],
+};

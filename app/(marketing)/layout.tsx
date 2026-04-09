@@ -1,7 +1,6 @@
-import Footer from "@/components/custom/marketing/landing/footer";
-import Navbar from "@/components/custom/marketing/landing/navbar";
-// 
-function layout({
+import { Footer, Navbar } from "@/components/shared/layout";
+
+function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -15,4 +14,4 @@ function layout({
   );
 }
 
-export default layout;
+export default PublicLayout;
