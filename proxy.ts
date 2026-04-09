@@ -6,7 +6,7 @@ const AUTH_ROUTES = ["/auth/login", "/auth/signup", "/auth/forgot-password", "/a
 const PROTECTED_ROUTE_PREFIXES = ["/app", "/onboard"];
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isPublicRoute = PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`));
   const isAuthRoute = AUTH_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`));
