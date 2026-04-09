@@ -1,7 +1,13 @@
+"use client";
+
 import { ArrowUpRight, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/hooks/use-auth";
+import Link from "next/link";
 
 const CTA = () => {
+  const { isAuthenticated, isLoading } = useAuth();
+
   return (
     <div className="mx-auto flex max-w-screen-xl flex-col px-6 py-24 sm:py-32">
       <div className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-primary/5 via-transparent to-transparent p-12 text-center sm:p-16 lg:p-20">
@@ -23,14 +29,31 @@ const CTA = () => {
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button size="lg" className="rounded-full px-8 text-base">
-              Request Early Access
-              <ArrowUpRight className="ml-2 h-4 w-4" />
-            </Button>
-            <Button size="lg" variant="outline" className="rounded-full px-8 text-base">
-              <Calendar className="mr-2 h-4 w-4" />
-              Schedule Demo
-            </Button>
+            {!isLoading && (
+              isAuthenticated ? (
+                <Link href="/app/dashboard">
+                  <Button size="lg" className="rounded-full px-8 text-base">
+                    Go to Dashboard
+                    <ArrowUpRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              ) : (
+                <>
+                  <Link href="/auth/signup">
+                    <Button size="lg" className="rounded-full px-8 text-base">
+                      Request Early Access
+                      <ArrowUpRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                  <Link href="/auth/login">
+                    <Button size="lg" variant="outline" className="rounded-full px-8 text-base">
+                      <Calendar className="mr-2 h-4 w-4" />
+                      Schedule Demo
+                    </Button>
+                  </Link>
+                </>
+              )
+            )}
           </div>
 
           {/* Optional trust indicator */}

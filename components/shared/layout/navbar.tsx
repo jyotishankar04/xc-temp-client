@@ -9,8 +9,10 @@ import { NavMenu } from "./nav-menu";
 import { NavigationSheet } from "../../marketing/landing/navigation-sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
+import { useAuth } from "@/lib/hooks/use-auth";
 
 const Navbar = () => {
+  const { isAuthenticated, isLoading } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
@@ -99,18 +101,42 @@ const Navbar = () => {
           <div className="flex items-center gap-2 sm:gap-3">
             <ThemeToggle />
 
-            <Link href="/waitlist">
-              <Button
-                size="sm"
-                className="rounded-full hidden lg:block bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 text-xs sm:text-sm px-3 sm:px-4"
-              >
-                Join Waitlist
-              </Button>
-            </Link>
+            {!isLoading && (
+              isAuthenticated ? (
+                <Link href="/app/dashboard">
+                  <Button
+                    size="sm"
+                    className="rounded-full hidden lg:block bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 text-xs sm:text-sm px-3 sm:px-4"
+                  >
+                    Go to Dashboard
+                  </Button>
+                </Link>
+              ) : (
+                <>
+                  <Link href="/auth/login">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="rounded-full hidden lg:block text-xs sm:text-sm px-3 sm:px-4"
+                    >
+                      Login
+                    </Button>
+                  </Link>
+                  <Link href="/auth/signup">
+                    <Button
+                      size="sm"
+                      className="rounded-full hidden lg:block bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 text-xs sm:text-sm px-3 sm:px-4"
+                    >
+                      Sign Up
+                    </Button>
+                  </Link>
+                </>
+              )
+            )}
 
             {/* Mobile Menu - Visible on medium screens and below */}
             <div className="lg:hidden">
-              <NavigationSheet />
+              <NavigationSheet isAuthenticated={isAuthenticated} isLoading={isLoading} />
             </div>
           </div>
         </div>

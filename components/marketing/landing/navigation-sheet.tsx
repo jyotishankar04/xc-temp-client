@@ -7,10 +7,14 @@ import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect, useRef } from "react";
 import { Logo } from "@/components/shared/branding/logo";
 import { NavMenu } from "../../shared/layout/nav-menu";
+import Link from "next/link";
 
+interface NavigationSheetProps {
+  isAuthenticated?: boolean;
+  isLoading?: boolean;
+}
 
-
-export const NavigationSheet = () => {
+export const NavigationSheet = ({ isAuthenticated = false, isLoading = false }: NavigationSheetProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -185,15 +189,46 @@ export const NavigationSheet = () => {
                     transition={{ delay: 0.1 }}
                     className="pt-4 border-t border-border/40"
                   >
-                    <Button
-                      className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:shadow-md shadow-md group"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <span className="relative">
-                        Join Waitlist
-                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white/50 group-hover:w-full transition-all duration-300" />
-                      </span>
-                    </Button>
+                    {isLoading ? (
+                      <Button
+                        className="w-full rounded-full bg-primary text-primary-foreground shadow-md"
+                        disabled
+                      >
+                        Loading...
+                      </Button>
+                    ) : isAuthenticated ? (
+                      <Link href="/app/dashboard" onClick={() => setIsOpen(false)}>
+                        <Button
+                          className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:shadow-md shadow-md group"
+                        >
+                          <span className="relative">
+                            Go to Dashboard
+                            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white/50 group-hover:w-full transition-all duration-300" />
+                          </span>
+                        </Button>
+                      </Link>
+                    ) : (
+                      <div className="flex gap-2">
+                        <Link href="/auth/login" onClick={() => setIsOpen(false)} className="flex-1">
+                          <Button
+                            variant="outline"
+                            className="w-full rounded-full"
+                          >
+                            Login
+                          </Button>
+                        </Link>
+                        <Link href="/auth/signup" onClick={() => setIsOpen(false)} className="flex-1">
+                          <Button
+                            className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:shadow-md shadow-md group"
+                          >
+                            <span className="relative">
+                              Sign Up
+                              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white/50 group-hover:w-full transition-all duration-300" />
+                            </span>
+                          </Button>
+                        </Link>
+                      </div>
+                    )}
                   </motion.div>
                 </div>
               </div>
