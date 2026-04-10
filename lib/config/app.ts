@@ -1,3 +1,4 @@
+
 export const appConfig = {
   name: "XecureCode",
   tagline: "AI-powered reliability for production systems",
