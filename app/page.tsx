@@ -1,13 +1,13 @@
-import BusinessBenefits from "@/components/custom/marketing/landing/business-benifits";
-import CTA from "@/components/custom/marketing/landing/cta";
-import Footer from "@/components/custom/marketing/landing/footer";
-import Hero from "@/components/custom/marketing/landing/hero";
-import HowItWorks from "@/components/custom/marketing/landing/how-it-works";
-import IncubationTrust from "@/components/custom/marketing/landing/incubation-trust";
-import Navbar from "@/components/custom/marketing/landing/navbar";
-import ProductPositioning from "@/components/custom/marketing/landing/positioning";
-import Problem from "@/components/custom/marketing/landing/problem-section";
-import SupportedTechnologies from "@/components/custom/marketing/landing/supported-technologies";
+import BusinessBenefits from "@/components/marketing/landing/business-benefits";
+import CTA from "@/components/marketing/landing/cta";
+import Footer from "@/components/marketing/landing/footer";
+import Hero from "@/components/marketing/landing/hero";
+import HowItWorks from "@/components/marketing/landing/how-it-works";
+import IncubationTrust from "@/components/marketing/landing/incubation-trust";
+import Navbar from "@/components/marketing/common/navbar";
+import ProductPositioning from "@/components/marketing/landing/positioning";
+import Problem from "@/components/marketing/landing/problem-section";
+import SupportedTechnologies from "@/components/marketing/landing/supported-technologies";
 
 export default function Page() {
   return (

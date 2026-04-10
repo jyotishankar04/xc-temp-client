@@ -55,7 +55,7 @@ const Timeline = React.forwardRef<HTMLUListElement, TimelineProps>(
 Timeline.displayName = "Timeline";
 
 // Timeline Item
-export interface TimelineItemProps extends React.HTMLAttributes<HTMLLIElement> { }
+export type TimelineItemProps = React.HTMLAttributes<HTMLLIElement>;
 
 const TimelineItem = React.forwardRef<HTMLLIElement, TimelineItemProps>(
   ({ className, ...props }, ref) => {
@@ -71,7 +71,7 @@ const TimelineItem = React.forwardRef<HTMLLIElement, TimelineItemProps>(
 TimelineItem.displayName = "TimelineItem";
 
 // Timeline Header (contains separator and icon)
-export interface TimelineHeaderProps extends React.HTMLAttributes<HTMLDivElement> { }
+export type TimelineHeaderProps = React.HTMLAttributes<HTMLDivElement>;
 
 const TimelineHeader = React.forwardRef<HTMLDivElement, TimelineHeaderProps>(
   ({ className, ...props }, ref) => {
@@ -93,7 +93,7 @@ const TimelineHeader = React.forwardRef<HTMLDivElement, TimelineHeaderProps>(
 TimelineHeader.displayName = "TimelineHeader";
 
 // Timeline Separator (the line)
-export interface TimelineSeparatorProps extends React.HTMLAttributes<HTMLDivElement> { }
+export type TimelineSeparatorProps = React.HTMLAttributes<HTMLDivElement>;
 
 const TimelineSeparator = React.forwardRef<HTMLDivElement, TimelineSeparatorProps>(
   ({ className, ...props }, ref) => {
@@ -161,7 +161,7 @@ const TimelineIcon = React.forwardRef<HTMLDivElement, TimelineIconProps>(
 TimelineIcon.displayName = "TimelineIcon";
 
 // Timeline Body (content area)
-export interface TimelineBodyProps extends React.HTMLAttributes<HTMLDivElement> { }
+export type TimelineBodyProps = React.HTMLAttributes<HTMLDivElement>;
 
 const TimelineBody = React.forwardRef<HTMLDivElement, TimelineBodyProps>(
   ({ className, ...props }, ref) => {
@@ -183,7 +183,7 @@ const TimelineBody = React.forwardRef<HTMLDivElement, TimelineBodyProps>(
 TimelineBody.displayName = "TimelineBody";
 
 // Timeline Title
-export interface TimelineTitleProps extends React.HTMLAttributes<HTMLHeadingElement> { }
+export type TimelineTitleProps = React.HTMLAttributes<HTMLHeadingElement>;
 
 const TimelineTitle = React.forwardRef<HTMLHeadingElement, TimelineTitleProps>(
   ({ className, ...props }, ref) => {
@@ -199,7 +199,7 @@ const TimelineTitle = React.forwardRef<HTMLHeadingElement, TimelineTitleProps>(
 TimelineTitle.displayName = "TimelineTitle";
 
 // Timeline Description
-export interface TimelineDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> { }
+export type TimelineDescriptionProps = React.HTMLAttributes<HTMLParagraphElement>;
 
 const TimelineDescription = React.forwardRef<HTMLParagraphElement, TimelineDescriptionProps>(
   ({ className, ...props }, ref) => {

@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { Logo } from "@/components/custom/marketing/landing/logo";
+import { Logo } from "@/components/shared/branding/logo";
 import Link from "next/link";
 
 /* ─── FADE-IN WRAPPER using motion/react ─── */
@@ -116,7 +116,7 @@ const teamMembers = [
     role: "Co-Founder · Marketing & Frontend",
     description:
       "Bridges engineering and growth. Builds interfaces that convert and narratives that resonate — at the same time.",
-    image: "/sd.jpg",
+    image: "/sd.jpeg",
     github: "https://github.com/snehashree-das",
     linkedin: "https://linkedin.com/in/snehashree-das",
     avatarColor: "bg-pink-50 text-pink-800",
