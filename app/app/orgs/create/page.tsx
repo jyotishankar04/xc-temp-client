@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -41,10 +40,10 @@ export default function CreateOrgPage() {
     register,
     watch,
     setValue,
+    setError,
     handleSubmit,
     formState: { errors },
   } = useForm<CreateOrgInput>({
-    resolver: zodResolver(createOrgSchema),
     defaultValues: {
       name: "",
       slug: "",
@@ -67,6 +66,15 @@ export default function CreateOrgPage() {
   };
 
   const onSubmit = async (data: CreateOrgInput) => {
+    const result = createOrgSchema.safeParse(data);
+    if (!result.success) {
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof CreateOrgInput;
+        setError(field, { message: issue.message });
+      });
+      return;
+    }
+
     try {
       await createOrg.mutateAsync(data);
       router.push("/app/orgs");

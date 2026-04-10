@@ -15,7 +15,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useOrgs, useCurrentOrg, useSwitchOrg, useCreateOrg } from "@/lib/hooks";
 
@@ -52,11 +51,11 @@ export default function OrgsPage() {
     register,
     watch,
     setValue,
+    setError,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm<CreateOrgInput>({
-    resolver: zodResolver(createOrgSchema),
     defaultValues: {
       name: "",
       slug: "",
@@ -89,6 +88,15 @@ export default function OrgsPage() {
   };
 
   const onSubmit = async (data: CreateOrgInput) => {
+    const result = createOrgSchema.safeParse(data);
+    if (!result.success) {
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof CreateOrgInput;
+        setError(field, { message: issue.message });
+      });
+      return;
+    }
+    
     try {
       await createOrg.mutateAsync(data);
       reset();
