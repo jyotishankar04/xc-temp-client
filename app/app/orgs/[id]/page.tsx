@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, UserPlus, Search, ShieldCheck, Pencil, Eye, Settings, Server, Users, CheckCircle, XCircle, AlertCircle, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -76,11 +75,11 @@ export default function OrgDetailPage() {
 
   const {
     register: registerInvite,
+    setError: setInviteError,
     handleSubmit: handleSubmitInvite,
     reset: resetInvite,
     formState: { errors: inviteErrors },
   } = useForm<InviteInput>({
-    resolver: zodResolver(inviteSchema),
     defaultValues: {
       email: "",
       role: "MEMBER",
@@ -88,6 +87,15 @@ export default function OrgDetailPage() {
   });
 
   const onSubmitInvite = async (data: InviteInput) => {
+    const result = inviteSchema.safeParse(data);
+    if (!result.success) {
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof InviteInput;
+        setInviteError(field, { message: issue.message });
+      });
+      return;
+    }
+
     try {
       await inviteMember.mutateAsync({ orgId, data });
       resetInvite();

@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronLeft, ChevronRight, Check, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -71,11 +70,10 @@ export default function OnboardPage() {
     register,
     watch,
     setValue,
-    trigger,
+    setError,
     getValues,
     formState: { errors },
   } = useForm<OnboardingInput>({
-    resolver: zodResolver(onboardingSchema),
     defaultValues: {
       orgName: "",
       orgSlug: "",
@@ -96,9 +94,42 @@ export default function OnboardPage() {
     }
   }, [orgName, slugAuto, setValue]);
 
+  const validateStep = (step: number) => {
+    const values = getValues();
+    
+    if (step === 1) {
+      const result = onboardingSchema.safeParse({
+        orgName: values.orgName,
+        orgSlug: values.orgSlug,
+      });
+      if (!result.success) {
+        result.error.issues.forEach((issue) => {
+          const field = issue.path[0] as "orgName" | "orgSlug";
+          setError(field, { message: issue.message });
+        });
+        return false;
+      }
+    }
+    
+    if (step === 2) {
+      const result = onboardingSchema.safeParse({
+        role: values.role,
+      });
+      if (!result.success) {
+        result.error.issues.forEach((issue) => {
+          const field = issue.path[0] as "role";
+          setError(field, { message: issue.message });
+        });
+        return false;
+      }
+    }
+    
+    return true;
+  };
+
   const goNext = async () => {
     if (step === 1) {
-      const valid = await trigger(["orgName", "orgSlug"]);
+      const valid = validateStep(1);
       if (!valid) return;
       setDirection(1);
       setStep(2);
@@ -106,7 +137,7 @@ export default function OnboardPage() {
     }
 
     if (step === 2) {
-      const valid = await trigger(["role"]);
+      const valid = validateStep(2);
       if (!valid) return;
       setDirection(1);
       setStep(3);
