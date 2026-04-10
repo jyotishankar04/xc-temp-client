@@ -4,6 +4,8 @@
 
 Next.js 16 frontend application for XecureCode - an AI-powered reliability platform for production systems. Built with TypeScript, Tailwind CSS, shadcn/ui, and React 19.
 
+
+
 ## Tech Stack
 
 | Category | Technology |
