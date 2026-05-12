@@ -31,12 +31,12 @@
   --chart-5: oklch(0.6532 0.2114 353.9392);
   --sidebar: oklch(1.0000 0 0);
   --sidebar-foreground: oklch(0.1284 0.0267 261.5937);
-  --sidebar-primary: oklch(0.4865 0.2423 291.8661);
+  --sidebar-primary: oklch(0.55 0.15 210);
   --sidebar-primary-foreground: oklch(0.9838 0.0035 247.8583);
   --sidebar-accent: oklch(0.9486 0.0085 303.5068);
-  --sidebar-accent-foreground: oklch(0.4865 0.2423 291.8661);
+  --sidebar-accent-foreground: oklch(0.55 0.15 210);
   --sidebar-border: oklch(0.9278 0.0058 264.5314);
-  --sidebar-ring: oklch(0.4865 0.2423 291.8661);
+  --sidebar-ring: oklch(0.55 0.15 210);
   --font-sans: Plus Jakarta Sans, Inter, system-ui, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: JetBrains Mono, monospace;
@@ -57,6 +57,40 @@
   --shadow-2xl: 0px 8px 30px 0px hsl(263 70% 50% / 0.20);
   --tracking-normal: -0.02em;
   --spacing: 0.25rem;
+
+  /* Severity (calibrated for light backgrounds) */
+  --severity-high: oklch(0.577 0.245 27.325);
+  --severity-medium: oklch(0.769 0.188 70.08);
+  --severity-low: oklch(0.609 0.184 155.552);
+
+  /* Status */
+  --status-open: oklch(0.588 0.181 243.643);
+  --status-resolved: oklch(0.442 0.017 285.786);
+  --status-healthy: oklch(0.609 0.184 155.552);
+
+  /* Success */
+  --success: oklch(0.609 0.184 155.552);
+
+  /* Fingerprint indicator */
+  --fingerprint: oklch(0.769 0.188 70.08);
+
+  /* Code viewer (terminal-style, always dark — values don't change with theme) */
+  --code-bg: oklch(0.141 0.005 285.823);
+  --code-header: oklch(0.21 0.006 285.885);
+  --code-border: oklch(0.274 0.006 286.032);
+  --code-text: oklch(0.871 0.006 286.286);
+  --code-muted: oklch(0.552 0.016 285.938);
+  --code-dim: oklch(0.442 0.017 285.786);
+  --code-gutter: oklch(0.37 0.013 285.805);
+  --code-label: oklch(0.705 0.015 286.067);
+  --code-error: oklch(0.704 0.191 22.182);
+  --code-error-msg: oklch(0.808 0.135 18.736);
+  --code-fn: oklch(0.746 0.16 232.661);
+  --code-file: oklch(0.765 0.177 163.223);
+  --code-line-col: oklch(0.828 0.189 84.429);
+  --code-keyword: oklch(0.714 0.203 305.504);
+  --code-py-file: oklch(0.702 0.183 293.541);
+  --code-success: oklch(0.765 0.177 163.223);
 }
 
 .dark {
@@ -89,13 +123,29 @@
   --sidebar-primary: oklch(0.6 0.2 210);
   --sidebar-primary-foreground: oklch(0.1091 0.0091 301.6956);
   --sidebar-accent: oklch(0.2096 0.0482 299.9505);
-  --sidebar-accent-foreground: oklch(0.6083 0.2172 297.1153);
+  --sidebar-accent-foreground: oklch(0.6 0.2 210);
   --sidebar-border: oklch(0.2217 0.0242 299.7054);
-  --sidebar-ring: oklch(0.6083 0.2172 297.1153);
+  --sidebar-ring: oklch(0.6 0.2 210);
   --font-sans: Plus Jakarta Sans, Inter, system-ui, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: JetBrains Mono, monospace;
   --radius: 0.5rem;
+
+  /* Severity (calibrated for dark backgrounds) */
+  --severity-high: oklch(0.704 0.191 22.182);
+  --severity-medium: oklch(0.828 0.189 84.429);
+  --severity-low: oklch(0.765 0.177 163.223);
+
+  /* Status */
+  --status-open: oklch(0.746 0.16 232.661);
+  --status-resolved: oklch(0.552 0.016 285.938);
+  --status-healthy: oklch(0.765 0.177 163.223);
+
+  /* Success */
+  --success: oklch(0.765 0.177 163.223);
+
+  /* Fingerprint indicator */
+  --fingerprint: oklch(0.828 0.189 84.429);
   --shadow-x: 0px;
   --shadow-y: 20px;
   --shadow-blur: 40px;
@@ -145,6 +195,40 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Severity */
+  --color-severity-high: var(--severity-high);
+  --color-severity-medium: var(--severity-medium);
+  --color-severity-low: var(--severity-low);
+
+  /* Status */
+  --color-status-open: var(--status-open);
+  --color-status-resolved: var(--status-resolved);
+  --color-status-healthy: var(--status-healthy);
+
+  /* Success */
+  --color-success: var(--success);
+
+  /* Fingerprint */
+  --color-fingerprint: var(--fingerprint);
+
+  /* Code viewer */
+  --color-code-bg: var(--code-bg);
+  --color-code-header: var(--code-header);
+  --color-code-border: var(--code-border);
+  --color-code-text: var(--code-text);
+  --color-code-muted: var(--code-muted);
+  --color-code-dim: var(--code-dim);
+  --color-code-gutter: var(--code-gutter);
+  --color-code-label: var(--code-label);
+  --color-code-error: var(--code-error);
+  --color-code-error-msg: var(--code-error-msg);
+  --color-code-fn: var(--code-fn);
+  --color-code-file: var(--code-file);
+  --color-code-line-col: var(--code-line-col);
+  --color-code-keyword: var(--code-keyword);
+  --color-code-py-file: var(--code-py-file);
+  --color-code-success: var(--code-success);
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);

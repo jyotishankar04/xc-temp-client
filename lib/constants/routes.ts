@@ -17,6 +17,7 @@ export const ROUTES = {
   DASHBOARD_SERVICES: "/app/dashboard/services",
   DASHBOARD_SETUP: "/app/dashboard/setup",
   DASHBOARD_TEAM: "/app/dashboard/team",
+  DASHBOARD_RCA: "/app/dashboard/rca",
   DASHBOARD_AUDIT: "/app/dashboard/audit",
   DASHBOARD_SETTINGS: "/app/dashboard/settings",
 

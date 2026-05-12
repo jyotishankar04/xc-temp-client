@@ -96,9 +96,9 @@ export default function OnboardPage() {
 
   const validateStep = (step: number) => {
     const values = getValues();
-    
+
     if (step === 1) {
-      const result = onboardingSchema.safeParse({
+      const result = onboardingSchema.pick({ orgName: true, orgSlug: true }).safeParse({
         orgName: values.orgName,
         orgSlug: values.orgSlug,
       });
@@ -110,9 +110,9 @@ export default function OnboardPage() {
         return false;
       }
     }
-    
+
     if (step === 2) {
-      const result = onboardingSchema.safeParse({
+      const result = onboardingSchema.pick({ role: true }).safeParse({
         role: values.role,
       });
       if (!result.success) {
@@ -123,7 +123,7 @@ export default function OnboardPage() {
         return false;
       }
     }
-    
+
     return true;
   };
 
