@@ -6,23 +6,23 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 const frameworks = [
-  { name: "Basic Usage", description: "Core Go client usage", href: "/docs/sdk/go/basic" },
-  { name: "Gin Framework", description: "Gin web framework integration", href: "/docs/sdk/go/gin" },
+  { name: "Standalone", description: "Manual capture in any Java app", href: "/docs/sdk/go/basic" },
+  { name: "Spring Boot", description: "Auto-configuration for Spring Boot", href: "/docs/sdk/go/gin" },
 ];
 
-export default function GoSdkPage() {
+export default function JavaSdkPage() {
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">
       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
         <Link href="/docs/sdk" className="hover:text-foreground">Docs</Link>
         <span>/</span>
-        <span className="text-foreground">Go</span>
+        <span className="text-foreground">Java</span>
       </div>
 
-      <Badge variant="outline" className="mb-4 border-sky-200 text-sky-600">Go SDK</Badge>
-      <h1 className="text-3xl font-bold tracking-tight mb-4">Go</h1>
+      <Badge variant="outline" className="mb-4 border-sky-200 text-sky-600">Java SDK</Badge>
+      <h1 className="text-3xl font-bold tracking-tight mb-4">Java</h1>
       <p className="text-muted-foreground mb-8">
-        Install the Go SDK and integrate with your Go applications.
+        Install the Java SDK and integrate with your Java applications. Spring Boot auto-configuration included.
       </p>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -46,7 +46,7 @@ export default function GoSdkPage() {
           <Link href="/docs/sdk/node/standalone">← Node.js</Link>
         </Button>
         <Button asChild className="bg-sky-500 hover:bg-sky-600">
-          <Link href="/docs/sdk/api/config">API Reference →</Link>
+          <Link href="/docs/sdk/installation">Back to Docs →</Link>
         </Button>
       </div>
     </div>
