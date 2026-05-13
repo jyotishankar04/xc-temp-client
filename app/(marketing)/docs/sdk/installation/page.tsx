@@ -4,11 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import Link from "next/link";
 import { ArrowRight, Check, Terminal } from "lucide-react";
 
-const pythonCode = `pip install xecurecode`;
+const pythonCode = `pip install x-reliability-sdk`;
 
-const nodeCode = `npm install @xecurecode/sdk`;
+const nodeCode = `npm install @xecurecode/reliability-sdk`;
 
-const goCode = `go get github.com/xecurecode/go-sdk`;
+const javaCode = `<dependency>
+  <groupId>com.xel</groupId>
+  <artifactId>reliability-sdk</artifactId>
+  <version>0.1.0</version>
+</dependency>`;
 
 export default function InstallationPage() {
   return (
@@ -25,7 +29,7 @@ export default function InstallationPage() {
             <CardTitle className="flex items-center gap-2">
               <span className="text-2xl">🐍</span> Python
             </CardTitle>
-            <CardDescription>Flask, FastAPI, Django, or standalone</CardDescription>
+            <CardDescription>Flask, FastAPI, Django, or standalone Python apps</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="bg-slate-950 rounded-md p-4 mb-4">
@@ -62,16 +66,16 @@ export default function InstallationPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <span className="text-2xl">🔷</span> Go
+              <span className="text-2xl">☕</span> Java
             </CardTitle>
-            <CardDescription>Any Go application</CardDescription>
+            <CardDescription>Spring Boot auto-configuration</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="bg-slate-950 rounded-md p-4 mb-4">
-              <code className="text-sky-400 font-mono">{goCode}</code>
+            <div className="bg-slate-950 rounded-md p-4 mb-4 overflow-x-auto">
+              <code className="text-sky-400 font-mono text-sm whitespace-pre">{javaCode}</code>
             </div>
             <Button asChild size="sm" className="bg-sky-500 hover:bg-sky-600">
-              <Link href="/docs/sdk/go/basic">Go Guide</Link>
+              <Link href="/docs/sdk/go/basic">Java Guide</Link>
             </Button>
           </CardContent>
         </Card>
