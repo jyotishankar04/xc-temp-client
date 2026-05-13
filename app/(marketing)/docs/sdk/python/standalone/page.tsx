@@ -48,18 +48,18 @@ export default function PythonStandalonePage() {
       <div className="space-y-8">
         <section>
           <h2 className="text-xl font-semibold mb-4">1. Install the SDK</h2>
-          <CodeBlock code="pip install xecurecode" />
+          <CodeBlock code="pip install x-reliability-sdk" />
         </section>
 
         <section>
           <h2 className="text-xl font-semibold mb-4">2. Basic Usage</h2>
-          <CodeBlock code={`from xecurecode import ReliabilityClient, ReliabilityConfig
+          <CodeBlock code={`from reliability import ReliabilityClient, ReliabilityConfig
 
-config = ReliabilityConfig(
+client = ReliabilityClient(ReliabilityConfig(
     api_key="YOUR_API_KEY",
-    service_id="your-service-id"
-)
-client = ReliabilityClient(config)
+    service_id="your-service-id",
+    mode="production"
+))
 
 try:
     # Your code here
@@ -69,21 +69,13 @@ except Exception as e:
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold mb-4">3. Capture Custom Events</h2>
-          <CodeBlock code={`# Capture custom events
-client.capture_event(
-    event_type="custom_event",
-    message="Custom event message",
-    metadata={"key": "value"}
-)
+          <h2 className="text-xl font-semibold mb-4">3. Graceful Shutdown</h2>
+          <p className="text-muted-foreground mb-4">
+            Call <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">flush()</code> before your process exits to ensure all pending errors are sent:
+          </p>
+          <CodeBlock code={`import atexit
 
-# Capture with severity
-client.capture_event(
-    event_type="slow_request",
-    message="Request took too long",
-    severity="warning",
-    metadata={"duration_ms": 5000}
-)`} />
+atexit.register(client.flush)`} />
         </section>
 
         <section>
@@ -108,15 +100,10 @@ client.capture_event(
                   <td className="py-2 text-muted-foreground">string</td>
                   <td className="py-2">Your service ID (required)</td>
                 </tr>
-                <tr className="border-b">
-                  <td className="py-2 font-mono">base_url</td>
-                  <td className="py-2 text-muted-foreground">string</td>
-                  <td className="py-2">Custom server URL (optional)</td>
-                </tr>
                 <tr>
-                  <td className="py-2 font-mono">flush_interval</td>
-                  <td className="py-2 text-muted-foreground">int</td>
-                  <td className="py-2">Seconds between flushes (default: 5)</td>
+                  <td className="py-2 font-mono">mode</td>
+                  <td className="py-2 text-muted-foreground">string</td>
+                  <td className="py-2">"development" or "production" (default: "development")</td>
                 </tr>
               </tbody>
             </table>
