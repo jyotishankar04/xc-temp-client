@@ -48,26 +48,28 @@ export default function NodeExpressPage() {
       <div className="space-y-8">
         <section>
           <h2 className="text-xl font-semibold mb-4">1. Install the SDK</h2>
-          <CodeBlock code="npm install @xecurecode/node" />
+          <CodeBlock code="npm install @xecurecode/reliability-sdk" />
         </section>
 
         <section>
           <h2 className="text-xl font-semibold mb-4">2. Initialize the Integration</h2>
           <CodeBlock code={`const express = require('express');
-const { xecurecode } = require('@xecurecode/node');
+const { ReliabilityClient } = require('@xecurecode/reliability-sdk');
 
 const app = express();
 
-// Initialize XecureCode middleware
-xecurecode({
+const reliability = new ReliabilityClient({
   apiKey: 'YOUR_API_KEY',
-  serviceId: 'your-service-id'
+  service_id: 'your-service-id',
+  mode: 'production'
 });
 
 app.get('/error', (req, res) => {
-  // This will be automatically captured
-  throw new Error('Test error');
-});`} />
+  throw new Error('Test error'); // automatically captured
+});
+
+// Must be placed after all routes
+app.use(reliability.middleware());`} />
           <p className="text-sm text-muted-foreground mt-2">
             Replace <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">YOUR_API_KEY</code> and <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">your-service-id</code> with your actual credentials.
           </p>
@@ -91,19 +93,14 @@ app.get('/error', (req, res) => {
                   <td className="py-2">Your API key (required)</td>
                 </tr>
                 <tr className="border-b">
-                  <td className="py-2 font-mono">serviceId</td>
+                  <td className="py-2 font-mono">service_id</td>
                   <td className="py-2 text-muted-foreground">string</td>
                   <td className="py-2">Your service ID (required)</td>
                 </tr>
-                <tr className="border-b">
+                <tr>
                   <td className="py-2 font-mono">mode</td>
                   <td className="py-2 text-muted-foreground">string</td>
-                  <td className="py-2">"development" or "production"</td>
-                </tr>
-                <tr>
-                  <td className="py-2 font-mono">environment</td>
-                  <td className="py-2 text-muted-foreground">string</td>
-                  <td className="py-2">Environment name (optional)</td>
+                  <td className="py-2">"development" or "production" (default: "development")</td>
                 </tr>
               </tbody>
             </table>
