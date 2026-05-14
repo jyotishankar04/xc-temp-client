@@ -32,7 +32,7 @@ export interface Action {
 
 export interface ListActionsParams {
   serviceId?: string;
-  status?: "PENDING" | "APPROVED" | "EXECUTED" | "FAILED";
+  status?: "PENDING" | "APPROVED" | "REJECTED" | "EXECUTED" | "FAILED";
   page?: number;
   limit?: number;
 }
