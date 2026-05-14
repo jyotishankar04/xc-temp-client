@@ -26,7 +26,7 @@ const PUBLIC_ROUTES = [
 const AUTH_ROUTES = [ROUTES.AUTH_LOGIN, ROUTES.AUTH_SIGNUP, ROUTES.AUTH_FORGOT_PASSWORD, ROUTES.AUTH_VERIFY_EMAIL];
 
 const PROTECTED_ROUTES = Object.values(ROUTES).filter(
-  (route) => route.startsWith("/app") || route.startsWith("/onboard")
+  (route) => route.startsWith("/dashboard") || route.startsWith("/onboard")
 );
 
 interface AuthContextType {
@@ -127,7 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     onSuccess: (data) => {
       setUser(data.user);
       setRequiresOnboarding(false);
-      router.push("/app/dashboard");
+      router.push("/dashboard");
     },
   });
 

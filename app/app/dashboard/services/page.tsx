@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -31,9 +32,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ConfirmDialog } from "@/components/ui/alert-dialog";
-import { Boxes, Clock, Plus, Settings2, Loader2, ChevronRight, MoreVertical } from "lucide-react";
-import { useServices, useCreateService, useDeleteService } from "@/lib/hooks";
+import { Boxes, Clock, Plus, Settings2, Loader2, ChevronRight, Github, GitBranch, ArrowRight, Check } from "lucide-react";
+import { useServices, useCreateService, useDeleteService, useGitHubStatus, useGitHubRepos } from "@/lib/hooks";
 import type { CreateServiceInput } from "@/lib/types/service";
 
 const statusConfig = {
@@ -48,54 +48,56 @@ const envConfig: Record<string, { variant: "outline" | "secondary" | "default"; 
   DEVELOPMENT: { variant: "outline" as const, label: "Development" },
 };
 
+type Step = 'repo' | 'details';
+
 export default function ServicesPage() {
+  const router = useRouter();
   const { data: services = [], isLoading, error } = useServices();
   const createService = useCreateService();
   const deleteService = useDeleteService();
+  const { data: gitHubStatus } = useGitHubStatus();
+  const { data: gitHubRepos = [], isLoading: reposLoading } = useGitHubRepos();
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; serviceId: string | null }>({
-    open: false,
-    serviceId: null,
-  });
+  const [step, setStep] = useState<Step>('repo');
+  const [selectedRepo, setSelectedRepo] = useState<string>("");
+  const [selectedBranch, setSelectedBranch] = useState("main");
   const [newService, setNewService] = useState<CreateServiceInput>({
     name: "",
     env: "DEVELOPMENT",
   });
 
+  const isGitHubConnected = gitHubStatus?.connected || false;
+
+  const resetWizard = () => {
+    setStep('repo');
+    setSelectedRepo("");
+    setSelectedBranch("main");
+    setNewService({ name: "", env: "DEVELOPMENT" });
+  };
+
+  const handleContinueToDetails = () => {
+    if (!selectedRepo) return;
+    setStep('details');
+  };
+
   const handleCreate = async () => {
     try {
-      await createService.mutateAsync(newService);
+      const result = await createService.mutateAsync(newService);
       setIsCreateOpen(false);
-      setNewService({ name: "", env: "DEVELOPMENT" });
+      resetWizard();
     } catch (e) {
       console.error("Failed to create service:", e);
     }
   };
 
-  const handleDelete = async () => {
-    if (!deleteConfirm.serviceId) return;
+  const handleDelete = async (serviceId: string) => {
     try {
-      await deleteService.mutateAsync(deleteConfirm.serviceId);
-      setDeleteConfirm({ open: false, serviceId: null });
+      await deleteService.mutateAsync(serviceId);
     } catch (e) {
       console.error("Failed to delete service:", e);
     }
   };
-
-  const openDeleteConfirm = (serviceId: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDeleteConfirm({ open: true, serviceId });
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -126,61 +128,127 @@ export default function ServicesPage() {
             Manage your connected services and integrations
           </p>
         </div>
-        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+        <Dialog open={isCreateOpen} onOpenChange={(open) => { setIsCreateOpen(open); if (!open) resetWizard(); }}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="bg-sky-500 hover:bg-sky-600">
               <Plus className="size-4 mr-2" />
               Connect Service
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-lg">
             <DialogHeader>
               <DialogTitle>Connect New Service</DialogTitle>
               <DialogDescription>
-                Add a new service to monitor its reliability and performance.
+                {step === 'repo' ? 'Select a GitHub repository to connect' : 'Configure your service details'}
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Service Name</Label>
-                <Input
-                  id="name"
-                  placeholder="e.g., payments-api"
-                  value={newService.name}
-                  onChange={(e) => setNewService({ ...newService, name: e.target.value })}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="env">Environment</Label>
-                <Select
-                  value={newService.env}
-                  onValueChange={(value) => setNewService({ ...newService, env: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select environment" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="DEVELOPMENT">Development</SelectItem>
-                    <SelectItem value="STAGING">Staging</SelectItem>
-                    <SelectItem value="PRODUCTION">Production</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsCreateOpen(false)}>
-                Cancel
-              </Button>
-              <Button
-                onClick={handleCreate}
-                disabled={!newService.name || createService.isPending}
-              >
-                {createService.isPending && (
-                  <Loader2 className="size-4 mr-2 animate-spin" />
+
+            {step === 'repo' ? (
+              <div className="space-y-4">
+                {!isGitHubConnected ? (
+                  <div className="text-center py-8">
+                    <Github className="size-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground mb-4">Connect your GitHub account first</p>
+                    <Button asChild variant="outline">
+                      <Link href="/dashboard/settings">Go to Settings</Link>
+                    </Button>
+                  </div>
+                ) : reposLoading ? (
+                  <div className="text-center py-8">
+                    <Loader2 className="size-8 animate-spin mx-auto mb-4 text-sky-500" />
+                    <p className="text-muted-foreground">Loading repositories...</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Label>Select Repository</Label>
+                    <div className="max-h-64 overflow-y-auto border rounded-md">
+                      {gitHubRepos.map((repo) => (
+                        <div
+                          key={repo.id}
+                          onClick={() => setSelectedRepo(repo.fullName)}
+                          className={`flex items-center gap-3 p-3 cursor-pointer hover:bg-slate-50 border-b last:border-b-0 ${
+                            selectedRepo === repo.fullName ? 'bg-sky-50 border-sky-500' : ''
+                          }`}
+                        >
+                          <Github className="size-5 text-muted-foreground" />
+                          <div className="flex-1">
+                            <div className="font-medium">{repo.name}</div>
+                            <div className="text-xs text-muted-foreground">{repo.fullName}</div>
+                          </div>
+                          {repo.private && <Badge variant="secondary" className="text-xs">Private</Badge>}
+                          {selectedRepo === repo.fullName && <Check className="size-4 text-sky-500" />}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
-                Create Service
-              </Button>
-            </DialogFooter>
+                {selectedRepo && (
+                  <div className="flex justify-end">
+                    <Button onClick={handleContinueToDetails} className="bg-sky-500 hover:bg-sky-600">
+                      Continue <ArrowRight className="size-4 ml-2" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-md">
+                  <Github className="size-5 text-muted-foreground" />
+                  <div className="flex-1">
+                    <div className="font-medium text-sm">{selectedRepo}</div>
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={() => setStep('repo')}>
+                    Change
+                  </Button>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Service Name</Label>
+                  <Input
+                    id="name"
+                    placeholder="e.g., payments-api"
+                    value={newService.name}
+                    onChange={(e) => setNewService({ ...newService, name: e.target.value })}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    We'll use the repository name as default
+                  </p>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="env">Environment</Label>
+                  <Select
+                    value={newService.env}
+                    onValueChange={(value) => setNewService({ ...newService, env: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select environment" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="DEVELOPMENT">Development</SelectItem>
+                      <SelectItem value="STAGING">Staging</SelectItem>
+                      <SelectItem value="PRODUCTION">Production</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setStep('repo')}>
+                    Back
+                  </Button>
+                  <Button
+                    onClick={handleCreate}
+                    disabled={!newService.name || createService.isPending}
+                    className="bg-sky-500 hover:bg-sky-600"
+                  >
+                    {createService.isPending && (
+                      <Loader2 className="size-4 mr-2 animate-spin" />
+                    )}
+                    Create Service
+                  </Button>
+                </DialogFooter>
+              </div>
+            )}
           </DialogContent>
         </Dialog>
       </div>
@@ -194,7 +262,7 @@ export default function ServicesPage() {
               <p className="text-muted-foreground text-sm mb-4">
                 Connect your first service to start monitoring.
               </p>
-              <Button onClick={() => setIsCreateOpen(true)}>
+              <Button onClick={() => setIsCreateOpen(true)} className="bg-sky-500 hover:bg-sky-600">
                 <Plus className="size-4 mr-2" />
                 Connect Service
               </Button>
@@ -212,71 +280,29 @@ export default function ServicesPage() {
               </TableHeader>
               <TableBody>
                 {services?.map((service) => {
-                  const status = (service.status as keyof typeof statusConfig) || "healthy";
-                  const statusConfigItem = statusConfig[status] || statusConfig.healthy;
-                  const envConfigItem = envConfig[service.env] || envConfig.DEVELOPMENT;
-                  
+                  const status = service.status || "healthy";
+                  const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.healthy;
+                  const env = envConfig[service.env] || envConfig.DEVELOPMENT;
+
                   return (
-                    <TableRow key={service.id} className="cursor-pointer hover:bg-muted/50">
+                    <TableRow key={service.id} className="cursor-pointer" onClick={() => router.push(`/dashboard/services/${service.id}`)}>
+                      <TableCell className="font-medium">{service.name}</TableCell>
                       <TableCell>
-                        <Link 
-                          href={`/app/dashboard/services/${service.id}/overview`}
-                          className="flex items-center gap-2 group"
-                        >
-                          <Boxes className="size-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-                          <span className="text-sm font-medium group-hover:text-primary transition-colors">
-                            {service.name}
-                          </span>
-                          <ChevronRight className="size-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </Link>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={envConfigItem.variant} className="text-xs font-normal capitalize">
-                          {envConfigItem.label}
-                        </Badge>
+                        <Badge variant={env.variant}>{env.label}</Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <span className={`size-2 rounded-full ${statusConfigItem.dot}`} />
-                          <Badge variant={statusConfigItem.variant} className="text-xs capitalize">
-                            {statusConfigItem.label}
-                          </Badge>
+                          <span className={`h-2 w-2 rounded-full ${config.dot}`} />
+                          {config.label}
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                          <Clock className="size-3.5" />
-                          {service.updatedAt
-                            ? new Date(service.updatedAt).toLocaleDateString()
-                            : "N/A"}
-                        </div>
+                      <TableCell className="text-muted-foreground">
+                        {service.updatedAt ? new Date(service.updatedAt).toLocaleDateString() : 'N/A'}
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center justify-end gap-1">
-                          <Link href={`/app/dashboard/services/${service.id}/settings`}>
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="size-8"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <Settings2 className="size-4" />
-                            </Button>
-                          </Link>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="size-8 text-red-500 hover:text-red-600"
-                            onClick={(e) => openDeleteConfirm(service.id, e)}
-                            disabled={deleteService.isPending}
-                          >
-                            {deleteService.isPending ? (
-                              <Loader2 className="size-4 animate-spin" />
-                            ) : (
-                              <MoreVertical className="size-4" />
-                            )}
-                          </Button>
-                        </div>
+                        <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/services/${service.id}/settings`); }}>
+                          <Settings2 className="size-4" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   );
@@ -286,16 +312,6 @@ export default function ServicesPage() {
           )}
         </CardContent>
       </Card>
-
-      <ConfirmDialog
-        open={deleteConfirm.open}
-        onOpenChange={(open) => setDeleteConfirm({ ...deleteConfirm, open })}
-        onConfirm={handleDelete}
-        title="Delete Service"
-        description="Are you sure you want to delete this service? This action cannot be undone and all associated data will be permanently removed."
-        confirmText="Delete"
-        variant="destructive"
-      />
     </div>
   );
 }

@@ -137,7 +137,7 @@ export default function RcaPage() {
                     <TableCell>
                       {report.serviceName ? (
                         <Link 
-                          href={`/app/dashboard/services/${report.serviceId}/overview`}
+                          href={`/dashboard/services/${report.serviceId}/overview`}
                           className="text-sm hover:underline flex items-center gap-1"
                           onClick={(e) => e.stopPropagation()}
                         >
@@ -150,7 +150,7 @@ export default function RcaPage() {
                     </TableCell>
                     <TableCell>
                       <Link 
-                        href={`/app/dashboard/failures/${report.caseId}`}
+                        href={`/dashboard/failures/${report.caseId}`}
                         className="text-sm hover:underline"
                         onClick={(e) => e.stopPropagation()}
                       >
@@ -184,7 +184,7 @@ export default function RcaPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/app/dashboard/rca/${report.id}`}>
+                        <Link href={`/dashboard/rca/${report.id}`}>
                           <ExternalLink className="size-4" />
                         </Link>
                       </Button>

@@ -96,7 +96,7 @@ export function Footer() {
 
         <div className="mt-12 pt-8 border-t flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} XecureCode. All rights reserved.
+            © 2025 XecureCode. All rights reserved.
           </p>
 
           <div className="flex items-center gap-4">

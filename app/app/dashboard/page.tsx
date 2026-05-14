@@ -45,7 +45,7 @@ export default function DashboardPage() {
                 services.slice(0, 5).map((service) => (
                   <Link
                     key={service.id}
-                    href={`/app/dashboard/services/${service.id}/overview`}
+                    href={`/dashboard/services/${service.id}/overview`}
                     className="flex items-center justify-between rounded-lg border p-3 hover:bg-muted/50 transition-colors"
                   >
                     <div className="flex items-center gap-3">

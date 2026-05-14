@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +19,12 @@ import {
   Key,
   Plus,
   Trash2,
+  Github,
+  Loader2,
+  Check,
+  ExternalLink,
 } from "lucide-react";
+import { useGitHubStatus, useConnectGitHub, useDisconnectGitHub } from "@/lib/hooks";
 
 type ApiKey = {
   id: string;
@@ -152,7 +158,11 @@ export default function SettingsPage() {
                   variant="ghost"
                   size="icon"
                   className="size-8"
-                  onClick={() => navigator.clipboard.writeText(apiKey.key)}
+                  onClick={() => {
+                    if (typeof window !== "undefined" && window.navigator?.clipboard) {
+                      window.navigator.clipboard.writeText(apiKey.key);
+                    }
+                  }}
                 >
                   <Copy className="size-3.5" />
                 </Button>
@@ -185,6 +195,101 @@ export default function SettingsPage() {
           ))}
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">GitHub Integration</CardTitle>
+          <CardDescription>Connect your GitHub repositories to enable service creation</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <GitHubConnection />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function GitHubConnection() {
+  const { data: gitHubStatus, isLoading } = useGitHubStatus();
+  const connectGitHub = useConnectGitHub();
+  const disconnectGitHub = useDisconnectGitHub();
+
+  const isConnected = gitHubStatus?.connected || false;
+
+  const handleConnect = async () => {
+    try {
+      const result = await connectGitHub.mutateAsync();
+      if (result?.url) {
+        window.location.href = result.url;
+      }
+    } catch (error) {
+      console.error("Failed to connect GitHub:", error);
+    }
+  };
+
+  const handleDisconnect = async () => {
+    if (!confirm("Are you sure you want to disconnect your GitHub account?")) return;
+    try {
+      await disconnectGitHub.mutateAsync();
+    } catch (error) {
+      console.error("Failed to disconnect GitHub:", error);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="size-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (isConnected) {
+    return (
+      <div className="flex items-center justify-between rounded-lg border p-4 bg-green-50 dark:bg-green-950">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-green-100 dark:bg-green-900">
+            <Check className="size-5 text-green-600 dark:text-green-400" />
+          </div>
+          <div>
+            <p className="text-sm font-medium">Connected to GitHub</p>
+            <p className="text-xs text-muted-foreground">
+              {gitHubStatus?.org ? `Organization: ${gitHubStatus.org}` : "Successfully connected"}
+            </p>
+          </div>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleDisconnect}
+          disabled={disconnectGitHub.isPending}
+          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+        >
+          {disconnectGitHub.isPending ? <Loader2 className="size-4 animate-spin" /> : "Disconnect"}
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-between rounded-lg border p-4">
+      <div className="flex items-center gap-3">
+        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800">
+          <Github className="size-5 text-muted-foreground" />
+        </div>
+        <div>
+          <p className="text-sm font-medium">Connect GitHub</p>
+          <p className="text-xs text-muted-foreground">Authorize access to your repositories</p>
+        </div>
+      </div>
+      <Button
+        onClick={handleConnect}
+        disabled={connectGitHub.isPending}
+        className="bg-sky-500 hover:bg-sky-600"
+      >
+        {connectGitHub.isPending ? <Loader2 className="size-4 animate-spin mr-2" /> : <Github className="size-4 mr-2" />}
+        Connect
+      </Button>
     </div>
   );
 }

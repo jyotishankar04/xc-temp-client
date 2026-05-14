@@ -49,7 +49,7 @@ export default function ServiceSettingsPage() {
     if (deleteName !== service?.name) return;
     try {
       await deleteService.mutateAsync(serviceId);
-      router.push("/app/dashboard/services");
+      router.push("/dashboard/services");
     } catch (e) {
       console.error("Failed to delete service:", e);
     }

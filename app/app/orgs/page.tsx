@@ -80,8 +80,8 @@ export default function OrgsPage() {
   const handleSwitchOrg = async (orgId: string) => {
     if (orgId === currentOrg?.id) return;
     try {
-      await switchOrg.mutateAsync(orgId);
-      router.push("/app/dashboard");
+await switchOrg.mutateAsync(orgId);
+       router.push("/dashboard");
     } catch (error) {
       console.error("Failed to switch org:", error);
     }
@@ -129,7 +129,7 @@ export default function OrgsPage() {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => router.push("/app/dashboard")}
+          onClick={() => router.push("/dashboard")}
           className="gap-1"
         >
           <ChevronLeft className="size-4" />
@@ -217,7 +217,7 @@ export default function OrgsPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => router.push(`/app/orgs/${org.id}`)}
+                      onClick={() => router.push(`/dashboard/orgs/${org.id}`)}
                     >
                       <Settings className="size-4 mr-1" />
                       Manage

@@ -206,4 +206,23 @@ export const servicesApi = {
     );
     return response.data;
   },
+
+  getGitHubRepos: async (): Promise<ApiResponse<GitHubRepo[]>> => {
+    const response = await apiClient.get<ApiResponse<GitHubRepo[]>>(
+      "/api/v1/services/github/repos"
+    );
+    return response.data;
+  },
 };
+
+export interface GitHubRepo {
+  id: number;
+  fullName: string;
+  name: string;
+  private: boolean;
+  htmlUrl: string;
+  description: string | null;
+  defaultBranch: string;
+  language: string | null;
+  updatedAt: string;
+}

@@ -228,7 +228,7 @@ function EventsPageContent() {
                               </span>
                               {event.service && (
                                 <Link
-                                  href={`/app/dashboard/services/${event.service.id}/overview`}
+                                  href={`/dashboard/services/${event.service.id}/overview`}
                                   onClick={(e) => e.stopPropagation()}
                                   className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors bg-muted/50 px-2 py-0.5 rounded"
                                 >
@@ -274,7 +274,7 @@ function EventsPageContent() {
                             onClick={(e) => e.stopPropagation()}
                             className="opacity-0 group-hover:opacity-100 transition-opacity"
                           >
-                            <Link href={`/app/dashboard/events/${event.id}`}>
+                            <Link href={`/dashboard/events/${event.id}`}>
                               <ExternalLink className="size-4" />
                             </Link>
                           </Button>
@@ -300,7 +300,7 @@ function EventsPageContent() {
                                   Service
                                 </h4>
                                 <Link 
-                                  href={`/app/dashboard/services/${expandedEvent.service.id}/overview`}
+                                  href={`/dashboard/services/${expandedEvent.service.id}/overview`}
                                   className="text-sm hover:underline"
                                 >
                                   {expandedEvent.service.name}
@@ -335,7 +335,7 @@ function EventsPageContent() {
                                 ))}
                                 {correlatedEvents.length > 5 && (
                                   <Link
-                                    href={`/app/dashboard/events/${expandedEventId}/correlation`}
+                                    href={`/dashboard/events/${expandedEventId}/correlation`}
                                     className="text-sm text-primary hover:underline"
                                   >
                                     View all {correlatedEvents.length} correlated events →

@@ -52,7 +52,7 @@ export default function RcaDetailPage() {
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link href="/app/dashboard/rca">
+<Link href="/dashboard/rca">
               <ArrowLeft className="size-4" />
             </Link>
           </Button>
@@ -71,7 +71,7 @@ export default function RcaDetailPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/app/dashboard/rca">
+          <Link href="/dashboard/rca">
             <ArrowLeft className="size-4" />
           </Link>
         </Button>

@@ -66,7 +66,7 @@ axiosInstance.interceptors.response.use(
         );
         return axiosInstance(originalRequest);
       } catch {
-        // Let the calling code handle the error
+        console.log("Error  while hitting request at refresh route",error.message)
       }
     }
 

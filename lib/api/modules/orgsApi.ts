@@ -111,4 +111,25 @@ export const orgsApi = {
     );
     return response.data;
   },
+
+  getGitHubStatus: async (): Promise<ApiResponse<{ connected: boolean; org?: string; installed?: boolean; connectedAt?: string }>> => {
+    const response = await apiClient.get<ApiResponse<{ connected: boolean; org?: string; installed?: boolean; connectedAt?: string }>>(
+      "/api/v1/orgs/github"
+    );
+    return response.data;
+  },
+
+  connectGitHub: async (): Promise<ApiResponse<{ url: string }>> => {
+    const response = await apiClient.post<ApiResponse<{ url: string }>>(
+      "/api/v1/orgs/github/connect"
+    );
+    return response.data;
+  },
+
+  disconnectGitHub: async (): Promise<ApiResponse<void>> => {
+    const response = await apiClient.delete<ApiResponse<void>>(
+      "/api/v1/orgs/github"
+    );
+    return response.data;
+  },
 };

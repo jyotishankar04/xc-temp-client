@@ -126,3 +126,50 @@ export function useInviteMember() {
     },
   });
 }
+
+export function useGitHubStatus() {
+  return useQuery({
+    queryKey: ["orgs", "github"],
+    queryFn: async () => {
+      const res = await orgsApi.getGitHubStatus();
+      if (!res.success) {
+        throw new Error(res.message || "Failed to fetch GitHub status");
+      }
+      return res.data;
+    },
+  });
+}
+
+export function useConnectGitHub() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const res = await orgsApi.connectGitHub();
+      if (!res.success) {
+        throw new Error(res.message || "Failed to connect GitHub");
+      }
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orgs", "github"] });
+    },
+  });
+}
+
+export function useDisconnectGitHub() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const res = await orgsApi.disconnectGitHub();
+      if (!res.success) {
+        throw new Error(res.message || "Failed to disconnect GitHub");
+      }
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orgs", "github"] });
+    },
+  });
+}

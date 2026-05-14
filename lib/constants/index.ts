@@ -18,6 +18,7 @@ export const NAV_LINKS = [
   { label: "Product", href: "/product" },
   { label: "How it Works", href: "/how-it-works" },
   { label: "Solutions", href: "/solutions" },
+  { label: "SDK Docs", href: "/docs/sdk" },
   { label: "Blog", href: "/blog" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },

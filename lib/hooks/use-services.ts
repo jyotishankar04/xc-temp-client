@@ -293,3 +293,16 @@ export function useDeleteApiKey() {
     },
   });
 }
+
+export function useGitHubRepos() {
+  return useQuery({
+    queryKey: ["github", "repos"],
+    queryFn: async () => {
+      const res = await servicesApi.getGitHubRepos();
+      if (!res.success) {
+        throw new Error(res.message || "Failed to fetch GitHub repos");
+      }
+      return res.data ?? [];
+    },
+  });
+}

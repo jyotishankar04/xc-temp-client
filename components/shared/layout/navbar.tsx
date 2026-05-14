@@ -103,7 +103,7 @@ const Navbar = () => {
 
             {!isLoading && (
               isAuthenticated ? (
-                <Link href="/app/dashboard">
+                <Link href="/dashboard">
                   <Button
                     size="sm"
                     className="rounded-full hidden lg:block bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 text-xs sm:text-sm px-3 sm:px-4"

@@ -86,7 +86,7 @@ const Footer = () => {
           <div className="flex flex-col-reverse items-center justify-between gap-x-2 gap-y-5 px-6 py-8 sm:flex-row xl:px-0">
             {/* Copyright */}
             <span className="text-sm text-muted-foreground">
-              &copy; {new Date().getFullYear()} Xecurecode AI. All rights reserved.
+              &copy; 2025 Xecurecode AI. All rights reserved.
             </span>
 
             {/* Social Links */}

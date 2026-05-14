@@ -7,3 +7,7 @@ export * from "./modules/servicesApi";
 export * from "./modules/eventsApi";
 export * from "./modules/rcaApi";
 export * from "./modules/casesApi";
+export * from "./modules/actionsApi";
+export * from "./modules/analysisApi";
+export * from "./modules/auditApi";
+export * from "./modules/rollbackApi";
