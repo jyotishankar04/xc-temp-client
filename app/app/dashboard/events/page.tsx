@@ -1,11 +1,10 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import { format } from "date-fns";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,7 +20,6 @@ import {
 import { useEvents, useServices, useEventById, useCorrelatedEvents } from "@/lib/hooks";
 import type { Event } from "@/lib/types/event";
 import {
-  Calendar,
   ChevronDown,
   Clock,
   Code2,
@@ -37,29 +35,30 @@ import {
   Hash,
   Fingerprint,
 } from "lucide-react";
+import { StackTraceViewer } from "@/components/ui/stack-trace-viewer";
 
 const severityConfig = {
   critical: {
-    color: "text-red-600 dark:text-red-400",
-    bg: "bg-red-50 dark:bg-red-950/30",
-    border: "border-red-200 dark:border-red-800",
-    badge: "bg-red-500 text-white",
+    color: "text-severity-high",
+    bg: "bg-severity-high/10",
+    border: "border-severity-high/30",
+    badge: "bg-severity-high text-white",
     label: "Critical",
     icon: Zap
   },
   warning: {
-    color: "text-amber-600 dark:text-amber-400",
-    bg: "bg-amber-50 dark:bg-amber-950/30",
-    border: "border-amber-200 dark:border-amber-800",
-    badge: "bg-amber-500 text-white",
+    color: "text-severity-medium",
+    bg: "bg-severity-medium/10",
+    border: "border-severity-medium/30",
+    badge: "bg-severity-medium text-foreground",
     label: "Warning",
     icon: Waves
   },
   info: {
-    color: "text-slate-600 dark:text-slate-400",
-    bg: "bg-slate-50 dark:bg-slate-950/30",
-    border: "border-slate-200 dark:border-slate-800",
-    badge: "bg-slate-500 text-white",
+    color: "text-muted-foreground",
+    bg: "bg-muted",
+    border: "border-border",
+    badge: "bg-muted text-muted-foreground",
     label: "Info",
     icon: Activity
   },
@@ -72,15 +71,14 @@ const getSeverity = (event: Event): "critical" | "warning" | "info" => {
 };
 
 function EventsPageContent() {
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null);
 
-  const serviceId = searchParams.get("service") || undefined;
-  const from = searchParams.get("from") || undefined;
-  const to = searchParams.get("to") || undefined;
-  const search = searchParams.get("q") || undefined;
+  const [serviceId, setServiceId] = useState(searchParams.get("service") || undefined);
+  const [from, setFrom] = useState(searchParams.get("from") || undefined);
+  const [to, setTo] = useState(searchParams.get("to") || undefined);
+  const [search, setSearch] = useState(searchParams.get("q") || undefined);
 
   const { data: events = [], isLoading } = useEvents({ serviceId, from, to, search });
   const { data: services = [] } = useServices();
@@ -90,17 +88,31 @@ function EventsPageContent() {
   const [localSearch, setLocalSearch] = useState(search || "");
 
   const updateFilters = (key: string, value: string | undefined) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value) {
-      params.set(key, value);
-    } else {
-      params.delete(key);
-    }
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    const nextFilters = {
+      service: key === "service" ? value : serviceId,
+      from: key === "from" ? value : from,
+      to: key === "to" ? value : to,
+      q: key === "q" ? value : search,
+    };
+    const params = new URLSearchParams();
+    Object.entries(nextFilters).forEach(([filterKey, filterValue]) => {
+      if (filterValue) params.set(filterKey, filterValue);
+    });
+    const query = params.toString();
+    window.history.replaceState(null, "", query ? `${pathname}?${query}` : pathname);
+
+    if (key === "service") setServiceId(value);
+    if (key === "from") setFrom(value);
+    if (key === "to") setTo(value);
+    if (key === "q") setSearch(value);
   };
 
   const clearFilters = () => {
-    router.replace(pathname, { scroll: false });
+    window.history.replaceState(null, "", pathname);
+    setServiceId(undefined);
+    setFrom(undefined);
+    setTo(undefined);
+    setSearch(undefined);
     setLocalSearch("");
   };
 
@@ -129,17 +141,17 @@ function EventsPageContent() {
         </div>
         <div className="flex items-center gap-2">
           {criticalCount > 0 && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 border border-red-200 dark:border-red-800 rounded-full">
-              <Zap className="size-3.5 text-red-500" />
-              <span className="text-sm font-semibold text-red-600 dark:text-red-400">{criticalCount}</span>
-              <span className="text-xs text-red-400">critical</span>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-severity-high/10 border border-severity-high/30 rounded-full">
+              <Zap className="size-3.5 text-severity-high" />
+              <span className="text-sm font-semibold text-severity-high">{criticalCount}</span>
+              <span className="text-xs text-severity-high/70">critical</span>
             </div>
           )}
           {warningCount > 0 && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-200 dark:border-amber-800 rounded-full">
-              <AlertTriangle className="size-3.5 text-amber-500" />
-              <span className="text-sm font-semibold text-amber-600 dark:text-amber-400">{warningCount}</span>
-              <span className="text-xs text-amber-400">warning</span>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-severity-medium/10 border border-severity-medium/30 rounded-full">
+              <AlertTriangle className="size-3.5 text-severity-medium" />
+              <span className="text-sm font-semibold text-severity-medium">{warningCount}</span>
+              <span className="text-xs text-severity-medium/70">warning</span>
             </div>
           )}
         </div>
@@ -228,7 +240,7 @@ function EventsPageContent() {
                               </span>
                               {event.service && (
                                 <Link
-                                  href={`/dashboard/services/${event.service.id}/overview`}
+                                  href={`/app/dashboard/services/${event.service.id}/overview`}
                                   onClick={(e) => e.stopPropagation()}
                                   className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors bg-muted/50 px-2 py-0.5 rounded"
                                 >
@@ -274,7 +286,7 @@ function EventsPageContent() {
                             onClick={(e) => e.stopPropagation()}
                             className="opacity-0 group-hover:opacity-100 transition-opacity"
                           >
-                            <Link href={`/dashboard/events/${event.id}`}>
+                            <Link href={`/app/dashboard/events/${event.id}`}>
                               <ExternalLink className="size-4" />
                             </Link>
                           </Button>
@@ -285,58 +297,98 @@ function EventsPageContent() {
                       </div>
                       {isExpanded && expandedEvent && (
                         <div className="mt-4 pt-4 border-t space-y-4">
-                          <div className="grid md:grid-cols-2 gap-4">
+                          {/* Meta row */}
+                          <div className="flex flex-wrap gap-4">
                             <div>
-                              <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
-                                <Hash className="size-4" />
-                                Event ID
-                              </h4>
-                              <p className="text-xs font-mono bg-muted p-2 rounded">{expandedEvent.id}</p>
+                              <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                                <Hash className="size-3" /> Event ID
+                              </p>
+                              <code className="text-xs font-mono bg-muted px-2 py-1 rounded">
+                                {expandedEvent.id}
+                              </code>
                             </div>
+                            {expandedEvent.requestId && (
+                              <div>
+                                <p className="text-xs text-muted-foreground mb-1">Request ID</p>
+                                <code className="text-xs font-mono bg-muted px-2 py-1 rounded">
+                                  {expandedEvent.requestId}
+                                </code>
+                              </div>
+                            )}
+                            {expandedEvent.fingerprint && (
+                              <div>
+                                <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                                  <Fingerprint className="size-3" /> Fingerprint
+                                </p>
+                                <code className="text-xs font-mono text-fingerprint bg-fingerprint/10 px-2 py-1 rounded">
+                                  {expandedEvent.fingerprint.slice(0, 16)}…
+                                </code>
+                              </div>
+                            )}
                             {expandedEvent.service && (
                               <div>
-                                <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
-                                  <Server className="size-4" />
-                                  Service
-                                </h4>
-                                <Link 
-                                  href={`/dashboard/services/${expandedEvent.service.id}/overview`}
-                                  className="text-sm hover:underline"
+                                <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                                  <Server className="size-3" /> Service
+                                </p>
+                                <Link
+                                  href={`/app/dashboard/services/${expandedEvent.service.id}/overview`}
+                                  className="text-xs font-medium hover:underline flex items-center gap-1"
                                 >
                                   {expandedEvent.service.name}
+                                  <span className="text-muted-foreground">({expandedEvent.service.env})</span>
                                 </Link>
                               </div>
                             )}
                           </div>
-                          {expandedEvent.stackTrace && (
-                            <div>
-                              <h4 className="text-sm font-medium mb-2">Stack Trace</h4>
-                              <pre className="text-xs bg-muted p-3 rounded-lg overflow-x-auto max-h-40">
-                                {expandedEvent.stackTrace}
-                              </pre>
+
+                          {/* Colored error message */}
+                          {expandedEvent.errorMessage && (
+                            <div className="rounded-lg border border-code-border bg-code-bg px-4 py-3">
+                              <p className="text-xs text-code-muted mb-1">Error</p>
+                              <p className="text-sm font-mono text-code-error-msg leading-relaxed">
+                                {expandedEvent.errorMessage}
+                              </p>
                             </div>
                           )}
+
+                          {/* Colored stack trace */}
+                          {expandedEvent.stackTrace && (
+                            <StackTraceViewer trace={expandedEvent.stackTrace} maxLines={15} />
+                          )}
+
+                          {/* Correlated events */}
                           {correlatedEvents.length > 0 && (
                             <div>
                               <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
                                 <Activity className="size-4" />
-                                Correlated Events ({correlatedEvents.length})
+                                Correlated Events
+                                <span className="text-xs font-normal text-muted-foreground">
+                                  ({correlatedEvents.length})
+                                </span>
                               </h4>
-                              <div className="space-y-2">
-                                {correlatedEvents.slice(0, 5).map((evt) => (
-                                  <Link
-                                    key={evt.id}
-                                    href={`/app/dashboard/events/${evt.id}`}
-                                    className="flex items-center gap-2 text-sm p-2 rounded hover:bg-muted"
-                                  >
-                                    <ChevronDown className="size-3 text-muted-foreground" />
-                                    <span className="truncate">{evt.errorMessage || evt.message || evt.id}</span>
-                                  </Link>
-                                ))}
+                              <div className="space-y-1.5">
+                                {correlatedEvents.slice(0, 5).map((evt) => {
+                                  const evtCfg = severityConfig[getSeverity(evt)];
+                                  return (
+                                    <Link
+                                      key={evt.id}
+                                      href={`/app/dashboard/events/${evt.id}`}
+                                      className="flex items-center gap-3 text-sm px-3 py-2 rounded-lg hover:bg-muted border border-transparent hover:border-border transition-colors"
+                                    >
+                                      <span className={`size-2 rounded-full shrink-0 ${evtCfg.badge.split(" ")[0]}`} />
+                                      <span className="truncate text-muted-foreground">
+                                        {evt.errorMessage || evt.message || evt.id}
+                                      </span>
+                                      <span className="shrink-0 text-xs text-muted-foreground/60 ml-auto">
+                                        {evt.timestamp ? format(new Date(evt.timestamp), "HH:mm:ss") : ""}
+                                      </span>
+                                    </Link>
+                                  );
+                                })}
                                 {correlatedEvents.length > 5 && (
                                   <Link
-                                    href={`/dashboard/events/${expandedEventId}/correlation`}
-                                    className="text-sm text-primary hover:underline"
+                                    href={`/app/dashboard/events/${expandedEventId}/correlation`}
+                                    className="text-xs text-primary hover:underline pl-3"
                                   >
                                     View all {correlatedEvents.length} correlated events →
                                   </Link>
@@ -344,6 +396,17 @@ function EventsPageContent() {
                               </div>
                             </div>
                           )}
+
+                          {/* Open full detail link */}
+                          <div className="pt-1">
+                            <Link
+                              href={`/app/dashboard/events/${event.id}`}
+                              className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
+                            >
+                              <ExternalLink className="size-3" />
+                              Open full event view
+                            </Link>
+                          </div>
                         </div>
                       )}
                     </div>
