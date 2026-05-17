@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,6 +18,7 @@ import {
   useUpdateService,
   useDeleteService,
 } from "@/lib/hooks";
+import type { Service } from "@/lib/types/service";
 import { Loader2, Trash2 } from "lucide-react";
 
 export default function ServiceSettingsPage() {
@@ -30,31 +30,6 @@ export default function ServiceSettingsPage() {
   const updateService = useUpdateService();
   const deleteService = useDeleteService();
 
-  const [name, setName] = useState(service?.name || "");
-  const [env, setEnv] = useState(service?.env || "DEVELOPMENT");
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [deleteName, setDeleteName] = useState("");
-
-  const isLoading = serviceLoading || updateService.isPending || deleteService.isPending;
-
-  const handleSave = async () => {
-    try {
-      await updateService.mutateAsync({ serviceId, data: { name } });
-    } catch (e) {
-      console.error("Failed to update service:", e);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (deleteName !== service?.name) return;
-    try {
-      await deleteService.mutateAsync(serviceId);
-      router.push("/dashboard/services");
-    } catch (e) {
-      console.error("Failed to delete service:", e);
-    }
-  };
-
   if (serviceLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -62,6 +37,72 @@ export default function ServiceSettingsPage() {
       </div>
     );
   }
+
+  if (!service) {
+    return (
+      <div className="flex flex-col gap-6 max-w-2xl">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            Service not found.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <ServiceSettingsForm
+      key={service.id}
+      service={service}
+      isPending={updateService.isPending || deleteService.isPending}
+      isUpdating={updateService.isPending}
+      isDeleting={deleteService.isPending}
+      onSave={(data) => updateService.mutateAsync({ serviceId, data })}
+      onDelete={async () => {
+        await deleteService.mutateAsync(serviceId);
+        router.push("/app/dashboard/services");
+      }}
+    />
+  );
+}
+
+function ServiceSettingsForm({
+  service,
+  isPending,
+  isUpdating,
+  isDeleting,
+  onSave,
+  onDelete,
+}: {
+  service: Service;
+  isPending: boolean;
+  isUpdating: boolean;
+  isDeleting: boolean;
+  onSave: (data: { name: string; env: string }) => Promise<unknown>;
+  onDelete: () => Promise<void>;
+}) {
+  const [name, setName] = useState(service.name || "");
+  const [env, setEnv] = useState(service.env || "DEVELOPMENT");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteName, setDeleteName] = useState("");
+
+  const handleSave = async () => {
+    try {
+      await onSave({ name, env });
+    } catch (e) {
+      console.error("Failed to update service:", e);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (deleteName !== service.name) return;
+    try {
+      await onDelete();
+    } catch (e) {
+      console.error("Failed to delete service:", e);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
@@ -102,8 +143,8 @@ export default function ServiceSettingsPage() {
             </Select>
           </div>
 
-          <Button onClick={handleSave} disabled={isLoading || !name}>
-            {updateService.isPending && <Loader2 className="size-4 mr-2 animate-spin" />}
+          <Button onClick={handleSave} disabled={isPending || !name}>
+            {isUpdating && <Loader2 className="size-4 mr-2 animate-spin" />}
             Save Changes
           </Button>
         </CardContent>
@@ -148,9 +189,9 @@ export default function ServiceSettingsPage() {
                 <Button
                   variant="destructive"
                   onClick={handleDelete}
-                  disabled={deleteName !== service?.name || deleteService.isPending}
+                  disabled={deleteName !== service?.name || isDeleting}
                 >
-                  {deleteService.isPending && (
+                  {isDeleting && (
                     <Loader2 className="size-4 mr-2 animate-spin" />
                   )}
                   Delete Service

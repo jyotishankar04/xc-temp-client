@@ -294,7 +294,7 @@ export function useDeleteApiKey() {
   });
 }
 
-export function useGitHubRepos() {
+export function useGitHubRepos(enabled = true) {
   return useQuery({
     queryKey: ["github", "repos"],
     queryFn: async () => {
@@ -304,5 +304,36 @@ export function useGitHubRepos() {
       }
       return res.data ?? [];
     },
+    enabled,
+  });
+}
+
+export function useGitHubBranches(repoId?: number) {
+  return useQuery({
+    queryKey: ["github", "repos", repoId, "branches"],
+    queryFn: async () => {
+      if (!repoId) return [];
+      const res = await servicesApi.getGitHubBranches(repoId);
+      if (!res.success) {
+        throw new Error(res.message || "Failed to fetch GitHub branches");
+      }
+      return res.data ?? [];
+    },
+    enabled: !!repoId,
+  });
+}
+
+export function useGitHubWorkflows(repoId?: number) {
+  return useQuery({
+    queryKey: ["github", "repos", repoId, "workflows"],
+    queryFn: async () => {
+      if (!repoId) return [];
+      const res = await servicesApi.getGitHubWorkflows(repoId);
+      if (!res.success) {
+        throw new Error(res.message || "Failed to fetch GitHub workflows");
+      }
+      return res.data ?? [];
+    },
+    enabled: !!repoId,
   });
 }
