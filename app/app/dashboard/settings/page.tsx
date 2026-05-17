@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,48 +12,49 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Copy,
-  Eye,
-  EyeOff,
-  Key,
-  Plus,
-  Trash2,
   Github,
   Loader2,
   Check,
-  ExternalLink,
+  Save,
 } from "lucide-react";
-import { useGitHubStatus, useConnectGitHub, useDisconnectGitHub } from "@/lib/hooks";
+import { useCurrentOrg, useUpdateOrg, useGitHubStatus, useConnectGitHub, useDisconnectGitHub } from "@/lib/hooks";
 
-type ApiKey = {
-  id: string;
-  name: string;
-  key: string;
-  created: string;
-  lastUsed: string;
-};
-
-const apiKeys: ApiKey[] = [
-  { id: "1", name: "Production Key", key: "sk_live_xxxx", created: "Jan 15, 2025", lastUsed: "2 min ago" },
-  { id: "2", name: "Staging Key", key: "sk_test_xxxx", created: "Feb 1, 2025", lastUsed: "3 hrs ago" },
-  { id: "3", name: "Development Key", key: "sk_dev_xxxx", created: "Mar 10, 2025", lastUsed: "1 day ago" },
-];
+const TEAM_SIZES = ["1-10", "11-50", "51-200", "200+"];
 
 export default function SettingsPage() {
-  const [orgName, setOrgName] = useState("Acme Inc.");
-  const [orgSlug, setOrgSlug] = useState("acme");
-  const [visibleKeys, setVisibleKeys] = useState<Record<string, boolean>>({});
+  const { data: currentOrg, isLoading: orgLoading } = useCurrentOrg();
+  const updateOrg = useUpdateOrg();
 
-  const toggleKeyVisibility = (id: string) => {
-    setVisibleKeys((prev) => ({ ...prev, [id]: !prev[id] }));
+  const [draftOrg, setDraftOrg] = useState<{
+    name?: string;
+    slug?: string;
+    teamSize?: string;
+  }>({});
+
+  const orgName = draftOrg.name ?? currentOrg?.name ?? "";
+  const orgSlug = draftOrg.slug ?? currentOrg?.slug ?? "";
+  const teamSize = draftOrg.teamSize ?? currentOrg?.teamSize ?? "1-10";
+
+  const handleSave = async () => {
+    if (!currentOrg?.id) return;
+    try {
+      await updateOrg.mutateAsync({ id: currentOrg.id, name: orgName, slug: orgSlug });
+      setDraftOrg({});
+    } catch (e) {
+      console.error("Failed to update org:", e);
+    }
   };
+
+  const hasChanges =
+    orgName !== (currentOrg?.name ?? "") ||
+    orgSlug !== (currentOrg?.slug ?? "");
 
   return (
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Manage your organization settings and API keys
+          Manage your organization settings and integrations
         </p>
       </div>
 
@@ -64,114 +64,63 @@ export default function SettingsPage() {
           <CardDescription>Organization name and basic information</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="org-name">Organization Name</Label>
-              <Input
-                id="org-name"
-                value={orgName}
-                onChange={(e) => setOrgName(e.target.value)}
-              />
+          {orgLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="size-6 animate-spin text-muted-foreground" />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="org-slug">Slug</Label>
-              <Input
-                id="org-slug"
-                value={orgSlug}
-                onChange={(e) => setOrgSlug(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="team-size">Team Size</Label>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-48 justify-start">
-                  1-10 members
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {["1-10", "11-50", "51-200", "200+"].map((size) => (
-                  <DropdownMenuItem key={size} className="cursor-pointer">
-                    {size} members
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-          <div className="flex justify-end">
-            <Button>Save Changes</Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-base">API Keys</CardTitle>
-              <CardDescription>Manage your API keys for service integration</CardDescription>
-            </div>
-            <Button size="sm">
-              <Plus className="size-3.5 mr-1.5" />
-              Create Key
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {apiKeys.map((apiKey) => (
-            <div
-              key={apiKey.id}
-              className="flex items-center justify-between rounded-lg border p-4"
-            >
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <Key className="size-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">{apiKey.name}</span>
+          ) : (
+            <>
+              <div className="grid gap-3 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="org-name">Organization Name</Label>
+                  <Input
+                    id="org-name"
+                    value={orgName}
+                    onChange={(e) => setDraftOrg((current) => ({ ...current, name: e.target.value }))}
+                  />
                 </div>
-                <div className="flex items-center gap-4">
-                  <code className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-                    {visibleKeys[apiKey.id] ? apiKey.key : "sk_••••••••••••"}
-                  </code>
-                  <span className="text-xs text-muted-foreground">
-                    Created {apiKey.created}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    Last used {apiKey.lastUsed}
-                  </span>
+                <div className="space-y-2">
+                  <Label htmlFor="org-slug">Slug</Label>
+                  <Input
+                    id="org-slug"
+                    value={orgSlug}
+                    onChange={(e) => setDraftOrg((current) => ({ ...current, slug: e.target.value }))}
+                  />
                 </div>
               </div>
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-8"
-                  onClick={() => toggleKeyVisibility(apiKey.id)}
-                >
-                  {visibleKeys[apiKey.id] ? (
-                    <EyeOff className="size-3.5" />
+              <div className="space-y-2">
+                <Label>Team Size</Label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-48 justify-start">
+                      {teamSize} members
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    {TEAM_SIZES.map((size) => (
+                      <DropdownMenuItem
+                        key={size}
+                        onClick={() => setDraftOrg((current) => ({ ...current, teamSize: size }))}
+                        className="cursor-pointer"
+                      >
+                        {size} members
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              <div className="flex justify-end">
+                <Button onClick={handleSave} disabled={!hasChanges || updateOrg.isPending}>
+                  {updateOrg.isPending ? (
+                    <Loader2 className="size-4 mr-2 animate-spin" />
                   ) : (
-                    <Eye className="size-3.5" />
+                    <Save className="size-4 mr-2" />
                   )}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-8"
-                  onClick={() => {
-                    if (typeof window !== "undefined" && window.navigator?.clipboard) {
-                      window.navigator.clipboard.writeText(apiKey.key);
-                    }
-                  }}
-                >
-                  <Copy className="size-3.5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="size-8 text-destructive hover:text-destructive">
-                  <Trash2 className="size-3.5" />
+                  Save Changes
                 </Button>
               </div>
-            </div>
-          ))}
+            </>
+          )}
         </CardContent>
       </Card>
 
@@ -190,7 +139,7 @@ export default function SettingsPage() {
                 <p className="text-sm font-medium">{pref.label}</p>
                 <p className="text-xs text-muted-foreground">{pref.desc}</p>
               </div>
-              <Button variant="outline" size="sm">Configure</Button>
+              <Button variant="outline" size="sm" disabled>Coming soon</Button>
             </div>
           ))}
         </CardContent>
@@ -218,7 +167,7 @@ function GitHubConnection() {
 
   const handleConnect = async () => {
     try {
-      const result = await connectGitHub.mutateAsync();
+      const result = await connectGitHub.mutateAsync(undefined);
       if (result?.url) {
         window.location.href = result.url;
       }
@@ -246,10 +195,10 @@ function GitHubConnection() {
 
   if (isConnected) {
     return (
-      <div className="flex items-center justify-between rounded-lg border p-4 bg-green-50 dark:bg-green-950">
+      <div className="flex items-center justify-between rounded-lg border border-success/30 bg-success/10 p-4">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-green-100 dark:bg-green-900">
-            <Check className="size-5 text-green-600 dark:text-green-400" />
+          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-success/20">
+            <Check className="size-5 text-success" />
           </div>
           <div>
             <p className="text-sm font-medium">Connected to GitHub</p>
@@ -263,7 +212,7 @@ function GitHubConnection() {
           size="sm"
           onClick={handleDisconnect}
           disabled={disconnectGitHub.isPending}
-          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+          className="text-destructive hover:text-destructive hover:bg-destructive/10"
         >
           {disconnectGitHub.isPending ? <Loader2 className="size-4 animate-spin" /> : "Disconnect"}
         </Button>
@@ -274,7 +223,7 @@ function GitHubConnection() {
   return (
     <div className="flex items-center justify-between rounded-lg border p-4">
       <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800">
+        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-muted">
           <Github className="size-5 text-muted-foreground" />
         </div>
         <div>
@@ -285,7 +234,7 @@ function GitHubConnection() {
       <Button
         onClick={handleConnect}
         disabled={connectGitHub.isPending}
-        className="bg-sky-500 hover:bg-sky-600"
+        className="bg-primary hover:bg-primary/90"
       >
         {connectGitHub.isPending ? <Loader2 className="size-4 animate-spin mr-2" /> : <Github className="size-4 mr-2" />}
         Connect
