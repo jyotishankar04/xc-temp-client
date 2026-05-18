@@ -38,64 +38,64 @@ const defaultRoutes: Route[] = [
     id: "overview",
     title: "Overview",
     icon: <LayoutDashboard className="size-4" />,
-    link: "/dashboard",
+    link: "/app/dashboard",
   },
   {
     id: "failures",
     title: "Failures",
     icon: <AlertTriangle className="size-4" />,
-    link: "/dashboard/failures",
+    link: "/app/dashboard/failures",
   },
   {
     id: "analysis",
     title: "Analysis",
     icon: <Brain className="size-4" />,
-    link: "/dashboard/analysis",
+    link: "/app/dashboard/analysis",
   },
   {
     id: "actions",
     title: "Actions",
     icon: <Zap className="size-4" />,
-    link: "/dashboard/actions",
+    link: "/app/dashboard/actions",
   },
   {
     id: "services",
     title: "Services",
     icon: <Boxes className="size-4" />,
-    link: "/dashboard/services",
+    link: "/app/dashboard/services",
     subs: [
-      { title: "All Services", link: "/dashboard/services" },
+      { title: "All Services", link: "/app/dashboard/services" },
     ],
   },
   {
     id: "events",
     title: "Events",
     icon: <Activity className="size-4" />,
-    link: "/dashboard/events",
+    link: "/app/dashboard/events",
   },
   {
     id: "rca",
     title: "RCA",
     icon: <FileSearch className="size-4" />,
-    link: "/dashboard/rca",
+    link: "/app/dashboard/rca",
   },
   {
     id: "team",
     title: "Team",
     icon: <Users className="size-4" />,
-    link: "/dashboard/team",
+    link: "/app/dashboard/team",
   },
   {
     id: "audit",
     title: "Audit Log",
     icon: <FileText className="size-4" />,
-    link: "/dashboard/audit",
+    link: "/app/dashboard/audit",
   },
   {
     id: "setup",
     title: "Setup",
     icon: <Settings2 className="size-4" />,
-    link: "/dashboard/setup",
+    link: "/app/dashboard/setup",
   },
 ];
 
@@ -119,7 +119,11 @@ export default function DashboardNavigation({
   const [openCollapsible, setOpenCollapsible] = React.useState<string | null>(null);
 
   const renderMenuItem = (route: Route, isSub = false) => {
-    const isActive = pathname === route.link || pathname.startsWith(route.link + "/");
+    // Exact-match for the overview route to avoid false highlights on all sub-pages
+    const isActive =
+      route.link === "/app/dashboard"
+        ? pathname === route.link
+        : pathname === route.link || pathname.startsWith(route.link + "/");
     const hasSubRoutes = !!route.subs?.length;
     const isOpen = !isCollapsed && openCollapsible === route.id;
 

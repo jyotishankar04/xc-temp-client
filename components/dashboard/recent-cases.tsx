@@ -36,7 +36,8 @@ function formatRelativeTime(dateString: string): string {
 }
 
 export function RecentCases() {
-  const { data: cases = [], isLoading } = useCases({ limit: 5 });
+  const { data: casesResponse, isLoading } = useCases({ limit: 5 });
+  const cases = casesResponse?.cases ?? [];
 
   if (isLoading) {
     return (
