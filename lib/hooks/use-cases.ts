@@ -18,7 +18,10 @@ export function useCases(params?: {
       if (!res.success) {
         throw new Error(res.message || "Failed to fetch cases");
       }
-      return res.data ?? [];
+      return res.data ?? {
+        cases: [],
+        pagination: { page: params?.page ?? 1, limit: params?.limit ?? 20, total: 0, totalPages: 0 },
+      };
     },
   });
 }
