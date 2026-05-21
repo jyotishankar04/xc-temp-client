@@ -45,7 +45,7 @@ const CTA = () => {
                       <ArrowUpRight className="ml-2 h-4 w-4" />
                     </Button>
                   </Link>
-                  <Link href="/auth/login">
+                  <Link href="/contact?intent=demo">
                     <Button size="lg" variant="outline" className="rounded-full px-8 text-base">
                       <Calendar className="mr-2 h-4 w-4" />
                       Schedule Demo
