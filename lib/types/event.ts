@@ -1,5 +1,7 @@
 export interface Event {
   id: string;
+  caseId?: string;
+  failureCaseId?: string;
   serviceId: string;
   timestamp: string;
   errorMessage?: string;
@@ -14,6 +16,18 @@ export interface Event {
     id: string;
     name: string;
     env: string;
+  };
+  case?: {
+    id: string;
+    fingerprint?: string;
+    severity?: string;
+    status?: string;
+  };
+  failureCase?: {
+    id: string;
+    fingerprint?: string;
+    severity?: string;
+    status?: string;
   };
   _count?: {
     mappings: number;
