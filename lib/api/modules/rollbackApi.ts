@@ -14,8 +14,15 @@ export interface RollbackHistory {
 export interface RollbackConfig {
   autoRollbackEnabled: boolean;
   autoRollbackThreshold: number;
+  rollbackWorkflow?: string | null;
+  deploymentType?: string | null;
   lastStableCommit: string | null;
   hasRepoMapping: boolean;
+  repoMapping?: {
+    id: string;
+    repoFull: string;
+    branch: string;
+  } | null;
 }
 
 export interface TriggerRollbackResponse {
@@ -38,9 +45,9 @@ export const rollbackApi = {
 
   updateConfig: async (
     serviceId: string,
-    data: { autoRollbackEnabled?: boolean; autoRollbackThreshold?: number }
-  ): Promise<ApiResponse<{ autoRollbackEnabled: boolean; autoRollbackThreshold: number }>> => {
-    const response = await apiClient.patch<ApiResponse<any>>(
+    data: { autoRollbackEnabled?: boolean; autoRollbackThreshold?: number; rollbackWorkflow?: string | null }
+  ): Promise<ApiResponse<{ autoRollbackEnabled: boolean; autoRollbackThreshold: number; rollbackWorkflow?: string | null }>> => {
+    const response = await apiClient.patch<ApiResponse<{ autoRollbackEnabled: boolean; autoRollbackThreshold: number; rollbackWorkflow?: string | null }>>(
       `/api/v1/services/${serviceId}/rollback/rollback-config`,
       data
     );
