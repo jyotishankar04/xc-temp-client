@@ -91,7 +91,7 @@ export default function SetupPage() {
                 "Custom event tracking",
               ].map((feature) => (
                 <div key={feature} className="flex items-center gap-2">
-                  <Check className="size-4 text-green-600 shrink-0" />
+                  <Check className="size-4 text-success shrink-0" />
                   <span className="text-sm">{feature}</span>
                 </div>
               ))}
@@ -123,9 +123,11 @@ export default function SetupPage() {
               <p className="text-sm text-muted-foreground">
                 Check our documentation for detailed integration guides.
               </p>
-              <Button variant="outline" className="w-full">
-                <Settings2 className="size-4 mr-2" />
-                View Documentation
+              <Button variant="outline" className="w-full" asChild>
+                <a href="/docs/sdk" target="_blank" rel="noopener noreferrer">
+                  <Settings2 className="size-4 mr-2" />
+                  View Documentation
+                </a>
               </Button>
             </CardContent>
           </Card>
