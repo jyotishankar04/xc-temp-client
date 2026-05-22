@@ -234,7 +234,7 @@ export default function ServiceMembersPage() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="text-red-500 hover:text-red-600"
+                            className="text-destructive hover:text-destructive/80"
                             onClick={() => openDeleteConfirm("member", member.userId)}
                             disabled={
                               removeMember.isPending ||
@@ -355,7 +355,7 @@ export default function ServiceMembersPage() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="text-red-500 hover:text-red-600"
+                            className="text-destructive hover:text-destructive/80"
                             onClick={() => openDeleteConfirm("invitation", invitation.id)}
                             disabled={cancelInvitation.isPending}
                           >

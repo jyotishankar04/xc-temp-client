@@ -5,13 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useServiceById, useServiceMembers, useApiKeys } from "@/lib/hooks";
-import { Loader2, Users, Key, Clock, Settings2 } from "lucide-react";
+import { ExternalLink, Github, Key, Loader2, Settings2, Users } from "lucide-react";
 import Link from "next/link";
 
 const statusConfig = {
-  healthy: { variant: "outline" as const, label: "Healthy", dot: "bg-green-500" },
-  degraded: { variant: "secondary" as const, label: "Degraded", dot: "bg-amber-500" },
-  down: { variant: "destructive" as const, label: "Down", dot: "bg-red-500" },
+  healthy: { variant: "outline" as const, label: "Healthy", dot: "bg-status-healthy" },
+  degraded: { variant: "secondary" as const, label: "Degraded", dot: "bg-severity-medium" },
+  down: { variant: "destructive" as const, label: "Down", dot: "bg-severity-high" },
 };
 
 const envConfig: Record<string, { variant: "outline" | "secondary" | "default"; label: string }> = {
@@ -145,6 +145,57 @@ export default function ServiceOverviewPage() {
               </p>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Github className="size-5" />
+            GitHub Repository
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {service?.githubRepoFullName ? (
+            <div className="grid gap-4 md:grid-cols-[1fr_auto]">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <p className="text-sm text-muted-foreground">Repository</p>
+                  <p className="mt-1 text-sm font-medium">{service.githubRepoFullName}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Branch</p>
+                  <p className="mt-1 text-sm font-medium">{service.defaultBranch || "main"}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Deployment</p>
+                  <p className="mt-1 text-sm font-medium">
+                    {service.deploymentType?.replace("_", " ") || "Not configured"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Rollback</p>
+                  <p className="mt-1 text-sm font-medium">
+                    {service.rollbackWorkflow || "Configure later"}
+                  </p>
+                </div>
+              </div>
+              <Button variant="outline" asChild>
+                <a
+                  href={`https://github.com/${service.githubRepoFullName}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  View on GitHub
+                  <ExternalLink className="ml-2 size-4" />
+                </a>
+              </Button>
+            </div>
+          ) : (
+            <div className="rounded-md border bg-muted/40 p-4 text-sm text-muted-foreground">
+              This service is not linked to a repository yet.
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

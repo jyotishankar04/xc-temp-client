@@ -122,7 +122,7 @@ export default function ServiceApiKeysPage() {
                   <p className="text-sm text-muted-foreground mb-2">Your new API key:</p>
                   <code className="text-sm font-mono break-all">{newlyCreatedKey}</code>
                 </div>
-                <p className="text-sm text-amber-600">
+                <p className="text-sm text-severity-medium">
                   Make sure to copy your API key now. You won&apos;t be able to see it again!
                 </p>
                 <div className="flex gap-2">
@@ -214,7 +214,7 @@ export default function ServiceApiKeysPage() {
                             onClick={() => handleCopy(apiKey.key!)}
                           >
                             {copiedKey === apiKey.key ? (
-                              <span className="text-xs text-green-500">Copied</span>
+                              <span className="text-xs text-success">Copied</span>
                             ) : (
                               <Copy className="size-4" />
                             )}
@@ -223,7 +223,7 @@ export default function ServiceApiKeysPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="text-red-500 hover:text-red-600"
+                          className="text-destructive hover:text-destructive/80"
                           onClick={() => openDeleteConfirm(apiKey.id)}
                           disabled={deleteApiKey.isPending}
                         >
