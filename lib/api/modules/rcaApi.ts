@@ -56,18 +56,29 @@ interface RawRCAReport {
 }
 
 function transformRCAReport(raw: RawRCAReport): RCAReport {
-  const isFailed = raw.metadata?.status === "FAILED" || raw.explanation?.includes("failed");
-  
+  // Use only metadata.status — never string-match explanation text
+  const rcaStatus = (raw.metadata?.status as string) || "PENDING";
+  const isFailed = rcaStatus === "FAILED";
+
+  // detailedAnalysis is stored in metadata by the RCA worker
+  const detailedAnalysis = raw.metadata?.detailedAnalysis as
+    | { mechanism?: string; why_this_cause?: string }
+    | undefined;
+
   return {
     id: raw.id,
     caseId: raw.caseId,
-    title: raw.rootCauseTitle 
-      ? raw.rootCauseTitle 
-      : isFailed 
-        ? "RCA Generation Failed" 
-        : `RCA Report - ${raw.caseId.slice(0, 8)}`,
-    summary: raw.rootCauseSummary || raw.explanation || undefined,
-    rootCause: raw.rootCauseSummary || undefined,
+    title: raw.rootCauseTitle
+      ? raw.rootCauseTitle
+      : isFailed
+        ? "RCA Generation Failed"
+        : rcaStatus === "IN_PROGRESS"
+          ? "RCA In Progress…"
+          : `RCA Report — ${raw.caseId.slice(0, 8)}`,
+    // Summary: the AI's concise root-cause summary (distinct from the full explanation)
+    summary: raw.rootCauseSummary || undefined,
+    // Root Cause: the technical mechanism — how the root cause led to the failure
+    rootCause: detailedAnalysis?.mechanism || detailedAnalysis?.why_this_cause || undefined,
     rootCauseTitle: raw.rootCauseTitle,
     rootCauseCategory: raw.rootCauseCategory,
     rootCauseSummary: raw.rootCauseSummary,
@@ -79,12 +90,13 @@ function transformRCAReport(raw: RawRCAReport): RCAReport {
     userImpact: raw.userImpact ?? undefined,
     duration: raw.duration ?? undefined,
     metadata: raw.metadata,
-    reviewed: false,
+    notes: raw.metadata?.notes as string | undefined,
+    reviewed: (raw.metadata?.reviewed as boolean) ?? false,
     createdAt: raw.createdAt,
     updatedAt: undefined,
     serviceId: raw.case?.service?.id,
     serviceName: raw.case?.service?.name,
-    status: raw.case?.status || "UNKNOWN",
+    status: rcaStatus,          // RCA processing state: FAILED | IN_PROGRESS | COMPLETED | PENDING
     severity: raw.case?.severity,
     caseFingerprint: raw.case?.fingerprint,
   };
@@ -135,7 +147,7 @@ export const rcaApi = {
         data: transformRCAReport(data.data as RawRCAReport),
       };
     }
-    return { success: false, message: "Failed to fetch RCA report", data: null as unknown as RCAReport };
+    return { success: false, message: "Failed to fetch RCA report" };
   },
 
   generate: async (caseId: string): Promise<ApiResponse<RCAReport>> => {

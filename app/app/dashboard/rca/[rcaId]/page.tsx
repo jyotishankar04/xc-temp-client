@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useRcaById, useUpdateRca } from "@/lib/hooks";
-import { Loader2, ArrowLeft, ExternalLink, Calendar, Boxes, CheckCircle, Circle, Save } from "lucide-react";
+import { useRcaById, useUpdateRca, useGenerateRca } from "@/lib/hooks";
+import { Loader2, ArrowLeft, ExternalLink, Boxes, CheckCircle, Circle, Save, XCircle, RefreshCw, AlertTriangle, Bot } from "lucide-react";
+import { JsonViewer } from "@/components/ui/json-viewer";
 
 export default function RcaDetailPage() {
   const params = useParams();
@@ -16,9 +17,14 @@ export default function RcaDetailPage() {
 
   const { data: report, isLoading, error } = useRcaById(reportId);
   const updateRca = useUpdateRca();
+  const generateRca = useGenerateRca();
 
   const [notes, setNotes] = useState(report?.notes || "");
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setNotes(report?.notes || "");
+  }, [report?.notes]);
 
   const handleSaveNotes = async () => {
     setIsSaving(true);
@@ -52,7 +58,7 @@ export default function RcaDetailPage() {
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-<Link href="/dashboard/rca">
+<Link href="/app/dashboard/rca">
               <ArrowLeft className="size-4" />
             </Link>
           </Button>
@@ -60,7 +66,7 @@ export default function RcaDetailPage() {
         </div>
         <Card>
           <CardContent className="pt-6">
-            <p className="text-red-500">Failed to load RCA report. Please try again.</p>
+            <p className="text-destructive">Failed to load RCA report. Please try again.</p>
           </CardContent>
         </Card>
       </div>
@@ -71,7 +77,7 @@ export default function RcaDetailPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/dashboard/rca">
+          <Link href="/app/dashboard/rca">
             <ArrowLeft className="size-4" />
           </Link>
         </Button>
@@ -81,14 +87,19 @@ export default function RcaDetailPage() {
             Root Cause Analysis Report
           </p>
         </div>
-        <Badge 
-          variant={report.explanation?.includes("failed") ? "destructive" : report.reviewed ? "default" : "secondary"} 
+        <Badge
+          variant={report.status === "FAILED" ? "destructive" : report.reviewed ? "default" : "secondary"}
           className="gap-1.5"
         >
-          {report.explanation?.includes("failed") ? (
+          {report.status === "FAILED" ? (
             <>
-              <Circle className="size-3.5" />
+              <XCircle className="size-3.5" />
               Failed
+            </>
+          ) : report.status === "IN_PROGRESS" ? (
+            <>
+              <Loader2 className="size-3.5 animate-spin" />
+              Processing
             </>
           ) : report.reviewed ? (
             <>
@@ -98,11 +109,56 @@ export default function RcaDetailPage() {
           ) : (
             <>
               <Circle className="size-3.5" />
-              Pending Review
+              Unreviewed
             </>
           )}
         </Badge>
       </div>
+
+      {report.status === "IN_PROGRESS" && (
+        <div className="flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm">
+          <Loader2 className="size-4 animate-spin text-primary shrink-0" />
+          <span>AI analysis is in progress. This page refreshes automatically.</span>
+        </div>
+      )}
+
+      {report.status === "FAILED" && (
+        <div className="flex items-center justify-between gap-3 rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3">
+          <div className="flex items-center gap-3 text-sm text-destructive">
+            <XCircle className="size-4 shrink-0" />
+            <span>RCA generation failed. You can retry the analysis below.</span>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => generateRca.mutate(report.caseId)}
+            disabled={generateRca.isPending}
+          >
+            {generateRca.isPending ? (
+              <Loader2 className="size-4 mr-2 animate-spin" />
+            ) : (
+              <RefreshCw className="size-4 mr-2" />
+            )}
+            Retry
+          </Button>
+        </div>
+      )}
+
+      {report.status === "COMPLETED" && report.confidenceScore > 0 && report.confidenceScore < 5 && (
+        <div className="flex items-center gap-3 rounded-lg border border-severity-medium/20 bg-severity-medium/5 px-4 py-3 text-sm">
+          <AlertTriangle className="size-4 text-severity-medium shrink-0" />
+          <span className="text-severity-medium">
+            Low confidence score ({report.confidenceScore}/10). This analysis is based on limited evidence — review findings carefully before acting.
+          </span>
+        </div>
+      )}
+
+      {report.status === "COMPLETED" && (
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <Bot className="size-3.5" />
+          <span>AI-generated analysis · {report.modelVersion ?? "AI model"} · Always verify before taking action</span>
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
@@ -158,9 +214,9 @@ export default function RcaDetailPage() {
               {report.explanation && (
                 <div>
                   <p className="text-xs text-muted-foreground mb-2">
-                    {report.explanation.includes("failed") ? "Error" : "Explanation"}
+                    {report.status === "FAILED" ? "Error" : "Explanation"}
                   </p>
-                  <p className={`text-sm p-3 rounded-lg ${report.explanation.includes("failed") ? "bg-destructive/10 text-destructive" : "bg-muted"}`}>
+                  <p className={`text-sm p-3 rounded-lg ${report.status === "FAILED" ? "bg-destructive/10 text-destructive" : "bg-muted"}`}>
                     {report.explanation}
                   </p>
                 </div>
@@ -207,16 +263,32 @@ export default function RcaDetailPage() {
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Button 
-                variant={report.reviewed ? "outline" : "default"} 
+              {report.status === "FAILED" && (
+                <Button
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={() => generateRca.mutate(report.caseId)}
+                  disabled={generateRca.isPending}
+                >
+                  {generateRca.isPending ? (
+                    <Loader2 className="size-4 mr-2 animate-spin" />
+                  ) : (
+                    <RefreshCw className="size-4 mr-2" />
+                  )}
+                  Retry RCA Generation
+                </Button>
+              )}
+
+              <Button
+                variant={report.reviewed ? "outline" : "default"}
                 className="w-full justify-start"
                 onClick={handleToggleReviewed}
-                disabled={updateRca.isPending}
+                disabled={updateRca.isPending || report.status !== "COMPLETED"}
               >
                 {report.reviewed ? (
                   <>
                     <Circle className="size-4 mr-2" />
-                    Mark as Pending
+                    Mark as Unreviewed
                   </>
                 ) : (
                   <>
@@ -279,7 +351,7 @@ export default function RcaDetailPage() {
               )}
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Confidence</span>
-                <span>{report.confidenceScore > 0 ? `${Math.round(report.confidenceScore * 100)}%` : "N/A"}</span>
+                <span>{report.confidenceScore > 0 ? `${report.confidenceScore}/10` : "N/A"}</span>
               </div>
               {report.affectedServices && report.affectedServices.length > 0 && (
                 <div>

@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/table";
 import { useRcaReports, useGenerateRca } from "@/lib/hooks";
 import { useServices } from "@/lib/hooks";
-import { Loader2, FileSearch, CheckCircle, Circle, ExternalLink, Boxes } from "lucide-react";
+import { Loader2, FileSearch, CheckCircle, Circle, ExternalLink, Boxes, XCircle } from "lucide-react";
 
 export default function RcaPage() {
   const { data: reports = [], isLoading } = useRcaReports();
@@ -89,7 +89,7 @@ export default function RcaPage() {
                 <SelectContent>
                   <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="reviewed">Reviewed</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="pending">Unreviewed</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -137,7 +137,7 @@ export default function RcaPage() {
                     <TableCell>
                       {report.serviceName ? (
                         <Link 
-                          href={`/dashboard/services/${report.serviceId}/overview`}
+                          href={`/app/dashboard/services/${report.serviceId}/overview`}
                           className="text-sm hover:underline flex items-center gap-1"
                           onClick={(e) => e.stopPropagation()}
                         >
@@ -149,8 +149,8 @@ export default function RcaPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Link 
-                        href={`/dashboard/failures/${report.caseId}`}
+                      <Link
+                        href={`/app/dashboard/failures/${report.caseId}`}
                         className="text-sm hover:underline"
                         onClick={(e) => e.stopPropagation()}
                       >
@@ -158,10 +158,15 @@ export default function RcaPage() {
                       </Link>
                     </TableCell>
                     <TableCell>
-                      {report.explanation?.includes("failed") ? (
+                      {report.status === "FAILED" ? (
                         <Badge variant="destructive" className="gap-1">
-                          <Circle className="size-3" />
+                          <XCircle className="size-3" />
                           Failed
+                        </Badge>
+                      ) : report.status === "IN_PROGRESS" ? (
+                        <Badge variant="secondary" className="gap-1">
+                          <Loader2 className="size-3 animate-spin" />
+                          Processing
                         </Badge>
                       ) : (
                         <Badge variant={report.reviewed ? "default" : "secondary"} className="gap-1">
@@ -173,7 +178,7 @@ export default function RcaPage() {
                           ) : (
                             <>
                               <Circle className="size-3" />
-                              Pending
+                              Unreviewed
                             </>
                           )}
                         </Badge>
@@ -184,7 +189,7 @@ export default function RcaPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/dashboard/rca/${report.id}`}>
+                        <Link href={`/app/dashboard/rca/${report.id}`}>
                           <ExternalLink className="size-4" />
                         </Link>
                       </Button>
