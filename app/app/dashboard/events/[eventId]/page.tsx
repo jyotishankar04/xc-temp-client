@@ -23,29 +23,31 @@ import {
 } from "lucide-react";
 import type { Event } from "@/lib/types/event";
 import { Label } from "@/components/ui/label";
+import { StackTraceViewer } from "@/components/ui/stack-trace-viewer";
+import { JsonViewer } from "@/components/ui/json-viewer";
 
 const severityConfig = {
-  critical: { 
-    color: "text-red-600 dark:text-red-400", 
-    bg: "bg-red-50 dark:bg-red-950/30", 
-    border: "border-red-200 dark:border-red-800",
-    badge: "bg-red-500 text-white",
+  critical: {
+    color: "text-severity-high",
+    bg: "bg-severity-high/10",
+    border: "border-severity-high/30",
+    badge: "bg-severity-high text-white",
     label: "Critical",
     icon: Zap
   },
-  warning: { 
-    color: "text-amber-600 dark:text-amber-400", 
-    bg: "bg-amber-50 dark:bg-amber-950/30", 
-    border: "border-amber-200 dark:border-amber-800",
-    badge: "bg-amber-500 text-white",
+  warning: {
+    color: "text-severity-medium",
+    bg: "bg-severity-medium/10",
+    border: "border-severity-medium/30",
+    badge: "bg-severity-medium text-foreground",
     label: "Warning",
     icon: Waves
   },
-  info: { 
-    color: "text-slate-600 dark:text-slate-400", 
-    bg: "bg-slate-50 dark:bg-slate-950/30", 
-    border: "border-slate-200 dark:border-slate-800",
-    badge: "bg-slate-500 text-white",
+  info: {
+    color: "text-muted-foreground",
+    bg: "bg-muted",
+    border: "border-border",
+    badge: "bg-muted text-muted-foreground",
     label: "Info",
     icon: Activity
   },
@@ -93,7 +95,7 @@ export default function EventDetailPage() {
             </p>
           </div>
         </div>
-        <Card className="border-red-200 dark:border-red-800">
+        <Card className="border-severity-high/30">
           <CardContent className="pt-6">
             <p className="text-destructive">Unable to load event details. Please try again.</p>
           </CardContent>
@@ -105,6 +107,7 @@ export default function EventDetailPage() {
   const severity = getSeverity(event);
   const cfg = severityConfig[severity];
   const SeverityIcon = cfg.icon;
+  const linkedCaseId = event.caseId ?? event.failureCaseId ?? event.case?.id ?? event.failureCase?.id;
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)] gap-6">
@@ -139,6 +142,14 @@ export default function EventDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {linkedCaseId && (
+            <Link href={`/app/dashboard/failures/${linkedCaseId}`}>
+              <Button variant="outline" size="sm">
+                <Link2 className="size-4 mr-1.5" />
+                View Case
+              </Button>
+            </Link>
+          )}
           {event.service && (
             <Link href={`/app/dashboard/services/${event.service.id}/overview`}>
               <Button variant="outline" size="sm">
@@ -185,6 +196,27 @@ export default function EventDetailPage() {
                     </div>
                   )}
 
+                  {linkedCaseId && (
+                    <div>
+                      <Label className="text-xs text-muted-foreground mb-2 flex items-center gap-1.5">
+                        <Link2 className="size-3" />
+                        Failure Case
+                      </Label>
+                      <Link
+                        href={`/app/dashboard/failures/${linkedCaseId}`}
+                        className="inline-flex items-center justify-between gap-3 px-4 py-3 bg-muted/50 rounded-xl hover:bg-muted transition-colors border w-full"
+                      >
+                        <div>
+                          <div className="font-semibold">View linked failure case</div>
+                          <div className="text-xs text-muted-foreground font-mono">
+                            {linkedCaseId}
+                          </div>
+                        </div>
+                        <Badge variant="outline">Case</Badge>
+                      </Link>
+                    </div>
+                  )}
+
                   <div className="grid sm:grid-cols-2 gap-4">
                     {event.requestId && (
                       <div>
@@ -213,8 +245,10 @@ export default function EventDetailPage() {
                   {event.errorMessage && (
                     <div>
                       <Label className="text-xs text-muted-foreground mb-2 block">Error Message</Label>
-                      <div className={`${cfg.bg} ${cfg.border} border rounded-xl p-4`}>
-                        <p className="text-sm leading-relaxed">{event.errorMessage}</p>
+                      <div className="rounded-xl border border-code-border bg-code-bg px-4 py-3">
+                        <p className="text-sm font-mono leading-relaxed text-code-error-msg">
+                          {event.errorMessage}
+                        </p>
                       </div>
                     </div>
                   )}
@@ -225,20 +259,14 @@ export default function EventDetailPage() {
                         <Code2 className="size-3" />
                         Stack Trace
                       </Label>
-                      <pre className="text-xs bg-muted/50 border rounded-xl p-4 overflow-x-auto max-h-[400px] font-mono">
-                        {event.stackTrace}
-                      </pre>
+                      <StackTraceViewer trace={event.stackTrace} maxLines={25} />
                     </div>
                   )}
 
                   {event.runtimeContext && (
                     <div>
                       <Label className="text-xs text-muted-foreground mb-2 block">Runtime Context</Label>
-                      <pre className="text-xs bg-muted/50 border rounded-xl p-4 overflow-x-auto font-mono">
-                        {typeof event.runtimeContext === "string"
-                          ? event.runtimeContext
-                          : JSON.stringify(event.runtimeContext, null, 2)}
-                      </pre>
+                      <JsonViewer data={event.runtimeContext} />
                     </div>
                   )}
 

@@ -11,24 +11,24 @@ import { Loader2, ArrowLeft, Clock, AlertTriangle, Server, Zap, Waves, Activity 
 import type { Event } from "@/lib/types/event";
 
 const severityConfig = {
-  critical: { 
-    color: "text-red-600 dark:text-red-400", 
-    bg: "bg-red-50 dark:bg-red-950/30", 
-    badge: "bg-red-500 text-white",
+  critical: {
+    color: "text-severity-high",
+    bg: "bg-severity-high/10",
+    badge: "bg-severity-high text-white",
     label: "Critical",
     icon: Zap
   },
-  warning: { 
-    color: "text-amber-600 dark:text-amber-400", 
-    bg: "bg-amber-50 dark:bg-amber-950/30", 
-    badge: "bg-amber-500 text-white",
+  warning: {
+    color: "text-severity-medium",
+    bg: "bg-severity-medium/10",
+    badge: "bg-severity-medium text-foreground",
     label: "Warning",
     icon: Waves
   },
-  info: { 
-    color: "text-slate-600 dark:text-slate-400", 
-    bg: "bg-slate-50 dark:bg-slate-950/30", 
-    badge: "bg-slate-500 text-white",
+  info: {
+    color: "text-muted-foreground",
+    bg: "bg-muted",
+    badge: "bg-muted text-muted-foreground",
     label: "Info",
     icon: Activity
   },
@@ -75,9 +75,9 @@ export default function CorrelatedEventsPage() {
           </p>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <Badge className="bg-red-500 text-white">{eventsBySeverity.critical.length} Critical</Badge>
-          <Badge className="bg-amber-500 text-white">{eventsBySeverity.warning.length} Warning</Badge>
-          <Badge className="bg-slate-500 text-white">{eventsBySeverity.info.length} Info</Badge>
+          <Badge className="bg-severity-high text-white">{eventsBySeverity.critical.length} Critical</Badge>
+          <Badge className="bg-severity-medium text-foreground">{eventsBySeverity.warning.length} Warning</Badge>
+          <Badge className="bg-muted text-muted-foreground">{eventsBySeverity.info.length} Info</Badge>
         </div>
       </div>
 
@@ -104,7 +104,7 @@ export default function CorrelatedEventsPage() {
               <div className="p-4 space-y-4">
                 {eventsBySeverity.critical.length > 0 && (
                   <div className="space-y-2">
-                    <h3 className="text-sm font-semibold text-red-600 dark:text-red-400 flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-severity-high flex items-center gap-2">
                       <Zap className="size-3.5" />
                       Critical ({eventsBySeverity.critical.length})
                     </h3>
@@ -116,7 +116,7 @@ export default function CorrelatedEventsPage() {
 
                 {eventsBySeverity.warning.length > 0 && (
                   <div className="space-y-2 pt-2">
-                    <h3 className="text-sm font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-severity-medium flex items-center gap-2">
                       <Waves className="size-3.5" />
                       Warning ({eventsBySeverity.warning.length})
                     </h3>
@@ -128,7 +128,7 @@ export default function CorrelatedEventsPage() {
 
                 {eventsBySeverity.info.length > 0 && (
                   <div className="space-y-2 pt-2">
-                    <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
                       <Activity className="size-3.5" />
                       Info ({eventsBySeverity.info.length})
                     </h3>
