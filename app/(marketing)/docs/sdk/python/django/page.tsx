@@ -48,21 +48,15 @@ export default function PythonDjangoPage() {
       <div className="space-y-8">
         <section>
           <h2 className="text-xl font-semibold mb-4">1. Install the SDK</h2>
-          <CodeBlock code="pip install xecurecode" />
+          <CodeBlock code="pip install x-reliability-sdk" />
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold mb-4">2. Add to INSTALLED_APPS</h2>
-          <p className="text-muted-foreground mb-2">In your <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">settings.py</code>:</p>
-          <CodeBlock code={`INSTALLED_APPS = [
-    # ...
-    'xecurecode.integrations.django',
-]
-
-XECURECODE = {
-    'api_key': 'YOUR_API_KEY',
-    'service_id': 'your-service-id',
-}`} />
+          <h2 className="text-xl font-semibold mb-4">2. Configure settings.py</h2>
+          <p className="text-muted-foreground mb-2">Add the following to your <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">settings.py</code>:</p>
+          <CodeBlock code={`RELIABILITY_API_KEY = 'YOUR_API_KEY'
+RELIABILITY_SERVICE_ID = 'your-service-id'
+RELIABILITY_MODE = 'production'  # or 'development'`} />
         </section>
 
         <section>
@@ -70,34 +64,37 @@ XECURECODE = {
           <p className="text-muted-foreground mb-2">In your <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">settings.py</code>:</p>
           <CodeBlock code={`MIDDLEWARE = [
     # ...
-    'xecurecode.integrations.django.XecureCodeMiddleware',
+    'reliability.django_integration.ReliabilityMiddleware',
 ]`} />
+          <p className="text-sm text-muted-foreground mt-2">
+            The middleware automatically reads your <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">RELIABILITY_*</code> settings and captures all unhandled exceptions.
+          </p>
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold mb-4">Configuration Options</h2>
+          <h2 className="text-xl font-semibold mb-4">Configuration Settings</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left py-2 font-medium">Option</th>
+                  <th className="text-left py-2 font-medium">Setting</th>
                   <th className="text-left py-2 font-medium">Type</th>
                   <th className="text-left py-2 font-medium">Description</th>
                 </tr>
               </thead>
               <tbody>
                 <tr className="border-b">
-                  <td className="py-2 font-mono">api_key</td>
+                  <td className="py-2 font-mono">RELIABILITY_API_KEY</td>
                   <td className="py-2 text-muted-foreground">string</td>
                   <td className="py-2">Your API key (required)</td>
                 </tr>
                 <tr className="border-b">
-                  <td className="py-2 font-mono">service_id</td>
+                  <td className="py-2 font-mono">RELIABILITY_SERVICE_ID</td>
                   <td className="py-2 text-muted-foreground">string</td>
                   <td className="py-2">Your service ID (required)</td>
                 </tr>
                 <tr>
-                  <td className="py-2 font-mono">mode</td>
+                  <td className="py-2 font-mono">RELIABILITY_MODE</td>
                   <td className="py-2 text-muted-foreground">string</td>
                   <td className="py-2">"development" or "production" (default: "development")</td>
                 </tr>
