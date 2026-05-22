@@ -90,8 +90,7 @@ export function useSwitchOrg() {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["orgs"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ refetchType: "all" });
     },
   });
 }
@@ -144,8 +143,8 @@ export function useConnectGitHub() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
-      const res = await orgsApi.connectGitHub();
+    mutationFn: async (redirectUrl?: string) => {
+      const res = await orgsApi.connectGitHub(redirectUrl);
       if (!res.success) {
         throw new Error(res.message || "Failed to connect GitHub");
       }

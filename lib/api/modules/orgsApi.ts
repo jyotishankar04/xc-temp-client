@@ -96,8 +96,10 @@ export const orgsApi = {
   getMembers: async (
     orgId?: string
   ): Promise<ApiResponse<OrgMember[]>> => {
-    const url = orgId ? `/api/v1/orgs/members/${orgId}` : "/api/v1/orgs/members/";
-    const response = await apiClient.get<ApiResponse<OrgMember[]>>(url);
+    const response = await apiClient.get<ApiResponse<OrgMember[]>>(
+      "/api/v1/orgs/members",
+      { params: orgId ? { orgId } : undefined }
+    );
     return response.data;
   },
 
@@ -119,9 +121,10 @@ export const orgsApi = {
     return response.data;
   },
 
-  connectGitHub: async (): Promise<ApiResponse<{ url: string }>> => {
+  connectGitHub: async (redirectUrl?: string): Promise<ApiResponse<{ url: string }>> => {
     const response = await apiClient.post<ApiResponse<{ url: string }>>(
-      "/api/v1/orgs/github/connect"
+      "/api/v1/orgs/github/connect",
+      redirectUrl ? { redirectUrl } : undefined
     );
     return response.data;
   },

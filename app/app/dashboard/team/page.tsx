@@ -22,40 +22,50 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  MoreHorizontal,
+  Loader2,
   Mail,
-  Plus,
+  MoreHorizontal,
   Shield,
   UserCog,
   UserMinus,
   UserPlus,
 } from "lucide-react";
+import { useCurrentOrg, useOrgMembers, useInviteMember } from "@/lib/hooks";
 
-type Member = {
-  id: string;
-  name: string;
-  email: string;
-  role: "owner" | "admin" | "member" | "viewer";
-  joined: string;
-};
+type Role = "OWNER" | "ADMIN" | "MEMBER" | "VIEWER";
 
-const members: Member[] = [
-  { id: "1", name: "Rahul Verma", email: "rahul@acme.com", role: "owner", joined: "Jan 15, 2025" },
-  { id: "2", name: "Priya Sharma", email: "priya@acme.com", role: "admin", joined: "Feb 1, 2025" },
-  { id: "3", name: "Amit Kumar", email: "amit@acme.com", role: "member", joined: "Mar 10, 2025" },
-  { id: "4", name: "Sneha Patel", email: "sneha@acme.com", role: "viewer", joined: "Apr 5, 2025" },
-];
-
-const roleColors: Record<Member["role"], "default" | "secondary" | "outline"> = {
-  owner: "default",
-  admin: "secondary",
-  member: "outline",
-  viewer: "outline",
+const roleColors: Record<string, "default" | "secondary" | "outline"> = {
+  OWNER: "default",
+  ADMIN: "secondary",
+  MEMBER: "outline",
+  VIEWER: "outline",
 };
 
 export default function TeamPage() {
+  const { data: currentOrg } = useCurrentOrg();
+  const { data: members = [], isLoading } = useOrgMembers(currentOrg?.id);
+  const inviteMember = useInviteMember();
+
   const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState<Member["role"]>("member");
+  const [inviteRole, setInviteRole] = useState<Role>("MEMBER");
+
+  const handleSendInvite = async () => {
+    if (!inviteEmail || !currentOrg?.id) return;
+    try {
+      await inviteMember.mutateAsync({
+        orgId: currentOrg.id,
+        data: { email: inviteEmail, role: inviteRole },
+      });
+      setInviteEmail("");
+    } catch (e) {
+      console.error("Failed to invite member:", e);
+    }
+  };
+
+  const getInitials = (name?: string, email?: string) => {
+    if (name) return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+    return email?.[0]?.toUpperCase() || "?";
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -70,9 +80,7 @@ export default function TeamPage() {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base">Invite Member</CardTitle>
-          </div>
+          <CardTitle className="text-base">Invite Member</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex gap-3">
@@ -87,23 +95,30 @@ export default function TeamPage() {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="w-36">
                   <UserPlus className="size-4 mr-2" />
-                  {inviteRole.charAt(0).toUpperCase() + inviteRole.slice(1)}
+                  {inviteRole.charAt(0) + inviteRole.slice(1).toLowerCase()}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                {(["admin", "member", "viewer"] as Member["role"][]).map((role) => (
+                {(["ADMIN", "MEMBER", "VIEWER"] as Role[]).map((role) => (
                   <DropdownMenuItem
                     key={role}
                     onClick={() => setInviteRole(role)}
                     className="cursor-pointer"
                   >
-                    {role.charAt(0).toUpperCase() + role.slice(1)}
+                    {role.charAt(0) + role.slice(1).toLowerCase()}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button>
-              <Mail className="size-4 mr-2" />
+            <Button
+              onClick={handleSendInvite}
+              disabled={!inviteEmail || !currentOrg?.id || inviteMember.isPending}
+            >
+              {inviteMember.isPending ? (
+                <Loader2 className="size-4 mr-2 animate-spin" />
+              ) : (
+                <Mail className="size-4 mr-2" />
+              )}
               Send Invite
             </Button>
           </div>
@@ -115,68 +130,79 @@ export default function TeamPage() {
           <CardTitle className="text-base">Members ({members.length})</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Member</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Joined</TableHead>
-                <TableHead className="w-12" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {members.map((member) => (
-                <TableRow key={member.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="size-8">
-                        <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
-                          {member.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="text-sm font-medium">{member.name}</p>
-                        <p className="text-xs text-muted-foreground">{member.email}</p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={roleColors[member.role]} className="text-xs capitalize">
-                      {member.role}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {member.joined}
-                  </TableCell>
-                  <TableCell>
-                    {member.role !== "owner" && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="size-8">
-                            <MoreHorizontal className="size-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem className="cursor-pointer">
-                            <UserCog className="size-4 mr-2" />
-                            Change role
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="cursor-pointer text-destructive">
-                            <UserMinus className="size-4 mr-2" />
-                            Remove
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
-                  </TableCell>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="size-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Member</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Joined</TableHead>
+                  <TableHead className="w-12" />
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {members.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                      No members found.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  members.map((member) => (
+                    <TableRow key={member.userId ?? member.email}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="size-8">
+                            <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+                              {getInitials(member.name, member.email)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="text-sm font-medium">{member.name || member.email}</p>
+                            <p className="text-xs text-muted-foreground">{member.email}</p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={roleColors[member.role] ?? "outline"} className="text-xs capitalize">
+                          {member.role.toLowerCase()}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {member.joinedAt ? new Date(member.joinedAt).toLocaleDateString() : "—"}
+                      </TableCell>
+                      <TableCell>
+                        {member.role !== "OWNER" && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="size-8">
+                                <MoreHorizontal className="size-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem className="cursor-pointer" disabled>
+                                <UserCog className="size-4 mr-2" />
+                                Change role
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem className="cursor-pointer text-destructive" disabled>
+                                <UserMinus className="size-4 mr-2" />
+                                Remove
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
 
