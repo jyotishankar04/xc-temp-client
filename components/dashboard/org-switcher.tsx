@@ -19,6 +19,7 @@ import {
   Settings,
 } from "lucide-react";
 import { useOrgs, useCurrentOrg, useSwitchOrg } from "@/lib/hooks";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface OrgSwitcherProps {
   isCollapsed?: boolean;
@@ -30,6 +31,7 @@ export function OrgSwitcher({ isCollapsed = false }: OrgSwitcherProps) {
   const { data: currentOrg, isLoading: isCurrentOrgLoading } = useCurrentOrg();
   const switchOrg = useSwitchOrg();
 
+  const queryClient = useQueryClient();
   const [isSwitching, setIsSwitching] = React.useState(false);
 
   const isLoading = isOrgsLoading || isCurrentOrgLoading;
@@ -40,6 +42,8 @@ export function OrgSwitcher({ isCollapsed = false }: OrgSwitcherProps) {
     setIsSwitching(true);
     try {
       await switchOrg.mutateAsync(orgId);
+      // Invalidate all queries so components refetch data for the new org
+      await queryClient.invalidateQueries();
       router.refresh();
     } catch (error) {
       console.error("Failed to switch org:", error);
@@ -107,7 +111,7 @@ export function OrgSwitcher({ isCollapsed = false }: OrgSwitcherProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="gap-2 p-2 cursor-pointer"
-          onClick={() => router.push("/app/orgs")}
+          onClick={() => router.push("/app/orgs/create")}
         >
           <div className="flex size-6 items-center justify-center rounded-md border bg-background shrink-0">
             <Plus className="size-3.5" />
