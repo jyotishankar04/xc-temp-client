@@ -22,6 +22,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/shared/branding/logo";
 import Link from "next/link";
+import Image from "next/image";
 
 /* ─── FADE-IN WRAPPER using motion/react ─── */
 function FadeUp({ children, delay = 0, className = "" }: { children: React.ReactNode, delay?: number, className?: string }) {
@@ -521,9 +522,11 @@ function Team() {
                   {/* Image */}
                   <div className="relative rounded-[10px] overflow-hidden border border-border/50 shrink-0 transition-all duration-300 ease-in-out w-16 h-16 group-hover:w-40 group-hover:h-40">
                     {member.image ? (
-                      <img
+                      <Image
                         src={member.image}
                         alt={member.name}
+                        fill
+                        sizes="(min-width: 768px) 160px, 64px"
                         className="object-cover"
                       />
                     ) : (
