@@ -41,29 +41,43 @@ export default function NodeFastifyPage() {
 
       <Badge variant="outline" className="mb-4 border-sky-200 text-sky-600">Node.js</Badge>
       <h1 className="text-3xl font-bold tracking-tight mb-4">Fastify Integration</h1>
-      <p className="text-muted-foreground mb-8">
-        Automatically capture uncaught exceptions in your Fastify application.
-      </p>
+
+      <div className="mb-8 p-4 bg-amber-50 dark:bg-amber-950 rounded-lg border border-amber-200 dark:border-amber-800">
+        <p className="text-sm text-amber-700 dark:text-amber-300">
+          A dedicated Fastify plugin is coming soon. In the meantime, use the manual capture approach below.
+        </p>
+      </div>
 
       <div className="space-y-8">
         <section>
           <h2 className="text-xl font-semibold mb-4">1. Install the SDK</h2>
-          <CodeBlock code="npm install @xecurecode/node" />
+          <CodeBlock code="npm install @xecurecode/reliability-sdk" />
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold mb-4">2. Initialize the Integration</h2>
+          <h2 className="text-xl font-semibold mb-4">2. Manual Capture in Fastify</h2>
           <CodeBlock code={`const fastify = require('fastify')({ logger: true });
-const { xecurecode } = require('@xecurecode/node');
+const { ReliabilityClient } = require('@xecurecode/reliability-sdk');
 
-fastify.register(xecurecode, {
+const reliability = new ReliabilityClient({
   apiKey: 'YOUR_API_KEY',
-  serviceId: 'your-service-id'
+  service_id: 'your-service-id',
+  mode: 'production'
+});
+
+// Use Fastify's error hook to capture exceptions
+fastify.addHook('onError', async (request, reply, error) => {
+  reliability.capture(error);
 });
 
 fastify.get('/error', async (request, reply) => {
-  throw new Error('Test error');
-});`} />
+  throw new Error('This will be captured');
+});
+
+fastify.listen({ port: 3000 });`} />
+          <p className="text-sm text-muted-foreground mt-2">
+            The <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">onError</code> hook fires for every unhandled exception in your routes.
+          </p>
         </section>
 
         <div className="flex gap-4 pt-4">

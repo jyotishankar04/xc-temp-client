@@ -7,7 +7,7 @@ import { ArrowRight } from "lucide-react";
 
 const frameworks = [
   { name: "Express", description: "Fast, unopinionated web framework", href: "/docs/sdk/node/express" },
-  { name: "Fastify", description: "Fast and low overhead web framework", href: "/docs/sdk/node/fastify" },
+  { name: "Fastify", description: "Fastify plugin (manual capture, dedicated plugin coming soon)", href: "/docs/sdk/node/fastify" },
   { name: "Standalone", description: "Use without a framework", href: "/docs/sdk/node/standalone" },
 ];
 
@@ -47,7 +47,7 @@ export default function NodeSdkPage() {
           <Link href="/docs/sdk/python/standalone">← Python</Link>
         </Button>
         <Button asChild className="bg-sky-500 hover:bg-sky-600">
-          <Link href="/docs/sdk/go/basic">Go →</Link>
+          <Link href="/docs/sdk/go/basic">Java →</Link>
         </Button>
       </div>
     </div>
