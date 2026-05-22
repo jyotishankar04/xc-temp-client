@@ -1,7 +1,11 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
+import { Bot, CheckCircle, Loader2, RotateCcw, User, XCircle, Zap } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -10,87 +14,39 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { RotateCcw, Bot, CheckCircle, User, XCircle, Zap } from "lucide-react";
+import { useActions, useApproveAction, useRejectAction } from "@/lib/hooks";
+import type { Action } from "@/lib/api";
 
-type Action = {
-  id: string;
-  action: string;
-  type: "rollback" | "restart" | "scale" | "alert";
-  service: string;
-  status: "pending" | "approved" | "executed" | "failed";
-  triggeredBy: "user" | "ai";
-  time: string;
-  caseId?: string;
+const statusConfig: Record<
+  Action["status"],
+  { variant: "default" | "secondary" | "outline" | "destructive"; label: string }
+> = {
+  PENDING: { variant: "secondary", label: "Pending" },
+  APPROVED: { variant: "default", label: "Approved" },
+  REJECTED: { variant: "outline", label: "Rejected" },
+  EXECUTED: { variant: "outline", label: "Executed" },
+  FAILED: { variant: "destructive", label: "Failed" },
 };
 
-const actions: Action[] = [
-  {
-    id: "1",
-    action: "Rollback payments-api",
-    type: "rollback",
-    service: "payments-api",
-    status: "pending",
-    triggeredBy: "ai",
-    time: "10:52",
-    caseId: "#142",
-  },
-  {
-    id: "2",
-    action: "Restart api-gateway",
-    type: "restart",
-    service: "api-gateway",
-    status: "executed",
-    triggeredBy: "ai",
-    time: "10:40",
-    caseId: "#141",
-  },
-  {
-    id: "3",
-    action: "Scale auth-service",
-    type: "scale",
-    service: "auth-service",
-    status: "approved",
-    triggeredBy: "user",
-    time: "09:15",
-    caseId: "#138",
-  },
-  {
-    id: "4",
-    action: "Rollback orders-service",
-    type: "rollback",
-    service: "orders-service",
-    status: "executed",
-    triggeredBy: "user",
-    time: "08:30",
-    caseId: "#139",
-  },
-  {
-    id: "5",
-    action: "Restart cache-service",
-    type: "restart",
-    service: "cache-service",
-    status: "failed",
-    triggeredBy: "ai",
-    time: "07:45",
-    caseId: "#138",
-  },
-];
-
-const statusConfig: Record<Action["status"], { variant: "default" | "secondary" | "outline" | "destructive"; label: string }> = {
-  pending: { variant: "secondary", label: "Pending" },
-  approved: { variant: "default", label: "Approved" },
-  executed: { variant: "outline", label: "Executed" },
-  failed: { variant: "destructive", label: "Failed" },
+const typeIcons: Record<Action["actionType"], React.ReactNode> = {
+  ROLLBACK: <RotateCcw className="size-3.5" />,
+  WAIT: <Zap className="size-3.5" />,
+  SCALE: <Zap className="size-3.5" />,
+  MANUAL: <User className="size-3.5" />,
 };
 
-const typeIcons = {
-  rollback: <RotateCcw className="size-3.5" />,
-  restart: <Zap className="size-3.5" />,
-  scale: <Zap className="size-3.5" />,
-  alert: <Zap className="size-3.5" />,
-};
+function formatDate(date?: string | null) {
+  if (!date) return "Not executed";
+  return new Date(date).toLocaleString();
+}
 
 export default function ActionsPage() {
+  const { data, isLoading, error } = useActions({ limit: 50 });
+  const approveAction = useApproveAction();
+  const rejectAction = useRejectAction();
+
+  const actions = data?.actions ?? [];
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -102,63 +58,127 @@ export default function ActionsPage() {
 
       <Card>
         <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Action</TableHead>
-                <TableHead>Service</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Triggered By</TableHead>
-                <TableHead>Time</TableHead>
-                <TableHead>Case</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {actions.map((action) => {
-                const status = statusConfig[action.status];
-                return (
-                  <TableRow key={action.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        {typeIcons[action.type]}
-                        <span className="text-sm font-medium">{action.action}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="text-xs font-normal">
-                        {action.service}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={status.variant} className="text-xs capitalize">
-                        {action.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                        {action.triggeredBy === "ai" ? (
-                          <Bot className="size-3.5" />
+          {isLoading ? (
+            <div className="flex min-h-64 items-center justify-center">
+              <Loader2 className="size-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : error ? (
+            <div className="p-6 text-sm text-destructive">
+              Failed to load recovery actions.
+            </div>
+          ) : actions.length === 0 ? (
+            <div className="p-8 text-center text-sm text-muted-foreground">
+              No recovery actions found.
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Action</TableHead>
+                  <TableHead>Service</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Requested By</TableHead>
+                  <TableHead>Created</TableHead>
+                  <TableHead>Case</TableHead>
+                  <TableHead className="text-right">Approval</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {actions.map((action) => {
+                  const status = statusConfig[action.status];
+                  const isPending = action.status === "PENDING";
+                  const isMutating =
+                    approveAction.isPending || rejectAction.isPending;
+
+                  return (
+                    <TableRow key={action.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          {typeIcons[action.actionType]}
+                          <div>
+                            <p className="text-sm font-medium">
+                              {action.recommendation?.rationale || action.actionType}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Risk: {action.recommendation?.riskLevel ?? "Unknown"}
+                            </p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {action.case?.service ? (
+                          <Button variant="link" className="h-auto p-0 text-sm" asChild>
+                            <Link href={`/app/dashboard/services/${action.case.service.id}/overview`}>
+                              {action.case.service.name}
+                            </Link>
+                          </Button>
                         ) : (
-                          <User className="size-3.5" />
+                          <span className="text-sm text-muted-foreground">Unknown</span>
                         )}
-                        {action.triggeredBy === "ai" ? "AI" : "User"}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground tabular-nums">
-                      {action.time}
-                    </TableCell>
-                    <TableCell>
-                      {action.caseId && (
-                        <span className="font-mono text-xs text-primary">
-                          {action.caseId}
-                        </span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={status.variant} className="text-xs">
+                          {status.label}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                          {action.approver ? (
+                            <>
+                              <User className="size-3.5" />
+                              {action.approver.name}
+                            </>
+                          ) : (
+                            <>
+                              <Bot className="size-3.5" />
+                              AI recommendation
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {formatDate(action.createdAt)}
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="link" className="h-auto p-0 font-mono text-xs" asChild>
+                          <Link href={`/app/dashboard/failures/${action.caseId}`}>
+                            {action.caseId.slice(0, 8)}...
+                          </Link>
+                        </Button>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {isPending ? (
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => rejectAction.mutate(action.id)}
+                              disabled={isMutating}
+                            >
+                              <XCircle className="mr-1 size-3.5" />
+                              Reject
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() => approveAction.mutate(action.id)}
+                              disabled={isMutating}
+                            >
+                              <CheckCircle className="mr-1 size-3.5" />
+                              Approve
+                            </Button>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">
+                            {formatDate(action.executedAt)}
+                          </span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>
