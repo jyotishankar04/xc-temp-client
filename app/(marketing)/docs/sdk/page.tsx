@@ -29,16 +29,16 @@ const languages = [
   {
     icon: Code2,
     title: "Node.js",
-    description: "Express, Fastify, or standalone",
+    description: "Express or standalone",
     href: "/docs/sdk/node/express",
     badge: "Stable"
   },
   {
     icon: Terminal,
-    title: "Go",
-    description: "Any Go application",
+    title: "Java",
+    description: "Spring Boot auto-configuration",
     href: "/docs/sdk/go/basic",
-    badge: "Beta"
+    badge: "Stable"
   },
 ];
 
