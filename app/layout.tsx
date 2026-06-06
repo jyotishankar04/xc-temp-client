@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { RootProvider } from "fumadocs-ui/provider/next";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider"
@@ -34,18 +35,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn("font-sans", inter.variable)} suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <QueryProvider>
-          <AuthProvider>
-            <ThemeProvider defaultTheme="dark" attribute="class">
-              <TooltipProvider delayDuration={0}>
-                {children}
-              </TooltipProvider>
-            </ThemeProvider>
-          </AuthProvider>
-        </QueryProvider>
+      <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background text-foreground antialiased`}>
+        <RootProvider theme={{ enabled: false }}>
+          <QueryProvider>
+            <AuthProvider>
+              <ThemeProvider defaultTheme="dark" attribute="class">
+                <TooltipProvider delayDuration={0}>
+                  {children}
+                </TooltipProvider>
+              </ThemeProvider>
+            </AuthProvider>
+          </QueryProvider>
+        </RootProvider>
       </body>
     </html>
   );
