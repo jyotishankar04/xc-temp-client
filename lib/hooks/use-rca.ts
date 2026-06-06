@@ -14,6 +14,12 @@ export function useRcaReports() {
       }
       return res.data ?? [];
     },
+    // Poll every 4s while any report is still processing
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      const hasInProgress = Array.isArray(data) && data.some((r) => r.status === "IN_PROGRESS");
+      return hasInProgress ? 4000 : false;
+    },
   });
 }
 
@@ -28,6 +34,11 @@ export function useRcaById(reportId: string) {
       return res.data;
     },
     enabled: !!reportId,
+    // Poll every 4s while this report is still processing
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      return data?.status === "IN_PROGRESS" ? 4000 : false;
+    },
   });
 }
 

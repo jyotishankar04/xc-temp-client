@@ -7,27 +7,12 @@ import {
   useState,
   ReactNode,
 } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, usePathname } from "next/navigation";
 import { authApi, type User } from "@/lib/api";
 import { ROUTES } from "@/lib/constants/routes";
 
-const PUBLIC_ROUTES = [
-  ROUTES.HOME,
-  ROUTES.ABOUT,
-  ROUTES.PRODUCT,
-  ROUTES.HOW_IT_WORKS,
-  ROUTES.BLOG,
-  ROUTES.SOLUTIONS,
-  ROUTES.CONTACT,
-  ROUTES.WAITLIST,
-];
-
-const AUTH_ROUTES = [ROUTES.AUTH_LOGIN, ROUTES.AUTH_SIGNUP, ROUTES.AUTH_FORGOT_PASSWORD, ROUTES.AUTH_VERIFY_EMAIL];
-
-const PROTECTED_ROUTES = Object.values(ROUTES).filter(
-  (route) => route.startsWith("/dashboard") || route.startsWith("/onboard")
-);
+const PROTECTED_ROUTE_PREFIXES = [ROUTES.DASHBOARD, ROUTES.ORGS, ROUTES.ONBOARD];
 
 interface AuthContextType {
   user: User | null;
@@ -50,6 +35,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [requiresOnboarding, setRequiresOnboarding] = useState(false);
@@ -80,10 +66,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (isLoading) return;
 
-    const isPublicRoute = PUBLIC_ROUTES.some((route) => pathname === route || pathname?.startsWith(route));
-    const isAuthRoute = AUTH_ROUTES.some((route) => pathname === route || pathname?.startsWith(route));
     const isOnboardingRoute = pathname === ROUTES.ONBOARD;
-    const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname === route || pathname?.startsWith(route));
+    const isProtectedRoute = PROTECTED_ROUTE_PREFIXES.some((route) => pathname === route || pathname?.startsWith(route));
 
     const isAuth = !!user;
 
@@ -110,6 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logoutMutation = useMutation({
     mutationFn: () => authApi.logout(),
     onSuccess: () => {
+      queryClient.clear();
       setUser(null);
       setRequiresOnboarding(false);
       router.push("/auth/login");
@@ -127,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     onSuccess: (data) => {
       setUser(data.user);
       setRequiresOnboarding(false);
-      router.push("/dashboard");
+      router.push("/app/dashboard");
     },
   });
 

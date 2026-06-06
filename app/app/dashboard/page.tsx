@@ -4,12 +4,50 @@ import { StatsCards } from "@/components/dashboard/stats-cards";
 import { ActivityTimeline } from "@/components/dashboard/activity-timeline";
 import { RecentCases } from "@/components/dashboard/recent-cases";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, XCircle, AlertTriangle, Loader2, Boxes } from "lucide-react";
+import { AlertTriangle, CheckCircle, Loader2, XCircle } from "lucide-react";
 import { useServices } from "@/lib/hooks";
 import Link from "next/link";
 
 export default function DashboardPage() {
   const { data: services = [], isLoading } = useServices();
+
+  const getServiceHealth = (status?: string) => {
+    const normalized = status?.toUpperCase();
+
+    if (normalized === "DOWN" || normalized === "UNHEALTHY") {
+      return {
+        icon: XCircle,
+        label: "Down",
+        value: "0%",
+        className: "text-destructive",
+      };
+    }
+
+    if (normalized === "DEGRADED" || normalized === "WARNING") {
+      return {
+        icon: AlertTriangle,
+        label: "Degraded",
+        value: "Degraded",
+        className: "text-severity-medium",
+      };
+    }
+
+    if (normalized === "HEALTHY" || normalized === "UP") {
+      return {
+        icon: CheckCircle,
+        label: "Healthy",
+        value: "Healthy",
+        className: "text-success",
+      };
+    }
+
+    return {
+      icon: AlertTriangle,
+      label: "Unknown",
+      value: "Unknown",
+      className: "text-muted-foreground",
+    };
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -42,22 +80,27 @@ export default function DashboardPage() {
                   No services configured
                 </p>
               ) : (
-                services.slice(0, 5).map((service) => (
-                  <Link
-                    key={service.id}
-                    href={`/dashboard/services/${service.id}/overview`}
-                    className="flex items-center justify-between rounded-lg border p-3 hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="size-3.5 text-green-600" />
-                      <div>
-                        <p className="text-sm font-medium">{service.name}</p>
-                        <p className="text-xs text-muted-foreground">Healthy</p>
+                services.slice(0, 5).map((service) => {
+                  const health = getServiceHealth(service.status);
+                  const HealthIcon = health.icon;
+
+                  return (
+                    <Link
+                      key={service.id}
+                      href={`/app/dashboard/services/${service.id}/overview`}
+                      className="flex items-center justify-between rounded-lg border p-3 hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <HealthIcon className={`size-3.5 ${health.className}`} />
+                        <div>
+                          <p className="text-sm font-medium">{service.name}</p>
+                          <p className="text-xs text-muted-foreground">{health.label}</p>
+                        </div>
                       </div>
-                    </div>
-                    <span className="text-xs text-muted-foreground">100%</span>
-                  </Link>
-                ))
+                      <span className="text-xs text-muted-foreground">{health.value}</span>
+                    </Link>
+                  );
+                })
               )}
             </CardContent>
           </Card>

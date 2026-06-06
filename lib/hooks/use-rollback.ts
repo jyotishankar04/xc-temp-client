@@ -40,7 +40,7 @@ export const useUpdateRollbackConfig = () => {
       data,
     }: {
       serviceId: string;
-      data: { autoRollbackEnabled?: boolean; autoRollbackThreshold?: number };
+      data: { autoRollbackEnabled?: boolean; autoRollbackThreshold?: number; rollbackWorkflow?: string | null };
     }) => {
       const res = await rollbackApi.updateConfig(serviceId, data);
       if (!res.success) {

@@ -53,7 +53,7 @@ export default function QuickStartPage() {
             First, create a service in your dashboard to get your API key and service ID.
           </p>
           <Button asChild className="bg-sky-500 hover:bg-sky-600">
-            <Link href="/dashboard/services">
+            <Link href="/app/dashboard/services">
               Create Service <ArrowRight className="ml-2 size-4" />
             </Link>
           </Button>
@@ -68,15 +68,15 @@ export default function QuickStartPage() {
           <div className="grid gap-4 md:grid-cols-3">
             <div className="p-4 border rounded-lg">
               <h3 className="font-medium mb-2">Python</h3>
-              <CodeBlock code="pip install xecurecode" />
+              <CodeBlock code="pip install x-reliability-sdk" />
             </div>
             <div className="p-4 border rounded-lg">
               <h3 className="font-medium mb-2">Node.js</h3>
-              <CodeBlock code="npm install @xecurecode/node" />
+              <CodeBlock code="npm install @xecurecode/reliability-sdk" />
             </div>
             <div className="p-4 border rounded-lg">
-              <h3 className="font-medium mb-2">Go</h3>
-              <CodeBlock code="go get github.com/xecurecode/go-sdk" />
+              <h3 className="font-medium mb-2">Java (Maven)</h3>
+              <CodeBlock code="com.xel:reliability-sdk:0.1.0" />
             </div>
           </div>
         </section>
@@ -91,28 +91,32 @@ export default function QuickStartPage() {
           <div className="mb-6">
             <h3 className="font-medium mb-2">Flask (Python)</h3>
             <CodeBlock code={`from flask import Flask
-from xecurecode.integrations.flask import FlaskIntegration
+from reliability import ReliabilityClient, ReliabilityConfig
+from reliability.flask_integration import init_flask
 
 app = Flask(__name__)
-FlaskIntegration(app, api_key="YOUR_KEY", service_id="YOUR_ID")`} />
+client = ReliabilityClient(ReliabilityConfig(api_key="YOUR_KEY", service_id="YOUR_ID"))
+init_flask(app, client)`} />
           </div>
-          
+
           <div className="mb-6">
             <h3 className="font-medium mb-2">Express (Node.js)</h3>
             <CodeBlock code={`const express = require('express');
-const { xecurecode } = require('@xecurecode/node');
+const { ReliabilityClient } = require('@xecurecode/reliability-sdk');
 
 const app = express();
-xecurecode({ apiKey: 'YOUR_KEY', serviceId: 'YOUR_ID' });`} />
+const reliability = new ReliabilityClient({ apiKey: 'YOUR_KEY', service_id: 'YOUR_ID' });
+
+// ... your routes ...
+app.use(reliability.middleware()); // must be last`} />
           </div>
 
           <div className="mb-6">
-            <h3 className="font-medium mb-2">Gin (Go)</h3>
-            <CodeBlock code={`r := gin.Default()
-r.Use(xecurecode.GinMiddleware(&xecurecode.Config{
-    APIKey: "YOUR_KEY",
-    ServiceID: "YOUR_ID",
-})`} />
+            <h3 className="font-medium mb-2">Spring Boot (Java)</h3>
+            <CodeBlock code={`# application.properties
+reliability.api-key=YOUR_KEY
+reliability.service-id=YOUR_ID
+reliability.mode=production`} />
           </div>
         </section>
 

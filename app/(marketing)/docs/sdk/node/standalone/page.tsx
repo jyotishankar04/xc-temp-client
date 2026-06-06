@@ -48,20 +48,22 @@ export default function NodeStandalonePage() {
       <div className="space-y-8">
         <section>
           <h2 className="text-xl font-semibold mb-4">1. Install the SDK</h2>
-          <CodeBlock code="npm install @xecurecode/node" />
+          <CodeBlock code="npm install @xecurecode/reliability-sdk" />
         </section>
 
         <section>
           <h2 className="text-xl font-semibold mb-4">2. Basic Usage</h2>
-          <CodeBlock code={`const { XecureCodeClient } = require('@xecurecode/node');
+          <CodeBlock code={`const { ReliabilityClient } = require('@xecurecode/reliability-sdk');
 
-const client = new XecureCodeClient({
+const client = new ReliabilityClient({
   apiKey: 'YOUR_API_KEY',
-  serviceId: 'your-service-id'
+  service_id: 'your-service-id',
+  mode: 'production'
 });
 
+// Uncaught exceptions and unhandled rejections are captured automatically.
+// You can also capture manually:
 try {
-  // Your code here
   await riskyOperation();
 } catch (error) {
   client.capture(error);
@@ -69,20 +71,13 @@ try {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold mb-4">3. Manual Capture</h2>
-          <CodeBlock code={`// Capture custom events
-await client.captureEvent({
-  type: 'custom_event',
-  message: 'Custom event',
-  metadata: { key: 'value' }
-});
-
-// Capture with severity
-await client.captureEvent({
-  type: 'slow_request',
-  message: 'Request took too long',
-  severity: 'warning',
-  metadata: { durationMs: 5000 }
+          <h2 className="text-xl font-semibold mb-4">3. Graceful Shutdown</h2>
+          <p className="text-muted-foreground mb-4">
+            Wait for all pending sends to complete before exiting:
+          </p>
+          <CodeBlock code={`process.on('SIGTERM', async () => {
+  await client.flush();
+  process.exit(0);
 });`} />
         </section>
 
@@ -91,7 +86,7 @@ await client.captureEvent({
             <Link href="/docs/sdk/node/fastify">← Back to Fastify</Link>
           </Button>
           <Button asChild className="bg-sky-500 hover:bg-sky-600">
-            <Link href="/docs/sdk/go/basic">Next: Go →</Link>
+            <Link href="/docs/sdk/go/basic">Next: Java →</Link>
           </Button>
         </div>
       </div>

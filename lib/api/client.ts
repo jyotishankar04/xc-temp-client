@@ -41,6 +41,8 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
+let refreshPromise: Promise<void> | null = null;
+
 export class OnboardingRequiredError extends Error {
   constructor(public requirement: string) {
     super("Onboarding required");
@@ -59,14 +61,22 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        await axios.post(
-          `${API_URL}/api/v1/auth/refresh`,
-          {},
-          { withCredentials: true }
-        );
+        refreshPromise ??= axios
+          .post(`${API_URL}/api/v1/auth/refresh`, {}, { withCredentials: true })
+          .then(() => undefined)
+          .finally(() => {
+            refreshPromise = null;
+          });
+
+        await refreshPromise;
         return axiosInstance(originalRequest);
       } catch {
-        console.log("Error  while hitting request at refresh route",error.message)
+        if (
+          typeof window !== "undefined" &&
+          !window.location.pathname.startsWith("/auth")
+        ) {
+          window.location.href = "/auth/login";
+        }
       }
     }
 

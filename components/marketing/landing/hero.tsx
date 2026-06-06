@@ -31,7 +31,7 @@ export default function Hero() {
         </h1>
 
         <p className="mt-6 text-foreground/80 md:text-lg max-w-2xl mx-auto">
-          X Tech adds an intelligent decision layer between
+          XecureCode adds an intelligent decision layer between
           observability tools and recovery actions.
         </p>
 

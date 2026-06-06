@@ -6,16 +6,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useCaseById, useUpdateCase } from "@/lib/hooks";
-import { 
-  ArrowLeft, 
-  Loader2, 
-  Boxes, 
-  CheckCircle, 
-  AlertTriangle, 
-  Clock,
+import { useCaseById, useUpdateCase, useGenerateRca, useRcaReports } from "@/lib/hooks";
+import { useRouter } from "next/navigation";
+import {
+  ArrowLeft,
+  Loader2,
+  Boxes,
+  CheckCircle,
+  AlertTriangle,
   GitBranch,
-  Lightbulb,
   Zap
 } from "lucide-react";
 import { ROUTES } from "@/lib/constants/routes";
@@ -40,8 +39,27 @@ export default function FailureDetailPage() {
   const params = useParams();
   const caseId = params?.id as string;
 
+  const router = useRouter();
   const { data: failureCase, isLoading, error } = useCaseById(caseId);
+  const { data: rcaReports = [] } = useRcaReports();
   const updateCase = useUpdateCase();
+  const generateRca = useGenerateRca();
+
+  const existingRca =
+    failureCase?.rcaReport ??
+    failureCase?.rcaReports?.[0] ??
+    rcaReports.find((report) => report.caseId === caseId);
+
+  const caseEvents = failureCase?.events ?? [];
+
+  const handleGenerateRca = async () => {
+    try {
+      const report = await generateRca.mutateAsync(caseId);
+      router.push(report?.id ? `${ROUTES.DASHBOARD_RCA}/${report.id}` : ROUTES.DASHBOARD_RCA);
+    } catch (e) {
+      console.error("Failed to generate RCA:", e);
+    }
+  };
 
   const handleStatusChange = async (newStatus: "OPEN" | "RESOLVED") => {
     try {
@@ -178,15 +196,50 @@ export default function FailureDetailPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                No AI analysis available for this case yet. Generate an RCA report to analyze this case.
-              </p>
-              <Button variant="outline" className="mt-4" asChild>
-                <Link href={`/app/dashboard/rca?caseId=${failureCase.id}`}>
-                  <Zap className="size-4 mr-2" />
-                  Generate RCA
-                </Link>
-              </Button>
+              {existingRca ? (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-sm font-medium">{existingRca.title}</p>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {existingRca.summary || existingRca.rootCause || "RCA report is available for this case."}
+                      </p>
+                    </div>
+                    <Badge variant={existingRca.status === "FAILED" ? "destructive" : "secondary"}>
+                      {existingRca.status}
+                    </Badge>
+                  </div>
+                  {typeof existingRca.confidenceScore === "number" && (
+                    <p className="text-xs text-muted-foreground">
+                      Confidence: {existingRca.confidenceScore}%
+                    </p>
+                  )}
+                  <Button variant="outline" asChild>
+                    <Link href={`${ROUTES.DASHBOARD_RCA}/${existingRca.id}`}>
+                      View RCA Report
+                    </Link>
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <p className="text-sm text-muted-foreground">
+                    No AI analysis available for this case yet. Generate an RCA report to analyze this case.
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="mt-4"
+                    onClick={handleGenerateRca}
+                    disabled={generateRca.isPending}
+                  >
+                    {generateRca.isPending ? (
+                      <Loader2 className="size-4 mr-2 animate-spin" />
+                    ) : (
+                      <Zap className="size-4 mr-2" />
+                    )}
+                    {generateRca.isPending ? "Generating…" : "Generate RCA"}
+                  </Button>
+                </>
+              )}
             </CardContent>
           </Card>
 
@@ -198,9 +251,51 @@ export default function FailureDetailPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                No events recorded for this case yet.
-              </p>
+              {caseEvents.length > 0 ? (
+                <div className="space-y-3">
+                  {caseEvents.slice(0, 5).map((event) => (
+                    <Link
+                      key={event.id}
+                      href={`/app/dashboard/events/${event.id}`}
+                      className="block rounded-lg border p-3 transition-colors hover:bg-muted/50"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="truncate text-sm font-medium">
+                          {event.errorMessage || event.message || event.errorType || "Event"}
+                        </p>
+                        <span className="shrink-0 text-xs text-muted-foreground">
+                          {formatDate(event.timestamp || event.createdAt || failureCase.createdAt)}
+                        </span>
+                      </div>
+                      {event.requestId && (
+                        <p className="mt-1 font-mono text-xs text-muted-foreground">
+                          request {event.requestId}
+                        </p>
+                      )}
+                    </Link>
+                  ))}
+                  <Button variant="outline" asChild>
+                    <Link
+                      href={`/app/dashboard/events?service=${failureCase.service.id}&q=${encodeURIComponent(failureCase.fingerprint)}`}
+                    >
+                      View All Events
+                    </Link>
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    This case has {failureCase._count?.events || 0} associated events.
+                  </p>
+                  <Button variant="outline" asChild>
+                    <Link
+                      href={`/app/dashboard/events?service=${failureCase.service.id}&q=${encodeURIComponent(failureCase.fingerprint)}`}
+                    >
+                      View Case Events
+                    </Link>
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -231,11 +326,18 @@ export default function FailureDetailPage() {
                   Reopen Case
                 </Button>
               )}
-              <Button variant="outline" className="w-full justify-start" asChild>
-                <Link href={`/rca?caseId=${failureCase.id}`}>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={handleGenerateRca}
+                disabled={generateRca.isPending}
+              >
+                {generateRca.isPending ? (
+                  <Loader2 className="size-4 mr-2 animate-spin" />
+                ) : (
                   <Zap className="size-4 mr-2" />
-                  Generate RCA
-                </Link>
+                )}
+                Generate RCA
               </Button>
             </CardContent>
           </Card>

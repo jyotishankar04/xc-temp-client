@@ -48,7 +48,7 @@ export function DashboardSidebar() {
   const router = useRouter();
   const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed";
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { theme: currentTheme, setTheme } = useTheme();
 
   const getInitials = (name: string) => {
@@ -127,11 +127,11 @@ export function DashboardSidebar() {
                   {user?.email || ""}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="gap-2 p-2 cursor-pointer">
+                <DropdownMenuItem className="gap-2 p-2 cursor-pointer" onClick={() => router.push("/app/dashboard/settings")}>
                   <User className="size-4" />
                   Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem className="gap-2 p-2 cursor-pointer">
+                <DropdownMenuItem className="gap-2 p-2 cursor-pointer" onClick={() => router.push("/app/orgs")}>
                   <Building2 className="size-4" />
                   Organization
                 </DropdownMenuItem>
@@ -143,12 +143,12 @@ export function DashboardSidebar() {
                   {currentTheme === "dark" ? "Light Mode" : "Dark Mode"}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="gap-2 p-2 cursor-pointer">
+                <DropdownMenuItem className="gap-2 p-2 cursor-pointer" onClick={() => router.push("/app/dashboard/settings")}>
                   <Settings className="size-4" />
                   Preferences
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="gap-2 p-2 cursor-pointer text-destructive focus:text-destructive">
+                <DropdownMenuItem className="gap-2 p-2 cursor-pointer text-destructive focus:text-destructive" onClick={() => logout()}>
                   <LogOut className="size-4" />
                   Logout
                 </DropdownMenuItem>

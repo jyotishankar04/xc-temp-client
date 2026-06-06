@@ -37,7 +37,7 @@ import {
 } from "@/lib/hooks";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Select, SelectItem, SelectTrigger } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const roleIcons = {
   OWNER: ShieldCheck,
@@ -76,6 +76,8 @@ export default function OrgDetailPage() {
   const {
     register: registerInvite,
     setError: setInviteError,
+    setValue: setInviteValue,
+    watch: watchInvite,
     handleSubmit: handleSubmitInvite,
     reset: resetInvite,
     formState: { errors: inviteErrors },
@@ -85,6 +87,8 @@ export default function OrgDetailPage() {
       role: "MEMBER",
     },
   });
+
+  const inviteRole = watchInvite("role");
 
   const onSubmitInvite = async (data: InviteInput) => {
     const result = inviteSchema.safeParse(data);
@@ -281,7 +285,8 @@ export default function OrgDetailPage() {
                 </TableHeader>
                 <TableBody>
                   {org.services?.map((service) => {
-                    const statusConfig = serviceStatusConfig[service.status as keyof typeof serviceStatusConfig] || serviceStatusConfig.DEGRADED;
+                    const statusKey = (service.status ?? "DEGRADED") as keyof typeof serviceStatusConfig;
+                    const statusConfig = serviceStatusConfig[statusKey] || serviceStatusConfig.DEGRADED;
                     const StatusIcon = statusConfig.icon;
                     return (
                       <TableRow key={service.id}>
@@ -299,7 +304,7 @@ export default function OrgDetailPage() {
                         <TableCell>
                           <div className={`flex items-center gap-1.5 ${statusConfig.color}`}>
                             <StatusIcon className="size-4" />
-                            <span className="text-sm capitalize">{service.status.toLowerCase()}</span>
+                            <span className="text-sm capitalize">{(service.status ?? "Unknown").toLowerCase()}</span>
                           </div>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
@@ -401,7 +406,11 @@ export default function OrgDetailPage() {
                           </div>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
-                          {member.joinedAt ? formatDate(member.joinedAt) : "Pending"}
+                          {member.joinedAt
+                            ? formatDate(member.joinedAt)
+                            : member.status === "ACTIVE"
+                              ? "—"
+                              : "Pending"}
                         </TableCell>
                       </TableRow>
                     );
@@ -438,18 +447,17 @@ export default function OrgDetailPage() {
             <div className="space-y-2">
               <Label htmlFor="role">Role</Label>
               <Select
-                {...registerInvite("role")}
+                value={inviteRole}
+                onValueChange={(val) => setInviteValue("role", val as InviteInput["role"])}
               >
-                <SelectTrigger
-                  id="role"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-
-                >
-                  Select role
+                <SelectTrigger id="role">
+                  <SelectValue placeholder="Select role" />
                 </SelectTrigger>
-                <SelectItem value="MEMBER">Member</SelectItem>
-                <SelectItem value="ADMIN">Admin</SelectItem>
-                <SelectItem value="BILLING">Billing</SelectItem>
+                <SelectContent>
+                  <SelectItem value="MEMBER">Member</SelectItem>
+                  <SelectItem value="ADMIN">Admin</SelectItem>
+                  <SelectItem value="BILLING">Billing</SelectItem>
+                </SelectContent>
               </Select>
               {inviteErrors.role && (
                 <p className="text-sm text-destructive">{inviteErrors.role.message}</p>

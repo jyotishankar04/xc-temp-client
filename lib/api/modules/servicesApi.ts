@@ -1,63 +1,18 @@
 import { apiClient, type ApiResponse } from "../client";
-
-export interface Service {
-  id: string;
-  name: string;
-  env: string;
-  status?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface CreateServiceInput {
-  name: string;
-  env: string;
-}
-
-export interface UpdateServiceInput {
-  name?: string;
-}
-
-export interface ServiceInvitation {
-  id: string;
-  email: string;
-  role: string;
-  status?: string;
-  serviceId?: string;
-  expiresAt?: string;
-  createdAt?: string;
-}
-
-export interface CreateInvitationInput {
-  email: string;
-  role: string;
-}
-
-export interface ServiceMember {
-  userId: string;
-  email?: string;
-  name?: string;
-  role: string;
-  avatarUrl?: string;
-  status?: string;
-  joinedAt?: string;
-}
-
-export interface UpdateMemberInput {
-  role: string;
-}
-
-export interface ApiKey {
-  id: string;
-  name: string;
-  key?: string;
-  prefix?: string;
-  createdAt?: string;
-}
-
-export interface CreateApiKeyInput {
-  name: string;
-}
+import type {
+  CreateApiKeyInput,
+  CreateInvitationInput,
+  CreateServiceInput,
+  GitHubBranch,
+  GitHubRepo,
+  GitHubWorkflow,
+  Service,
+  ServiceInvitation,
+  ServiceMember,
+  UpdateMemberInput,
+  UpdateServiceInput,
+  ApiKey,
+} from "@/lib/types/service";
 
 export const servicesApi = {
   getAll: async (): Promise<ApiResponse<Service[]>> => {
@@ -92,11 +47,9 @@ export const servicesApi = {
   },
 
   delete: async (serviceId: string): Promise<ApiResponse<void>> => {
-    const response = await apiClient.request<ApiResponse<void>>({
-      url: `/api/v1/services/${serviceId}`,
-      method: "DELETE",
-      data: { name: "" },
-    });
+    const response = await apiClient.delete<ApiResponse<void>>(
+      `/api/v1/services/${serviceId}`
+    );
     return response.data;
   },
 
@@ -152,7 +105,7 @@ export const servicesApi = {
 
   getMembers: async (serviceId: string): Promise<ApiResponse<ServiceMember[]>> => {
     const response = await apiClient.get<ApiResponse<ServiceMember[]>>(
-      `/api/v1/services/members/${serviceId}`
+      `/api/v1/services/${serviceId}/members`
     );
     return response.data;
   },
@@ -213,16 +166,18 @@ export const servicesApi = {
     );
     return response.data;
   },
-};
 
-export interface GitHubRepo {
-  id: number;
-  fullName: string;
-  name: string;
-  private: boolean;
-  htmlUrl: string;
-  description: string | null;
-  defaultBranch: string;
-  language: string | null;
-  updatedAt: string;
-}
+  getGitHubBranches: async (repoId: number): Promise<ApiResponse<GitHubBranch[]>> => {
+    const response = await apiClient.get<ApiResponse<GitHubBranch[]>>(
+      `/api/v1/services/github/repos/${repoId}/branches`
+    );
+    return response.data;
+  },
+
+  getGitHubWorkflows: async (repoId: number): Promise<ApiResponse<GitHubWorkflow[]>> => {
+    const response = await apiClient.get<ApiResponse<GitHubWorkflow[]>>(
+      `/api/v1/services/github/repos/${repoId}/workflows`
+    );
+    return response.data;
+  },
+};

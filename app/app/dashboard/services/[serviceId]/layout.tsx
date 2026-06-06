@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Boxes, LayoutDashboard, Settings2, Key, Users, ChevronRight } from "lucide-react";
+import { Boxes, LayoutDashboard, Settings2, Key, Users, ChevronRight, RotateCcw } from "lucide-react";
 import { useServiceById } from "@/lib/hooks";
 import { Loader2 } from "lucide-react";
 
@@ -12,6 +12,7 @@ const tabs = [
   { id: "overview", label: "Overview", href: "/overview", icon: LayoutDashboard },
   { id: "settings", label: "Settings", href: "/settings", icon: Settings2 },
   { id: "api-keys", label: "API Keys", href: "/api-keys", icon: Key },
+  { id: "rollback", label: "Rollback", href: "/rollback", icon: RotateCcw },
   { id: "members", label: "Members", href: "/members", icon: Users },
 ];
 
@@ -54,7 +55,6 @@ export default function ServiceLayout({ children }: { children: React.ReactNode 
         <Tabs value={currentTab} className="w-full" orientation="horizontal">
           <TabsList variant="line" className="h-auto p-0 border-b bg-transparent gap-1">
             {tabs.map((tab) => {
-              const isActive = pathname.endsWith(tab.href);
               return (
                 <TabsTrigger
                   key={tab.id}

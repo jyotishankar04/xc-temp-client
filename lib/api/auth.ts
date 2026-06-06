@@ -45,7 +45,7 @@ export const authApi = {
   },
 
   logout: async (): Promise<void> => {
-    await apiClient.post(`${AUTH_ENDPOINT}/logout`);
+    await apiClient.post("/api/v1/auth/logout");
   },
 
   onboard: async (data: OnboardingData): Promise<OnboardingResponse> => {

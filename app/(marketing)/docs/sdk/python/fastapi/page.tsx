@@ -48,22 +48,25 @@ export default function PythonFastAPIPage() {
       <div className="space-y-8">
         <section>
           <h2 className="text-xl font-semibold mb-4">1. Install the SDK</h2>
-          <CodeBlock code="pip install xecurecode" />
+          <CodeBlock code="pip install x-reliability-sdk" />
         </section>
 
         <section>
           <h2 className="text-xl font-semibold mb-4">2. Initialize the Integration</h2>
           <CodeBlock code={`from fastapi import FastAPI
-from xecurecode.integrations.fastapi import FastAPIIntegration
+from reliability import ReliabilityClient, ReliabilityConfig
+from reliability.fastapi_integration import setup_fastapi
 
 app = FastAPI()
 
-# Add XecureCode middleware
-FastAPIIntegration(
-    app,
+client = ReliabilityClient(ReliabilityConfig(
     api_key="YOUR_API_KEY",
-    service_id="your-service-id"
-)`} />
+    service_id="your-service-id",
+    mode="production"
+))
+
+# Add middleware — automatically captures all unhandled exceptions
+setup_fastapi(app, client)`} />
           <p className="text-sm text-muted-foreground mt-2">
             Replace <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">YOUR_API_KEY</code> and <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">your-service-id</code> with your actual credentials.
           </p>
@@ -106,11 +109,6 @@ async def trigger_error():
                   <td className="py-2 font-mono">mode</td>
                   <td className="py-2 text-muted-foreground">string</td>
                   <td className="py-2">"development" or "production" (default: "development")</td>
-                </tr>
-                <tr>
-                  <td className="py-2 font-mono">environment</td>
-                  <td className="py-2 text-muted-foreground">string</td>
-                  <td className="py-2">Environment name (optional)</td>
                 </tr>
               </tbody>
             </table>
