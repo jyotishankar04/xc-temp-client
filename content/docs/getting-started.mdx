@@ -1,0 +1,38 @@
+---
+title: Getting started
+description: Send your first failure event to XecureCode.
+---
+
+This guide takes you from a new XecureCode account to your first SDK event. You
+need a GitHub-authenticated user, an organization, one service, and one service
+API key.
+
+## Setup steps
+
+1. Sign in with GitHub and finish onboarding.
+2. Create an organization for your team.
+3. Create a service for the application and environment you want to monitor.
+4. Generate a service API key from the service settings.
+5. Install the Node.js, Python, or Java SDK on the server.
+6. Trigger a test error and review it in the dashboard.
+
+## Configuration checklist
+
+| Value | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_API_URL` | Points the frontend to the backend base URL. |
+| Service ID | Identifies the service that owns incoming events. |
+| API key | Authenticates SDK ingest requests. |
+| Environment | Labels events as development, staging, or production. |
+
+## Keep API keys server-side
+
+Service API keys authenticate event ingestion. Store them in server environment
+variables and do not expose them in browser code.
+
+## Next docs
+
+- [SDK installation](/docs/sdk/installation)
+- [Node.js Express](/docs/sdk/node/express)
+- [Python FastAPI](/docs/sdk/python/fastapi)
+- [API reference](/docs/api)

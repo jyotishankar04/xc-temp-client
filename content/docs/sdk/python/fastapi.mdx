@@ -1,0 +1,22 @@
+---
+title: FastAPI integration
+description: Capture FastAPI errors with the Python SDK.
+---
+
+Add the FastAPI middleware with an initialized client.
+
+```py
+from fastapi import FastAPI
+from reliability import ReliabilityClient, ReliabilityConfig
+from reliability.fastapi_integration import FastAPIMiddleware
+
+config = ReliabilityConfig(
+    api_key="your-api-key",
+    service_id="checkout-api",
+    mode="production",
+)
+
+client = ReliabilityClient(config)
+app = FastAPI()
+app.add_middleware(FastAPIMiddleware, client=client)
+```

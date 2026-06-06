@@ -1,0 +1,10 @@
+{
+  "title": "Python",
+  "pages": [
+    "index",
+    "fastapi",
+    "flask",
+    "django",
+    "standalone"
+  ]
+}

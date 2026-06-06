@@ -1,4 +1,4 @@
-import { Footer, Navbar } from "@/components/shared/layout";
+import { PublicLayoutShell } from "./public-layout-shell";
 
 function PublicLayout({
   children,
@@ -6,11 +6,7 @@ function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
-      <Navbar />
-      {children}
-      <Footer />
-    </>
+    <PublicLayoutShell>{children}</PublicLayoutShell>
   );
 }
 

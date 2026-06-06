@@ -1,0 +1,44 @@
+---
+title: SDK quick start
+description: Connect a service to XecureCode in minutes.
+---
+
+Use this flow after you create an organization and service in the dashboard.
+
+## Steps
+
+1. Open the service in the dashboard.
+2. Create a service API key.
+3. Install the SDK for your runtime.
+4. Configure the SDK with the API key, service ID, environment, and backend URL.
+5. Trigger a test error.
+6. Review the event in the dashboard.
+
+## Minimal Node.js example
+
+```ts
+import { ReliabilityClient } from "@xecurecode/reliability-sdk";
+
+const reliability = new ReliabilityClient({
+  apiKey: process.env.XECURECODE_API_KEY!,
+  service_id: "checkout-api",
+  mode: "production",
+});
+
+reliability.capture(new Error("Test failure"));
+```
+
+## Minimal Python example
+
+```py
+from reliability import ReliabilityClient, ReliabilityConfig
+
+config = ReliabilityConfig(
+    api_key="your-api-key",
+    service_id="checkout-api",
+    mode="production",
+)
+
+client = ReliabilityClient(config)
+client.capture(Exception("Test failure"))
+```

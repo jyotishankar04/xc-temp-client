@@ -1,0 +1,48 @@
+---
+title: Java SDK
+description: Capture Java and Spring Boot failures with XecureCode.
+---
+
+The Java SDK captures runtime exceptions, builds structured payloads,
+deduplicates repeated errors, and sends events to the XecureCode ingest
+endpoint. It also includes Spring Boot auto-configuration helpers.
+
+## Maven dependency
+
+```xml
+<dependency>
+  <groupId>com.xel</groupId>
+  <artifactId>reliability-sdk</artifactId>
+  <version>0.1.0</version>
+</dependency>
+```
+
+## Manual capture
+
+```java
+ReliabilityConfig config = new ReliabilityConfig.Builder()
+    .apiKey("your-api-key")
+    .serviceId("checkout-api")
+    .mode("production")
+    .build();
+
+ReliabilityClient client = new ReliabilityClient(config);
+
+try {
+    riskyOperation();
+} catch (Exception error) {
+    client.capture(error);
+    throw error;
+}
+```
+
+## Spring Boot configuration
+
+Configure `reliability.api-key`, `reliability.service-id`, `reliability.mode`,
+`reliability.timeout`, and `reliability.endpoint`, then inject the client where
+you need manual capture.
+
+## Safety behavior
+
+The Java client sends events through a daemon executor. Your application must
+keep handling requests even when delivery fails.

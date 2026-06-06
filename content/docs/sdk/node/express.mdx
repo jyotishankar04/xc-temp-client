@@ -1,0 +1,36 @@
+---
+title: Express integration
+description: Capture Express route errors with the Node.js SDK.
+---
+
+Add the SDK error middleware after your routes so it can capture errors before
+your final Express error handler returns a response.
+
+## Example
+
+```ts
+import express from "express";
+import { ReliabilityClient } from "@xecurecode/reliability-sdk";
+
+const reliability = new ReliabilityClient({
+  apiKey: process.env.XECURECODE_API_KEY!,
+  service_id: "checkout-api",
+  mode: "production",
+});
+
+const app = express();
+
+app.get("/orders", async () => {
+  throw new Error("Database connection failed");
+});
+
+app.use(reliability.middleware());
+
+app.use((error, _req, res, _next) => {
+  res.status(500).json({ error: error.message });
+});
+```
+
+## Shutdown
+
+Call `flush()` before a short-lived process exits so pending sends can finish.

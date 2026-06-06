@@ -1,0 +1,13 @@
+{
+  "title": "XecureCode",
+  "pages": [
+    "index",
+    "getting-started",
+    "concepts",
+    "api",
+    "dashboard",
+    "troubleshooting",
+    "---SDKs---",
+    "sdk"
+  ]
+}

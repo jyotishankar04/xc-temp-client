@@ -1,0 +1,11 @@
+{
+  "title": "SDKs",
+  "pages": [
+    "index",
+    "installation",
+    "quick-start",
+    "node",
+    "python",
+    "java"
+  ]
+}

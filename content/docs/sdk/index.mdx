@@ -1,0 +1,24 @@
+---
+title: SDK overview
+description: Integrate XecureCode into backend services.
+---
+
+XecureCode SDKs capture structured runtime errors and send non-blocking
+telemetry to the ingest API.
+
+## Supported SDKs
+
+| SDK | Status | Guides |
+| --- | --- | --- |
+| Node.js | Implemented | [Node.js](/docs/sdk/node) |
+| Python | Implemented | [Python](/docs/sdk/python) |
+| Java | Implemented | [Java](/docs/sdk/java) |
+
+## Shared behavior
+
+- Capture structured runtime errors.
+- Generate deterministic fingerprints.
+- Classify common error types.
+- Detect severity.
+- Send telemetry without blocking the host application.
+- Keep recovery assistive and human-approved.

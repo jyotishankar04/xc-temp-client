@@ -1,0 +1,26 @@
+---
+title: Standalone Python
+description: Capture Python errors outside a web framework.
+---
+
+Use standalone capture in workers, scripts, queues, and background jobs.
+
+```py
+from reliability import ReliabilityClient, ReliabilityConfig
+
+config = ReliabilityConfig(
+    api_key="your-api-key",
+    service_id="billing-worker",
+    mode="production",
+)
+
+client = ReliabilityClient(config)
+
+try:
+    run_job()
+except Exception as error:
+    client.capture(error)
+    raise
+finally:
+    client.flush()
+```

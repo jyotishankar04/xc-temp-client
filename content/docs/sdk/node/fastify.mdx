@@ -1,0 +1,26 @@
+---
+title: Fastify integration
+description: Capture Fastify errors manually with the Node.js SDK.
+---
+
+Use manual capture from Fastify error hooks or handlers. A dedicated Fastify
+plugin can wrap this pattern later.
+
+## Example
+
+```ts
+import Fastify from "fastify";
+import { ReliabilityClient } from "@xecurecode/reliability-sdk";
+
+const app = Fastify();
+const reliability = new ReliabilityClient({
+  apiKey: process.env.XECURECODE_API_KEY!,
+  service_id: "checkout-api",
+  mode: "production",
+});
+
+app.setErrorHandler((error, request, reply) => {
+  reliability.capture(error, request.raw);
+  reply.status(500).send({ error: error.message });
+});
+```

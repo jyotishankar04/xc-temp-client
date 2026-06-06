@@ -1,0 +1,40 @@
+---
+title: XecureCode documentation
+description: Build reliable services with clear failure intelligence.
+---
+
+XecureCode helps you capture production failures, group repeated incidents,
+generate root cause analysis, recommend recovery actions, and keep humans in
+control of rollback decisions.
+
+## Platform flow
+
+1. Create an organization and finish onboarding.
+2. Create a service for each application and environment.
+3. Generate an API key for the service.
+4. Install an SDK and send failure events to XecureCode.
+5. Use cases, RCA reports, actions, and audit logs to review recovery.
+
+## Main docs
+
+| Area | What you learn |
+| --- | --- |
+| [Getting started](/docs/getting-started) | Set up an organization, service, API key, and SDK. |
+| [Concepts](/docs/concepts) | Understand organizations, services, events, cases, RCA, and actions. |
+| [API reference](/docs/api) | Review backend route groups and the ingest payload. |
+| [Dashboard](/docs/dashboard) | Operate incidents, services, rollback, and audit workflows. |
+| [Troubleshooting](/docs/troubleshooting) | Debug setup, ingestion, auth, and rollback issues. |
+
+## Safety model
+
+- SDK delivery is non-blocking.
+- AI analysis runs asynchronously.
+- Recovery actions need human approval.
+- Audit logs preserve critical decisions.
+
+## Authentication surfaces
+
+Dashboard users sign in with GitHub OAuth. The frontend sends cookie-based
+requests to authenticated `/api/v1` routes.
+
+SDKs use service API keys when they send failure events to `/api/v1/ingest`.

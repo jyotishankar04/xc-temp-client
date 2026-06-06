@@ -1,0 +1,36 @@
+---
+title: Dashboard workflows
+description: Operate incidents from the dashboard.
+---
+
+The dashboard is the human review surface for XecureCode. Use it to connect
+services, inspect failure evidence, generate RCA reports, approve actions,
+configure rollback, and audit decisions.
+
+## Workflows
+
+| Area | What you do |
+| --- | --- |
+| Overview | Use dashboard stats and recent activity to identify current reliability pressure. |
+| Services | Create services, map GitHub repositories, configure environments, and manage API keys. |
+| Events | Filter raw failure events by service, fingerprint, and time range. |
+| Cases | Review grouped failures, update status or severity, and merge related cases. |
+| RCA | Generate, review, and annotate root cause reports for failure cases. |
+| Actions | Approve or reject recommended recovery actions before execution. |
+| Rollback | Set rollback thresholds, workflow names, and review rollback history per service. |
+| Audit | Review user, system, and AI activity across the organization. |
+
+## Service setup checklist
+
+- Create one service per deployable application and environment.
+- Generate API keys from the service detail page.
+- Invite service members when access differs from organization access.
+- Connect GitHub before configuring workflow-backed rollback.
+- Keep rollback disabled until the workflow and review process are tested.
+
+## Team workflow
+
+1. Invite organization members from the team area.
+2. Add service-specific members when a service needs narrower access.
+3. Give rollback permissions only to trusted service admins or owners.
+4. Use audit logs after approvals, rejections, and rollback attempts.

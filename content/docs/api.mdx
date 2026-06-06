@@ -1,0 +1,82 @@
+---
+title: API reference
+description: Use the XecureCode backend API.
+---
+
+This reference documents the practical route surface exposed by the backend.
+Dashboard routes use cookie-based authentication after GitHub OAuth. The ingest
+route uses service API-key authentication.
+
+## Response shape
+
+Controllers return a consistent JSON envelope for success and error responses.
+
+```json
+{
+  "success": true,
+  "message": "Operation completed",
+  "data": {}
+}
+```
+
+## Ingest payload
+
+SDKs send structured failure events to `POST /api/v1/ingest`.
+
+```json
+{
+  "message": "Database connection timed out",
+  "name": "DatabaseTimeoutError",
+  "stack": "DatabaseTimeoutError: ...",
+  "timestamp": "2026-06-06T10:30:00.000Z",
+  "service": "checkout-api",
+  "environment": "production",
+  "severity": "high",
+  "errorType": "database",
+  "serviceContext": {
+    "pid": 1284,
+    "runtime": "node",
+    "nodeVersion": "22.0.0",
+    "platform": "linux",
+    "hostname": "checkout-1"
+  },
+  "requestContext": {
+    "method": "POST",
+    "url": "/orders"
+  }
+}
+```
+
+## Ingest fields
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `message` | `string` | Required error message, max 2,048 characters. |
+| `name` | `string` | Required error class or name, max 256 characters. |
+| `stack` | `string` | Required stack trace, max 65,536 characters. |
+| `timestamp` | `string` or `number` | Event timestamp from the SDK host. |
+| `service` | `string` | Service ID or service name sent by the SDK. |
+| `environment` | `string` | Environment label such as production or development. |
+| `severity` | `string` | `low`, `medium`, `high`, `critical`, or `warning`. Warning becomes `medium`. |
+| `errorType` | `string` | SDK classification such as database, network, or runtime. |
+| `serviceContext` | `object` | Runtime, version, platform, hostname, and process ID. |
+| `requestContext` | `object` | Optional HTTP method, URL, user agent, IP, headers, and body. |
+
+## Route groups
+
+| Group | Route | Purpose |
+| --- | --- | --- |
+| Health | `GET /health` | Checks database and Redis readiness. |
+| Ingest | `POST /api/v1/ingest` | Accepts SDK failure payloads with API-key auth. |
+| Auth | `/api/v1/auth/*` | Starts OAuth, handles callback, refreshes sessions, and logs out. |
+| Users | `/api/v1/users/*` | Reads and updates the current user and settings. |
+| Organizations | `/api/v1/orgs/*` | Manages organizations, members, switching, and GitHub integration. |
+| Services | `/api/v1/services/*` | Manages services, API keys, members, invitations, and GitHub repo metadata. |
+| Events | `/api/v1/events/*` | Lists events, reads an event, and fetches correlations. |
+| Cases | `/api/v1/cases/*` | Lists, reads, updates, and merges failure cases. |
+| RCA | `/api/v1/rca/*` | Lists, reads, generates, and updates RCA reports. |
+| Actions | `/api/v1/actions/*` | Lists, reads, approves, and rejects recovery actions. |
+| Rollback | `/api/v1/services/:serviceId/rollback/*` | Reads rollback config, updates config, lists history, and triggers rollback. |
+| Dashboard | `GET /api/v1/dashboard/stats` | Returns dashboard metrics for a time range. |
+| Audit | `GET /api/v1/audit` | Lists organization audit logs. |
+| Analysis | `GET /api/v1/analysis` | Lists detected failure patterns. |

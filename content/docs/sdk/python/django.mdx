@@ -1,0 +1,17 @@
+---
+title: Django integration
+description: Capture Django errors with the Python SDK.
+---
+
+Configure the SDK in `settings.py`, then add the middleware.
+
+```py
+RELIABILITY_API_KEY = "your-api-key"
+RELIABILITY_SERVICE_ID = "checkout-api"
+RELIABILITY_MODE = "production"
+
+MIDDLEWARE = [
+    "reliability.django_integration.ReliabilityMiddleware",
+    # other middleware
+]
+```

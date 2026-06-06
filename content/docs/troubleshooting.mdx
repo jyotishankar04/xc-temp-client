@@ -1,0 +1,40 @@
+---
+title: Troubleshooting
+description: Debug setup, ingestion, auth, and rollback.
+---
+
+Most issues come from mismatched API URLs, missing service keys, expired
+dashboard sessions, or incomplete GitHub rollback setup. Use these checks before
+changing application code.
+
+## Start with health
+
+Check `GET /health` first. It verifies database and Redis connectivity.
+
+## The SDK does not send events
+
+- Confirm the SDK is initialized on the server, not in browser code.
+- Check that the API URL points to the backend host.
+- Verify that the service ID matches the service you created.
+- Call `flush()` before process shutdown in short-lived scripts.
+
+## Ingest returns unauthorized
+
+- Create a new service API key from the service page.
+- Store the key without extra quotes, spaces, or shell escaping.
+- Use the key only for `POST /api/v1/ingest`.
+- Rotate the key if it was exposed in a client bundle or log file.
+
+## Dashboard requests redirect to login
+
+- Confirm GitHub OAuth callback settings point to the backend callback route.
+- Set `NEXT_PUBLIC_API_URL` to the backend base URL.
+- Confirm the backend CORS origin matches the frontend URL.
+- Use the refresh route when a session expires.
+
+## Rollback does not run
+
+- Connect the organization GitHub integration first.
+- Map the service to the correct repository and branch.
+- Set the rollback workflow name on the service rollback page.
+- Approve the recovery action before triggering rollback.

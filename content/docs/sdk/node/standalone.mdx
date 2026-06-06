@@ -1,0 +1,28 @@
+---
+title: Standalone Node.js
+description: Capture errors outside a web framework.
+---
+
+Use standalone capture in workers, scripts, queues, and background jobs.
+
+## Example
+
+```ts
+import { ReliabilityClient } from "@xecurecode/reliability-sdk";
+
+const reliability = new ReliabilityClient({
+  apiKey: process.env.XECURECODE_API_KEY!,
+  service_id: "billing-worker",
+  mode: "production",
+});
+
+try {
+  await runJob();
+} catch (error) {
+  reliability.capture(error);
+  throw error;
+} finally {
+  await reliability.flush();
+  reliability.shutdown();
+}
+```

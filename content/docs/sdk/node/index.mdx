@@ -1,0 +1,28 @@
+---
+title: Node.js SDK
+description: Install and configure XecureCode for Node.js services.
+---
+
+The Node.js SDK exposes `ReliabilityClient`, automatic process-level handlers,
+manual capture, Express middleware, `flush`, and `shutdown`.
+
+## Install
+
+```bash
+npm install @xecurecode/reliability-sdk
+```
+
+## Configuration
+
+| Option | Required | Description |
+| --- | --- | --- |
+| `apiKey` | Yes | Service API key from the dashboard. |
+| `service_id` | Yes | Service identifier. |
+| `mode` | Yes | Runtime environment, such as `development` or `production`. |
+| `timeout` | No | Request timeout. |
+
+## Guides
+
+- [Express integration](/docs/sdk/node/express)
+- [Fastify integration](/docs/sdk/node/fastify)
+- [Standalone Node.js](/docs/sdk/node/standalone)
