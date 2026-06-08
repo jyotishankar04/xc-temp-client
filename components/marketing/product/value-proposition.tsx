@@ -85,7 +85,7 @@ export const ValueProposition = () => {
           </div>
 
           {/* Connecting lines (desktop) */}
-          <svg className="hidden md:block absolute top-1/2 left-0 w-full h-32 -translate-y-1/2 pointer-events-none">
+          <svg className="hidden md:block absolute top-1/2 left-0 w-full h-32 -translate-y-1/2 pointer-events-none" aria-hidden="true">
             <line
               x1="25%"
               y1="50%"

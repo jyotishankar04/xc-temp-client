@@ -4,7 +4,7 @@ export const Logo = ({ className }: { className?: string }) => (
   <Image
     className={`${className ?? ""} rounded-full`}
     src="/xc.jpeg"
-    alt="Logo"
+    alt="XecureCode Logo"
     width={96}
     height={96}
     priority

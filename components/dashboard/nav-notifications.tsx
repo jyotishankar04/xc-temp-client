@@ -32,6 +32,7 @@ export function NotificationsPopover({
           variant="ghost"
           size="icon"
           className="rounded-full text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          aria-label="Notifications"
         >
           <BellIcon className="size-4" />
         </Button>
@@ -42,7 +43,7 @@ export function NotificationsPopover({
         {notifications.map(({ id, avatar, fallback, text, time }) => (
           <DropdownMenuItem key={id} className="flex items-start gap-3 py-3">
             <Avatar className="size-8">
-              {avatar && <AvatarImage src={avatar} alt="Avatar" />}
+              {avatar && <AvatarImage src={avatar} alt="" />}
               <AvatarFallback>{fallback}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col gap-0.5">

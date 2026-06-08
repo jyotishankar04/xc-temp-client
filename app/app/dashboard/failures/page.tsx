@@ -94,6 +94,7 @@ export default function FailuresPage() {
           <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
             placeholder="Search cases..."
+            aria-label="Search failures"
             className="pl-9 h-9"
             value={search}
             onChange={(e) => setSearch(e.target.value)}

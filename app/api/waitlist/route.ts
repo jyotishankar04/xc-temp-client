@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
@@ -13,33 +12,26 @@ export async function POST(request: Request) {
       );
     }
 
-    const existing = await prisma.waitlistSignup.findUnique({
-      where: { email },
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+    const response = await fetch(`${apiUrl}/api/v1/subscribers`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, name, source: "marketing" }),
     });
+    const result = await response.json().catch(() => null);
 
-    if (existing) {
+    if (!response.ok) {
       return NextResponse.json(
-        { message: "You're already on the waitlist" },
-        { status: 200 }
+        { error: result?.message || result?.error || "Failed to subscribe. Please try again." },
+        { status: response.status }
       );
     }
 
-    await prisma.waitlistSignup.create({
-      data: {
-        email,
-        firstName: name || "",
-        lastName: "",
-        contactNumber: "",
-        teamSize: "1-5",
-        useCase: "Other",
-      },
-    });
-
-    return NextResponse.json({ success: true }, { status: 200 });
+    return NextResponse.json(result ?? { success: true }, { status: 200 });
   } catch (error) {
-    console.error("Waitlist signup error:", error);
+    console.error("Subscribe error:", error);
     return NextResponse.json(
-      { error: "Failed to join waitlist. Please try again." },
+      { error: "Failed to subscribe. Please try again." },
       { status: 500 }
     );
   }

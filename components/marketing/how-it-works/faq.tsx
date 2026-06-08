@@ -69,7 +69,7 @@ export const FAQ = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.3 }}
           className="text-center mb-12"
         >
           <Badge variant="outline" className="mb-4 px-3 py-1 text-xs font-mono">
@@ -88,7 +88,7 @@ export const FAQ = () => {
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.1, duration: 0.5 }}
+          transition={{ delay: 0.1, duration: 0.3 }}
           className="flex flex-wrap justify-center gap-2 mb-8"
         >
           {categories.map((category) => (
@@ -109,7 +109,7 @@ export const FAQ = () => {
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.2, duration: 0.5 }}
+          transition={{ delay: 0.2, duration: 0.3 }}
         >
           <Accordion type="single" collapsible className="w-full">
             {filteredFaqs.map((faq, index) => (

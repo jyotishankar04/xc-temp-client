@@ -240,6 +240,7 @@ export default function ServiceMembersPage() {
                               removeMember.isPending ||
                               member.role === "OWNER"
                             }
+                            aria-label="Remove member"
                           >
                             <Trash2 className="size-4" />
                           </Button>
@@ -358,6 +359,7 @@ export default function ServiceMembersPage() {
                             className="text-destructive hover:text-destructive/80"
                             onClick={() => openDeleteConfirm("invitation", invitation.id)}
                             disabled={cancelInvitation.isPending}
+                            aria-label="Cancel invitation"
                           >
                             <Trash2 className="size-4" />
                           </Button>

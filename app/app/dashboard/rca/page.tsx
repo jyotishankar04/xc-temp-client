@@ -98,6 +98,7 @@ export default function RcaPage() {
               <Label className="text-xs text-muted-foreground">Search</Label>
               <Input 
                 placeholder="Search reports..." 
+                aria-label="Search RCA"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -189,7 +190,7 @@ export default function RcaPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/app/dashboard/rca/${report.id}`}>
+                        <Link href={`/app/dashboard/rca/${report.id}`} aria-label="Open RCA details">
                           <ExternalLink className="size-4" />
                         </Link>
                       </Button>

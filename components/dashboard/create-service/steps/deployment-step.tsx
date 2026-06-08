@@ -55,7 +55,7 @@ export function DeploymentStep() {
         </div>
 
         <div className="grid gap-2">
-          <label className="text-sm font-medium">Production branch</label>
+          <label className="text-sm font-medium" htmlFor="production-branch">Production branch</label>
           {isLoading ? (
             <Skeleton className="h-10 w-full" />
           ) : (
@@ -63,7 +63,7 @@ export function DeploymentStep() {
               value={state.defaultBranch}
               onValueChange={(defaultBranch) => updateState({ defaultBranch })}
             >
-              <SelectTrigger>
+              <SelectTrigger id="production-branch">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

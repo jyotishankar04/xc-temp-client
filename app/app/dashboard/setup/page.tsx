@@ -1,137 +1,141 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
+import type { LucideIcon } from "lucide-react";
+import {
+  CheckIcon,
+  ChevronRightIcon,
+  FileTextIcon,
+  LayoutDashboardIcon,
+  KeyRoundIcon,
+  PlugZapIcon,
+  RadioTowerIcon,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Check, Copy, Settings2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-const steps = [
+type SetupGuideStep = {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  href: string;
+  status: "completed" | "pending";
+};
+
+const setupGuideSteps: SetupGuideStep[] = [
   {
-    number: "1",
+    title: "Create your first service",
+    description: "Register the application that will send reliability events.",
+    icon: PlugZapIcon,
+    href: "/app/dashboard/services/new",
+    status: "pending",
+  },
+  {
+    title: "Generate a service API key",
+    description: "Use the key to authenticate SDK ingest requests.",
+    icon: KeyRoundIcon,
+    href: "/docs/getting-started",
+    status: "pending",
+  },
+  {
     title: "Install the SDK",
-    description: "Add the XecureCode SDK to your project",
-    code: "npm install @xecurecode/sdk",
+    description: "Open the SDK installation guide for supported runtimes.",
+    icon: FileTextIcon,
+    href: "/docs/sdk/installation",
+    status: "pending",
   },
   {
-    number: "2",
-    title: "Add your API key",
-    description: "Configure your service with the API key from your dashboard",
-    code: `initReliability({
-  apiKey: "sk_live_xxxx",
-  service: "payments-api"
-});`,
+    title: "Choose your framework guide",
+    description: "Use FastAPI, Flask, Django, Express, Fastify, or standalone guides.",
+    icon: LayoutDashboardIcon,
+    href: "/docs/sdk",
+    status: "pending",
   },
   {
-    number: "3",
-    title: "Start sending events",
-    description: "Automatically capture errors and performance events",
-    code: `// Errors are captured automatically
-// You can also manually report events:`,
+    title: "Send a test failure event",
+    description: "Trigger a test exception and verify ingestion in the dashboard.",
+    icon: RadioTowerIcon,
+    href: "/docs/sdk/quick-start",
+    status: "pending",
   },
 ];
 
 export default function SetupPage() {
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Connect your service</h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          Integrate XecureCode SDK into your service in minutes
-        </p>
-      </div>
+    <div className="mx-auto max-w-(--breakpoint-md) px-0 py-2 sm:py-6">
+      <h1 className="text-2xl font-medium tracking-normal sm:text-3xl">
+        Connect your service
+      </h1>
+      <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+        Use the dashboard and SDK documentation to start sending reliability
+        events.
+      </p>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="flex flex-col gap-4">
-          {steps.map((step) => (
-            <Card key={step.number}>
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-3">
-                  <div className="flex size-7 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold">
-                    {step.number}
-                  </div>
-                  <div>
-                    <CardTitle className="text-base">{step.title}</CardTitle>
-                    <p className="text-sm text-muted-foreground mt-0.5">
-                      {step.description}
-                    </p>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="relative rounded-lg bg-muted p-4 font-mono text-xs overflow-x-auto">
-                  <pre className="text-muted-foreground whitespace-pre-wrap">
-                    {step.code}
-                  </pre>
+      <div className="mt-6 flex flex-col divide-y overflow-hidden rounded-xl border bg-card shadow-lg/[0.03]">
+        {setupGuideSteps.map((step) => (
+          <div
+            className={cn(
+              "relative isolate flex items-center gap-5 px-6 py-4 sm:px-8",
+              {
+                "bg-primary/8": step.status === "completed",
+                "transition-colors hover:bg-muted/50": step.status === "pending",
+              },
+            )}
+            key={step.title}
+          >
+            <div
+              className={cn(
+                "absolute inset-y-0 -z-1 translate-x-4 border-r border-dashed",
+                {
+                  "border-primary/20 dark:border-primary/25":
+                    step.status === "completed",
+                },
+              )}
+            />
+
+            <div
+              className={cn(
+                "flex size-8 shrink-0 items-center justify-center rounded-full bg-muted",
+                {
+                  "bg-primary": step.status === "completed",
+                  "border border-dashed": step.status === "pending",
+                },
+              )}
+            >
+              {step.status === "completed" ? (
+                <CheckIcon className="size-4 text-primary-foreground" />
+              ) : (
+                <step.icon className="size-4" />
+              )}
+            </div>
+
+            <div className="flex grow flex-col justify-between gap-3 sm:flex-row sm:items-center sm:gap-5">
+              <div className="min-w-0 flex-1">
+                <h2 className="font-medium">{step.title}</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {step.description}
+                </p>
+              </div>
+
+              <div className="leading-none">
+                {step.status === "completed" && <Badge>Completed</Badge>}
+                {step.status === "pending" && (
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-2 top-2 size-7"
-                    onClick={() => navigator.clipboard.writeText(step.code)}
+                    asChild
+                    className="h-6 sm:ml-0"
+                    size="sm"
+                    variant="secondary"
                   >
-                    <Copy className="size-3.5" />
+                    <Link href={step.href}>
+                      Start <ChevronRightIcon />
+                    </Link>
                   </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <div className="flex flex-col gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">SDK Features</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {[
-                "Automatic error capturing",
-                "Performance monitoring",
-                "AI-powered root cause analysis",
-                "Real-time alerting",
-                "Deployment correlation",
-                "Custom event tracking",
-              ].map((feature) => (
-                <div key={feature} className="flex items-center gap-2">
-                  <Check className="size-4 text-success shrink-0" />
-                  <span className="text-sm">{feature}</span>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Supported Languages</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {["Node.js", "Python", "Go", "Ruby", "Java", ".NET", "PHP"].map(
-                  (lang) => (
-                    <Badge key={lang} variant="outline" className="text-xs">
-                      {lang}
-                    </Badge>
-                  )
                 )}
               </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Need help?</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground">
-                Check our documentation for detailed integration guides.
-              </p>
-              <Button variant="outline" className="w-full" asChild>
-                <a href="/docs/sdk" target="_blank" rel="noopener noreferrer">
-                  <Settings2 className="size-4 mr-2" />
-                  View Documentation
-                </a>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

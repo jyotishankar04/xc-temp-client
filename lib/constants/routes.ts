@@ -6,7 +6,10 @@ export const ROUTES = {
   BLOG: "/blog",
   SOLUTIONS: "/solutions",
   CONTACT: "/contact",
-  WAITLIST: "/waitlist",
+  WAITLIST: "/subscribe",
+
+  ADMIN: "/admin",
+  ADMIN_LOGIN: "/admin/login",
 
   DASHBOARD: "/app/dashboard",
   DASHBOARD_OVERVIEW: "/app/dashboard",
@@ -19,6 +22,7 @@ export const ROUTES = {
   DASHBOARD_TEAM: "/app/dashboard/team",
   DASHBOARD_RCA: "/app/dashboard/rca",
   DASHBOARD_AUDIT: "/app/dashboard/audit",
+  DASHBOARD_PROFILE: "/app/dashboard/profile",
   DASHBOARD_SETTINGS: "/app/dashboard/settings",
 
   ORGS: "/app/orgs",

@@ -527,6 +527,7 @@ export const CodeBlockCopyButton = ({
       size="icon"
       variant="ghost"
       {...props}
+      aria-label="Copy code"
     >
       {children ?? <Icon className="text-muted-foreground" size={14} />}
     </Button>

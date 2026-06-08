@@ -84,7 +84,7 @@ export default function EventDetailPage() {
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link href="/app/dashboard/events">
+            <Link href="/app/dashboard/events" aria-label="Back to event">
               <ArrowLeft className="size-4" />
             </Link>
           </Button>
@@ -114,7 +114,7 @@ export default function EventDetailPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button variant="outline" size="icon" asChild className="hover:bg-muted">
-            <Link href="/app/dashboard/events">
+            <Link href="/app/dashboard/events" aria-label="Back to event">
               <ArrowLeft className="size-4" />
             </Link>
           </Button>
@@ -310,7 +310,7 @@ export default function EventDetailPage() {
                         <Link
                           key={evt.id}
                           href={`/app/dashboard/events/${evt.id}`}
-                          className="block p-4 bg-muted/30 rounded-xl border hover:bg-muted/50 transition-all hover:shadow-sm"
+                          className="block p-4 bg-muted/30 rounded-xl border hover:bg-muted/50 transition-colors transition-shadow hover:shadow-sm"
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">

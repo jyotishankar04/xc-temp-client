@@ -48,7 +48,7 @@ export default function IncubationTrust() {
               <div className="w-fit shrink-0 rounded-3xl bg-transparent p-1">
                 <div className="relative border bg-background">
                   <img
-                    alt={supporter.name}
+                    alt=""
                     className="absolute inset-0 size-9 blur-[36px]"
                     src={supporter.name != "IIT Patna" ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(supporter.url)}&sz=64` : "https://upload.wikimedia.org/wikipedia/en/5/52/Indian_Institute_of_Technology%2C_Patna.svg"}
                   />

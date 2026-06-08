@@ -109,7 +109,15 @@ export default function ServicesPage() {
                     <TableRow
                       key={service.id}
                       className="cursor-pointer"
+                      role="link"
+                      tabIndex={0}
                       onClick={() => router.push(`/app/dashboard/services/${service.id}/overview`)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          router.push(`/app/dashboard/services/${service.id}/overview`);
+                        }
+                      }}
                     >
                       <TableCell className="font-medium">{service.name}</TableCell>
                       <TableCell>
@@ -142,6 +150,7 @@ export default function ServicesPage() {
                             event.stopPropagation();
                             router.push(`/app/dashboard/services/${service.id}/settings`);
                           }}
+                          aria-label="Service settings"
                         >
                           <Settings2 className="size-4" />
                         </Button>

@@ -212,6 +212,7 @@ export default function ServiceApiKeysPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleCopy(apiKey.key!)}
+                            aria-label="Copy API key"
                           >
                             {copiedKey === apiKey.key ? (
                               <span className="text-xs text-success">Copied</span>
@@ -226,6 +227,7 @@ export default function ServiceApiKeysPage() {
                           className="text-destructive hover:text-destructive/80"
                           onClick={() => openDeleteConfirm(apiKey.id)}
                           disabled={deleteApiKey.isPending}
+                          aria-label="Delete API key"
                         >
                           <Trash2 className="size-4" />
                         </Button>

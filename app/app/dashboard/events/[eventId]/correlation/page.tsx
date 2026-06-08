@@ -64,7 +64,7 @@ export default function CorrelatedEventsPage() {
     <div className="flex flex-col h-[calc(100vh-8rem)] gap-6">
       <div className="flex items-center gap-4">
         <Button variant="outline" size="icon" asChild className="hover:bg-muted">
-          <Link href={`/app/dashboard/events/${eventId}`}>
+          <Link href={`/app/dashboard/events/${eventId}`} aria-label="Back to event">
             <ArrowLeft className="size-4" />
           </Link>
         </Button>
@@ -154,7 +154,7 @@ function EventCard({ event }: { event: Event }) {
   return (
     <Link
       href={`/app/dashboard/events/${event.id}`}
-      className="block p-4 bg-muted/30 rounded-xl border hover:bg-muted/50 transition-all hover:shadow-sm"
+      className="block p-4 bg-muted/30 rounded-xl border hover:bg-muted/50 transition-colors transition-shadow hover:shadow-sm"
     >
       <div className="flex items-start justify-between gap-4 mb-2">
         <div className="flex-1 min-w-0">

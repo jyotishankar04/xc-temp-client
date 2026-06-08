@@ -18,7 +18,7 @@
   --secondary: oklch(0.9486 0.0085 303.5068);
   --secondary-foreground: oklch(0.3410 0.1625 292.9477);
   --muted: oklch(0.9679 0.0027 264.5424);
-  --muted-foreground: oklch(0.5503 0.0235 264.3620);
+  --muted-foreground: oklch(0.45 0.0235 264.3620);
   --accent: oklch(0.9546 0.0227 303.2883);
   --accent-foreground: oklch(0.55 0.15 210);
   --destructive: oklch(0.6356 0.2082 25.3782);
@@ -265,5 +265,17 @@
   body {
     @apply bg-background text-foreground;
     letter-spacing: var(--tracking-normal);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    animation-delay: 0.01ms !important;
+    transition-delay: 0.01ms !important;
   }
 }

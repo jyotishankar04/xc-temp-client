@@ -41,7 +41,7 @@ export function RollbackStep() {
         ) : (
           <div className="space-y-5">
             <div className="grid gap-2">
-              <Label>Rollback workflow</Label>
+              <Label htmlFor="rollback-workflow">Rollback workflow</Label>
               {workflows.length > 0 ? (
                 <Select
                   value={state.rollbackWorkflow || "none"}
@@ -49,7 +49,7 @@ export function RollbackStep() {
                     updateState({ rollbackWorkflow: value === "none" ? "" : value })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="rollback-workflow">
                     <SelectValue placeholder="Select workflow" />
                   </SelectTrigger>
                   <SelectContent>

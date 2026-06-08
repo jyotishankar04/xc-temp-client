@@ -82,7 +82,7 @@ export default function FailureDetailPage() {
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link href={ROUTES.DASHBOARD_FAILURES}>
+            <Link href={ROUTES.DASHBOARD_FAILURES} aria-label="Back to failures">
               <ArrowLeft className="size-4" />
             </Link>
           </Button>
@@ -101,7 +101,7 @@ export default function FailureDetailPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href={ROUTES.DASHBOARD_FAILURES}>
+          <Link href={ROUTES.DASHBOARD_FAILURES} aria-label="Back to failures">
             <ArrowLeft className="size-4" />
           </Link>
         </Button>

@@ -165,6 +165,7 @@ function EventsPageContent() {
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                 <Input
                   placeholder="Search events..."
+                  aria-label="Search events"
                   className="pl-9"
                   value={localSearch}
                   onChange={(e) => setLocalSearch(e.target.value)}
@@ -227,7 +228,16 @@ function EventsPageContent() {
                     <div key={event.id} className="p-4 hover:bg-muted/50 transition-colors">
                       <div 
                         className="flex items-center justify-between cursor-pointer"
+                        role="button"
+                        tabIndex={0}
+                        aria-expanded={isExpanded}
                         onClick={() => toggleEvent(event.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            toggleEvent(event.id);
+                          }
+                        }}
                       >
                         <div className="flex items-center gap-3 min-w-0 flex-1">
                           <div className={`p-2 rounded-lg ${cfg.bg}`}>

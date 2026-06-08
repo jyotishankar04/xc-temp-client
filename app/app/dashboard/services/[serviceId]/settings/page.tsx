@@ -175,6 +175,7 @@ function ServiceSettingsForm({
                 value={deleteName}
                 onChange={(e) => setDeleteName(e.target.value)}
                 placeholder="Type service name to confirm"
+                aria-label="Type service name to confirm deletion"
               />
               <div className="flex gap-2">
                 <Button

@@ -15,7 +15,7 @@ const pageTitles = {
   solutions: {
     title: "Solutions",
     description: "Industry-specific reliability solutions coming soon.",
-    waitlist: "Get early access to our solutions",
+    waitlist: "Get updates about our solutions",
     contact: "Interested in custom solutions?"
   },
   blogs: {
@@ -49,7 +49,7 @@ export const ComingSoon = ({ page }: ComingSoonProps) => {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
+            transition={{ duration: 0.35 }}
             className="w-full text-center"
           >
             {/* Simple indicator */}
@@ -71,13 +71,13 @@ export const ComingSoon = ({ page }: ComingSoonProps) => {
 
             {/* Two-button layout */}
             <div className="flex flex-col gap-2">
-              <Link href="/waitlist">
+              <Link href="/subscribe">
                 <Button
                   className="w-full gap-2"
                   size="lg"
                 >
                   <Mail className="h-4 w-4" />
-                  Join waitlist
+                  Subscribe for updates
                   <span className="text-xs opacity-80 ml-1">→</span>
                 </Button>
               </Link>

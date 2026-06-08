@@ -199,7 +199,7 @@ export const StepByStep = () => {
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.2 }}
+              transition={{ delay: index * 0.06 }}
               className="relative flex flex-col lg:flex-row gap-8 mb-12 last:mb-0"
             >
               {/* Step number and icon */}
@@ -233,7 +233,7 @@ export const StepByStep = () => {
                       initial={{ opacity: 0, x: -10 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
-                      transition={{ delay: index * 0.2 + i * 0.1 }}
+                      transition={{ delay: index * 0.05 + i * 0.03 }}
                       className="flex items-center gap-3 text-sm"
                     >
                       <CheckCircle2 className={`w-4 h-4 ${step.iconColor} flex-shrink-0`} />

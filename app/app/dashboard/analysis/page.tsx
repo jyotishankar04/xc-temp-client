@@ -170,7 +170,7 @@ export default function AnalysisPage() {
                         </div>
                         <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
                           <div
-                            className={`h-full rounded-full transition-all ${sev.bar}`}
+                            className={`h-full rounded-full transition-[width] ${sev.bar}`}
                             style={{ width: `${pattern.confidence}%` }}
                           />
                         </div>

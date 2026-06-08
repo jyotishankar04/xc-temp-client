@@ -162,7 +162,7 @@ export default function ServiceRollbackPage() {
                     </div>
                     {item.workflowUrl && (
                       <Button variant="ghost" size="icon" asChild>
-                        <a href={item.workflowUrl} target="_blank" rel="noreferrer">
+                        <a href={item.workflowUrl} target="_blank" rel="noreferrer" aria-label="Open workflow URL">
                           <ExternalLink className="size-4" />
                         </a>
                       </Button>

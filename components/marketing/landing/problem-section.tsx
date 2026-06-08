@@ -50,7 +50,7 @@ const Problem = () => {
       <div className="mt-20 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {problems.map((problem, index) => (
           <div
-            className="group relative rounded-xl border border-border/40 bg-background/50 p-6 backdrop-blur-sm transition-all duration-300 hover:border-border/80 hover:bg-muted/20 hover:shadow-lg hover:-translate-y-1"
+            className="group relative rounded-xl border border-border/40 bg-background/50 p-6 backdrop-blur-sm transition-[border-color,box-shadow,transform] duration-250 hover:border-border/80 hover:bg-muted/20 hover:shadow-lg hover:-translate-y-1"
             key={index}
           >
             {/* Icon */}

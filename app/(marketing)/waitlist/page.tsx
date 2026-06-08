@@ -4,19 +4,20 @@ import { useState } from "react";
 import { ArrowUpRight, CheckCircle2, Mail, User, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/shared/branding/logo";
 import { motion } from "motion/react";
 
 const benefits = [
-  "Early access to XecureCode platform",
-  "Priority onboarding and setup support",
-  "Influence product roadmap with your feedback",
-  "No credit card required — free during beta",
+  "Product launch updates",
+  "Beta availability notices",
+  "Reliability workflow guides",
+  "No spam. Unsubscribe anytime",
 ];
 
 export default function WaitlistPage() {
   const [email, setEmail] = useState("");
-  const [name, setname] = useState("");
+  const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,15 +30,16 @@ export default function WaitlistPage() {
     setError(null);
 
     try {
-      const res = await fetch("/api/waitlist", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+      const res = await fetch(`${apiUrl}/api/v1/subscribers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, name: name || undefined }),
+        body: JSON.stringify({ email, name: name || undefined, source: "marketing" }),
       });
 
       if (!res.ok) {
         const body = await res.json().catch(() => null);
-        setError(body?.error || "Something went wrong. Please try again.");
+        setError(body?.message || body?.error || "Something went wrong. Please try again.");
         return;
       }
 
@@ -68,37 +70,41 @@ export default function WaitlistPage() {
           </motion.div>
 
           <span className="text-sm font-mono text-muted-foreground tracking-widest mb-4">
-            EARLY ACCESS
+            PRODUCT UPDATES
           </span>
 
           <h1 className="text-3xl font-semibold tracking-tight mb-3">
-            Join the XecureCode
+            Get XecureCode
             <br />
-            <span className="text-primary">early access</span> waitlist
+            <span className="text-primary">launch updates</span>
           </h1>
 
           <p className="text-muted-foreground text-sm max-w-sm mb-8">
-            Be among the first to experience AI-powered failure detection and
-            guided recovery for your production systems.
+            Subscribe for release notes, launch news, and practical reliability updates.
           </p>
 
           {!isSubmitted ? (
             <form onSubmit={handleSubmit} className="w-full space-y-4">
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Label htmlFor="waitlist-name" className="sr-only">Name</Label>
                 <Input
+                  id="waitlist-name"
                   type="text"
                   value={name}
-                  onChange={(e) => setname(e.target.value)}
+                  onChange={(e) => setName(e.target.value)}
                   placeholder="Your name (optional)"
                   className="pl-10 h-12"
                 />
               </div>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Label htmlFor="waitlist-email" className="sr-only">Email</Label>
                 <Input
+                  id="waitlist-email"
                   type="email"
                   required
+                  aria-required="true"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
@@ -112,7 +118,7 @@ export default function WaitlistPage() {
                 disabled={!email || isSubmitting}
               >
                 <Zap className="mr-2 h-4 w-4" />
-                {isSubmitting ? "Joining..." : "Join Early Access"}
+                {isSubmitting ? "Subscribing..." : "Subscribe for Updates"}
                 <ArrowUpRight className="ml-1 h-4 w-4" />
               </Button>
 
@@ -131,9 +137,9 @@ export default function WaitlistPage() {
               className="w-full p-6 bg-muted/30 border border-border rounded-xl text-center"
             >
               <CheckCircle2 className="h-10 w-10 text-green-500 mx-auto mb-3" />
-              <h3 className="font-semibold text-lg mb-1">You're on the list!</h3>
+              <h3 className="font-semibold text-lg mb-1">You are subscribed.</h3>
               <p className="text-sm text-muted-foreground">
-                We'll reach out when early access opens. Stay tuned.
+                We will email you when there are product updates.
               </p>
             </motion.div>
           )}

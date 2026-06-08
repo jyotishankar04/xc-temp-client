@@ -13,7 +13,7 @@ export const ProductHero = () => {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.35 }}
           className="text-center"
         >
           <div className="mb-6">
@@ -25,7 +25,7 @@ export const ProductHero = () => {
           <motion.h1
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.4 }}
+            transition={{ delay: 0.1, duration: 0.35 }}
             className="text-5xl md:text-7xl font-medium mb-6 tracking-tight"
           >
             AI-powered reliability
@@ -36,7 +36,7 @@ export const ProductHero = () => {
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.4 }}
+            transition={{ delay: 0.2, duration: 0.35 }}
             className="text-sm text-muted-foreground max-w-xl mx-auto mb-10"
           >
             Understand failures, explain root causes,
@@ -46,15 +46,15 @@ export const ProductHero = () => {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.4 }}
+            transition={{ delay: 0.3, duration: 0.35 }}
             className="flex flex-col sm:flex-row gap-3 justify-center items-center"
           >
-            <Link href={"/waitlist"}>
+            <Link href={"/subscribe"}>
               <Button
                 size="lg"
                 className="rounded-full px-6 py-5 text-sm"
               >
-                Join Waitlist
+                Get Product Updates
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </Link>

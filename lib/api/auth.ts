@@ -34,8 +34,15 @@ export interface AuthCheckResponse {
   requirement?: string;
 }
 
+export interface AdminLoginResponse {
+  masterAdmin: {
+    id: string;
+    email: string;
+    role: "OWNER" | "ADMIN" | "MEMBER";
+  };
+}
+
 const AUTH_ENDPOINT = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/api/v1/auth`;
-const ORGS_ENDPOINT = "/api/v1/orgs";
 const ONBOARDING_ENDPOINT = "/api/v1/onboarding";
 const USER_ENDPOINT = "/api/v1/users";
 
@@ -44,8 +51,23 @@ export const authApi = {
     window.location.href = `${AUTH_ENDPOINT}/github?redirect_url=${window.location.origin}`;
   },
 
+  loginAdmin: async (data: {
+    email: string;
+    password: string;
+  }): Promise<AdminLoginResponse> => {
+    const response = await apiClient.post<ApiResponse<AdminLoginResponse>>(
+      "/api/v1/auth/admin/login",
+      data,
+    );
+    return response.data.data as AdminLoginResponse;
+  },
+
   logout: async (): Promise<void> => {
     await apiClient.post("/api/v1/auth/logout");
+  },
+
+  logoutAdmin: async (): Promise<void> => {
+    await apiClient.post("/api/v1/auth/admin/logout");
   },
 
   onboard: async (data: OnboardingData): Promise<OnboardingResponse> => {

@@ -19,7 +19,7 @@ export const ProductCTA = () => {
         >
           <div className="mb-4">
             <span className="text-sm font-mono text-muted-foreground tracking-wider">
-              EARLY ACCESS
+              PRODUCT UPDATES
             </span>
           </div>
 
@@ -32,16 +32,15 @@ export const ProductCTA = () => {
           </h2>
 
           <p className="text-sm text-muted-foreground mb-8 max-w-md mx-auto">
-            Join early access and be among the first to experience AI-powered
-            failure detection and recovery.
+            Subscribe for product updates, beta notes, and reliability workflow guides.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
-              href="/waitlist"
+              href="/subscribe"
             >
               <Button>
-                Join Early Access
+                Subscribe for Updates
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </Link>
@@ -65,7 +64,7 @@ export const ProductCTA = () => {
             transition={{ delay: 0.2 }}
             className="mt-6 text-xs text-muted-foreground"
           >
-            500+ engineers already on the waitlist
+            Updates are occasional and easy to unsubscribe from.
           </motion.p>
         </motion.div>
       </div>

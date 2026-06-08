@@ -96,7 +96,7 @@ export const ArchitectureOverview = () => {
                       transition={{
                         duration: 2,
                         repeat: Infinity,
-                        delay: index * 0.2,
+                        delay: index * 0.08,
                       }}
                       className="absolute inset-0 bg-primary/20 rounded-2xl blur-md"
                     />

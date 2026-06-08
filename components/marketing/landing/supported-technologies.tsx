@@ -41,7 +41,7 @@ const SupportedTechnologies = () => {
         {technologies.map((tech) => (
           <div
             key={tech.name}
-            className="group relative flex flex-col max-w-40 min-w-40 items-center justify-center rounded-xl border border-border/50 bg-card p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.15)] hover:-translate-y-1"
+            className="group relative flex flex-col max-w-40 min-w-40 items-center justify-center rounded-xl border border-border/50 bg-card p-6 transition-[border-color,box-shadow,transform] duration-250 hover:border-primary/30 hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.15)] hover:-translate-y-1"
           >
             {/* Icon with glow */}
             <div className="relative">
@@ -50,7 +50,7 @@ const SupportedTechnologies = () => {
                 style={{ backgroundColor: tech.color }}
               />
               <tech.icon
-                className="relative h-10 w-10 transition-all duration-300 group-hover:scale-110"
+                className="relative h-10 w-10 transition-transform duration-200 group-hover:scale-110"
                 style={{ color: tech.color }}
               />
             </div>

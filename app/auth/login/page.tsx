@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { GitHubLogo } from "@/components/shared/branding";
 import { ROUTES } from "@/lib/constants/routes";
 import { useAuth } from "@/lib/hooks/use-auth";
-import { appConfig } from "@/lib/config/app";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -37,6 +36,13 @@ export default function LoginPage() {
         Don&apos;t have an account?{" "}
         <Link className="ml-1 text-muted-foreground underline" href={ROUTES.AUTH_SIGNUP}>
           Create account
+        </Link>
+      </p>
+
+      <p className="mt-3 text-center text-sm">
+        Platform admin?{" "}
+        <Link className="ml-1 text-muted-foreground underline" href={ROUTES.ADMIN_LOGIN}>
+          Use admin login
         </Link>
       </p>
     </>

@@ -103,7 +103,9 @@ export default function ContactPage() {
                     <User className="h-4 w-4 text-muted-foreground" />
                   </InputGroupAddon>
                   <InputGroupInput
+                    id="contact-name"
                     type="text"
+                    aria-label="Your name"
                     {...register("name", {
                       required: "Name is required",
                       minLength: {
@@ -126,7 +128,9 @@ export default function ContactPage() {
                     <Mail className="h-4 w-4 text-muted-foreground" />
                   </InputGroupAddon>
                   <InputGroupInput
+                    id="contact-email"
                     type="email"
+                    aria-label="Your email"
                     {...register("email", {
                       required: "Email is required",
                       pattern: {
@@ -144,17 +148,19 @@ export default function ContactPage() {
                 )}
 
                 {/* Message */}
-                <Textarea
-                  {...register("message", {
-                    required: "Message is required",
-                    minLength: {
-                      value: 10,
-                      message: "Minimum 10 characters",
-                    },
-                  })}
-                  placeholder="How can we help?"
-                  className="min-h-[120px] resize-none"
-                />
+                  <Textarea
+                    id="contact-message"
+                    aria-label="Your message"
+                    {...register("message", {
+                      required: "Message is required",
+                      minLength: {
+                        value: 10,
+                        message: "Minimum 10 characters",
+                      },
+                    })}
+                    placeholder="How can we help?"
+                    className="min-h-[120px] resize-none"
+                  />
                 {errors.message && (
                   <p className="text-sm text-red-500 -mt-2">
                     {errors.message.message}

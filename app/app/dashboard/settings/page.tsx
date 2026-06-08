@@ -89,10 +89,10 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>Team Size</Label>
+                <Label htmlFor="team-size">Team Size</Label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="w-48 justify-start">
+                    <Button id="team-size" variant="outline" className="w-48 justify-start">
                       {teamSize} members
                     </Button>
                   </DropdownMenuTrigger>

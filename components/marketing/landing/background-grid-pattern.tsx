@@ -79,15 +79,21 @@ export default function AnimatedGridPattern({
 
   // Resize observer to update container dimensions
   useEffect(() => {
+    let rafId: number | undefined;
+
     const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const nextDimensions = {
-          width: entry.contentRect.width,
-          height: entry.contentRect.height,
-        };
-        setDimensions(nextDimensions);
-        setSquares(createSquares(numSquares, nextDimensions, width, height));
-      }
+      if (rafId !== undefined) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = undefined;
+        for (const entry of entries) {
+          const nextDimensions = {
+            width: entry.contentRect.width,
+            height: entry.contentRect.height,
+          };
+          setDimensions(nextDimensions);
+          setSquares(createSquares(numSquares, nextDimensions, width, height));
+        }
+      });
     });
 
     const container = containerRef.current;
