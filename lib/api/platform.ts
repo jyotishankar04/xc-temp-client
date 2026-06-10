@@ -1,4 +1,4 @@
-import { appConfig } from "@/lib/config/app";
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export interface PublicPlatformSettings {
   maintenanceMode: boolean;
@@ -52,7 +52,7 @@ const defaultPlatformState: PublicPlatformState = {
 
 export async function getPublicPlatformState(): Promise<PublicPlatformState> {
   try {
-    const response = await fetch(`${appConfig.apiUrl}/api/v1/platform/public`, {
+    const response = await fetch(`${apiUrl}/api/v1/platform/public`, {
       cache: "no-store",
     });
 
