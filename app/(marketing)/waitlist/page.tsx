@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/shared/branding/logo";
 import { motion } from "motion/react";
+import { appConfig } from "@/lib/config/app";
 
 const benefits = [
   "Product launch updates",
@@ -30,8 +31,7 @@ export default function WaitlistPage() {
     setError(null);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-      const res = await fetch(`${apiUrl}/api/v1/subscribers`, {
+      const res = await fetch(`${appConfig.apiUrl}/api/v1/subscribers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, name: name || undefined, source: "marketing" }),

@@ -1,4 +1,5 @@
 import { apiClient, handleApiError, type UserResponse, type ApiResponse } from "./client";
+import { appConfig } from "@/lib/config/app";
 
 export interface User {
   id: string;
@@ -42,7 +43,7 @@ export interface AdminLoginResponse {
   };
 }
 
-const AUTH_ENDPOINT = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/api/v1/auth`;
+const AUTH_ENDPOINT = `${appConfig.apiUrl}/api/v1/auth`;
 const ONBOARDING_ENDPOINT = "/api/v1/onboarding";
 const USER_ENDPOINT = "/api/v1/users";
 

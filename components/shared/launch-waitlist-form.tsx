@@ -5,6 +5,7 @@ import { Mail } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { appConfig } from "@/lib/config/app";
 import { cn } from "@/lib/utils";
 
 export function LaunchWaitlistForm({
@@ -28,8 +29,7 @@ export function LaunchWaitlistForm({
     setMessage("");
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-      const response = await fetch(`${apiUrl}/api/v1/subscribers`, {
+      const response = await fetch(`${appConfig.apiUrl}/api/v1/subscribers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, source: "launch" }),

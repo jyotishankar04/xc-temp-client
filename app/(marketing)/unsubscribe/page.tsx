@@ -5,6 +5,7 @@ import Link from "next/link";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { appConfig } from "@/lib/config/app";
 
 export default function UnsubscribePage() {
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
@@ -18,8 +19,7 @@ export default function UnsubscribePage() {
       return;
     }
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-    fetch(`${apiUrl}/api/v1/subscribers/unsubscribe?token=${encodeURIComponent(token)}`)
+    fetch(`${appConfig.apiUrl}/api/v1/subscribers/unsubscribe?token=${encodeURIComponent(token)}`)
       .then(async (response) => {
         const body = await response.json().catch(() => null);
         if (!response.ok) {
