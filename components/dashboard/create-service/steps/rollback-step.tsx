@@ -27,8 +27,8 @@ export function RollbackStep() {
     <Card>
       <CardContent className="space-y-6 p-6">
         <div>
-          <h2 className="text-lg font-semibold">Rollback configuration</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h2 className="text-balance text-lg font-semibold">Rollback configuration</h2>
+          <p className="text-pretty mt-1 text-sm text-muted-foreground">
             Configure the workflow XecureCode can use when recovery needs human-approved rollback.
           </p>
         </div>
@@ -41,7 +41,7 @@ export function RollbackStep() {
         ) : (
           <div className="space-y-5">
             <div className="grid gap-2">
-              <Label>Rollback workflow</Label>
+              <Label htmlFor="rollback-workflow">Rollback workflow</Label>
               {workflows.length > 0 ? (
                 <Select
                   value={state.rollbackWorkflow || "none"}
@@ -49,7 +49,7 @@ export function RollbackStep() {
                     updateState({ rollbackWorkflow: value === "none" ? "" : value })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="rollback-workflow">
                     <SelectValue placeholder="Select workflow" />
                   </SelectTrigger>
                   <SelectContent>
@@ -74,7 +74,7 @@ export function RollbackStep() {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-sm font-medium">Enable auto-rollback signals</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
+                  <p className="text-pretty mt-1 text-xs text-muted-foreground">
                     Production rollbacks still require human approval.
                   </p>
                 </div>
@@ -108,7 +108,7 @@ export function RollbackStep() {
 
         <div className="flex items-start gap-3 rounded-md border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
           <ShieldAlert className="mt-0.5 size-4 shrink-0" />
-          <p>
+          <p className="text-pretty">
             Auto-rollback is stored as policy only. Production execution must still flow
             through approval before destructive changes run.
           </p>

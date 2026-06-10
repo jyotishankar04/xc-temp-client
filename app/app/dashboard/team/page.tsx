@@ -71,7 +71,7 @@ export default function TeamPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Team</h1>
+          <h1 className="text-balance text-2xl font-bold tracking-tight">Team</h1>
           <p className="text-muted-foreground text-sm mt-1">
             Manage your team members and roles
           </p>
@@ -127,7 +127,7 @@ export default function TeamPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Members ({members.length})</CardTitle>
+          <CardTitle className="text-base">Members (<span className="tabular-nums">{members.length}</span>)</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           {isLoading ? (
@@ -179,7 +179,7 @@ export default function TeamPage() {
                         {member.role !== "OWNER" && (
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" className="size-8">
+                              <Button variant="ghost" size="icon" className="size-8" aria-label="More actions">
                                 <MoreHorizontal className="size-4" />
                               </Button>
                             </DropdownMenuTrigger>

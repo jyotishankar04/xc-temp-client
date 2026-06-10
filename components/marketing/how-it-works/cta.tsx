@@ -16,7 +16,7 @@ export const HowItWorksCTA = () => {
           initial={{ opacity: 0, scale: 0.98 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.4 }}
         >
           <Card className="border-primary/20 bg-gradient-to-br from-background via-background to-primary/5">
             <CardContent className="p-12 text-center">

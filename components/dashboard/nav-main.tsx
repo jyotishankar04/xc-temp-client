@@ -18,7 +18,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, LayoutDashboard, AlertTriangle, Brain, Zap, Boxes, Settings2, Users, FileText, Cog, Activity, FileSearch } from "lucide-react";
+import { ChevronDown, ChevronRight, LayoutDashboard, AlertTriangle, Brain, Zap, Boxes, Settings2, Users, FileText, Cog, Activity, FileSearch, User } from "lucide-react";
 
 export type Route = {
   id: string;
@@ -100,6 +100,12 @@ const defaultRoutes: Route[] = [
 ];
 
 const bottomRoutes: Route[] = [
+  {
+    id: "profile",
+    title: "Profile",
+    icon: <User className="size-4" />,
+    link: "/app/dashboard/profile",
+  },
   {
     id: "settings",
     title: "Settings",

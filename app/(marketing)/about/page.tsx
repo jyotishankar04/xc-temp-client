@@ -31,7 +31,7 @@ function FadeUp({ children, delay = 0, className = "" }: { children: React.React
       initial={{ opacity: 0, y: 22 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.6, delay: delay / 1000, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.45, delay: delay / 1000, ease: [0.22, 1, 0.36, 1] }}
       className={className}
     >
       {children}
@@ -162,7 +162,7 @@ function Hero() {
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
+          transition={{ duration: 0.45, delay: 0.1 }}
           className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.1] mb-6"
         >
           We believe production systems
@@ -174,7 +174,7 @@ function Hero() {
         <motion.p
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          transition={{ duration: 0.45, delay: 0.2 }}
           className="text-muted-foreground text-lg leading-relaxed max-w-xl mx-auto mb-3"
         >
           Modern software is powerful — but when it fails,
@@ -184,7 +184,7 @@ function Hero() {
         <motion.p
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.28 }}
+          transition={{ duration: 0.45, delay: 0.28 }}
           className="text-muted-foreground text-lg leading-relaxed max-w-xl mx-auto"
         >
           We're building XecureCode to make failures{" "}
@@ -196,7 +196,7 @@ function Hero() {
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          transition={{ duration: 0.45, delay: 0.4 }}
           className="mt-6 font-mono text-xs text-muted-foreground/60 tracking-wider"
         >
           Because reliability shouldn't depend on luck or experience.
@@ -316,7 +316,7 @@ function Building() {
                 <div
                   key={i}
                   className={cn(
-                    "px-5 py-3 rounded-xl border transition-all duration-200",
+                    "px-5 py-3 rounded-xl border transition-[border-color,background-color,box-shadow] duration-200",
                     node.accent
                       ? "border-primary bg-primary/5 shadow-md"
                       : "border-border bg-card"
@@ -364,10 +364,11 @@ function Principles() {
           {PRINCIPLES.map((p, i) => (
             <FadeUp key={p.name} delay={i * 70}>
               <motion.div
+                // touch-gated: hover state for team member cards on marketing page, acceptable for now
                 whileHover={{ y: -3 }}
                 transition={{ duration: 0.2 }}
                 className={cn(
-                  "group relative overflow-hidden rounded-xl border border-border bg-card p-6 transition-all duration-300 hover:shadow-lg",
+                  "group relative overflow-hidden rounded-xl border border-border bg-card p-6 transition-shadow duration-300 hover:shadow-lg",
                   p.className
                 )}
               >
@@ -515,12 +516,12 @@ function Team() {
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.08 }}
-                className="group bg-background hover:bg-muted/60 transition-all duration-300 p-6 flex flex-col gap-4"
+                className="group bg-background hover:bg-muted/60 transition-colors transition-shadow duration-300 p-6 flex flex-col gap-4"
               >
                 {/* Avatar + Name block */}
                 <div className="flex flex-col items-start gap-2">
                   {/* Image */}
-                  <div className="relative rounded-[10px] overflow-hidden border border-border/50 shrink-0 transition-all duration-300 ease-in-out w-16 h-16 group-hover:w-40 group-hover:h-40">
+                  <div className="relative rounded-[10px] overflow-hidden border border-border/50 shrink-0 transition-[width,height] duration-200 ease-in-out w-16 h-16 group-hover:w-40 group-hover:h-40">
                     {member.image ? (
                       <Image
                         src={member.image}
@@ -542,7 +543,7 @@ function Team() {
                   </div>
 
                   {/* Name + Role — beside image by default, below on hover */}
-                  <div className="flex flex-col transition-all duration-300 group-hover:mt-1">
+                  <div className="flex flex-col transition-[margin] duration-300 group-hover:mt-1">
                     <h3 className="text-sm font-medium leading-snug">{member.name}</h3>
                     <p className="text-xs text-muted-foreground mt-0.5 leading-snug">
                       {member.role}
@@ -556,7 +557,7 @@ function Team() {
                 </p>
 
                 {/* Hover-revealed section */}
-                <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-all duration-300">
+                <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-300">
                   <div className="overflow-hidden">
                     <div className="flex flex-col gap-3 pt-1">
 
@@ -738,11 +739,11 @@ function CTA() {
                   className="rounded-full h-12 px-7 whitespace-nowrap text-base font-medium"
                   onClick={() => email && setSubmitted(true)}
                 >
-                  Join Waitlist <ArrowUpRight className="ml-1 w-4 h-4" />
+                  Subscribe for Updates <ArrowUpRight className="ml-1 w-4 h-4" />
                 </Button>
               </div>
               <p className="mt-4 text-xs text-muted-foreground/60 font-mono">
-                Join 200+ engineers already on the waitlist
+                Product news and reliability updates in your inbox
               </p>
             </>
           ) : (

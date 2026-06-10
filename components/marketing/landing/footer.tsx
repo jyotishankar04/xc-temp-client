@@ -64,15 +64,14 @@ const Footer = () => {
               ))}
             </div>
 
-            {/* Early Access with waitlist button */}
             <div className="w-full max-w-xs flex flex-col gap-2">
-              <h6 className="font-semibold text-foreground">Early Access</h6>
+              <h6 className="font-semibold text-foreground">Product Updates</h6>
               <p className="mt-2 text-sm text-muted-foreground">
-                Get early access to our product
+                Get launch notes and product updates
               </p>
-              <Link href="/waitlist" >
+              <Link href="/subscribe" >
                 <Button className="w-full">
-                  Join Early Access
+                  Subscribe for Updates
                   <ArrowUpRight className="ml-1 h-5 w-5" />
                 </Button>
               </Link>
@@ -91,13 +90,13 @@ const Footer = () => {
 
             {/* Social Links */}
             <div className="flex items-center gap-5 text-muted-foreground">
-              <a href="https://x.com/xecurecode" target="_blank" className="transition-colors hover:text-foreground">
+              <a href="https://x.com/xecurecode" target="_blank" aria-label="X (Twitter)" className="transition-colors hover:text-foreground">
                 <TwitterIcon className="h-5 w-5" />
               </a>
-              <a href="https://www.linkedin.com/company/xecurecode/" target="_blank" className="transition-colors hover:text-foreground">
+              <a href="https://www.linkedin.com/company/xecurecode/" target="_blank" aria-label="LinkedIn" className="transition-colors hover:text-foreground">
                 <LinkedinIcon className="h-5 w-5" />
                 </a>
-              <a href="https://www.instagram.com/xecurecode/" target="_blank" className="transition-colors hover:text-foreground">
+              <a href="https://www.instagram.com/xecurecode/" target="_blank" aria-label="Instagram" className="transition-colors hover:text-foreground">
                 <InstagramIcon className="h-5 w-5" />
               </a>
             </div>

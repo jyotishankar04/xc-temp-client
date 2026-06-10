@@ -12,7 +12,19 @@ import { useRouter, usePathname } from "next/navigation";
 import { authApi, type User } from "@/lib/api";
 import { ROUTES } from "@/lib/constants/routes";
 
-const PROTECTED_ROUTE_PREFIXES = [ROUTES.DASHBOARD, ROUTES.ORGS, ROUTES.ONBOARD];
+const PROTECTED_ROUTE_PREFIXES = [
+  ROUTES.DASHBOARD,
+  ROUTES.ORGS,
+  ROUTES.ONBOARD,
+];
+
+const PUBLIC_AUTH_ROUTES = [
+  ROUTES.AUTH_LOGIN,
+  ROUTES.AUTH_SIGNUP,
+  ROUTES.AUTH_FORGOT_PASSWORD,
+  ROUTES.AUTH_VERIFY_EMAIL,
+  ROUTES.ADMIN_LOGIN,
+];
 
 interface AuthContextType {
   user: User | null;
@@ -67,12 +79,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (isLoading) return;
 
     const isOnboardingRoute = pathname === ROUTES.ONBOARD;
-    const isProtectedRoute = PROTECTED_ROUTE_PREFIXES.some((route) => pathname === route || pathname?.startsWith(route));
+    const isPublicAuthRoute = PUBLIC_AUTH_ROUTES.some(
+      (route) => pathname === route || pathname?.startsWith(`${route}/`),
+    );
+    const isProtectedRoute =
+      !isPublicAuthRoute &&
+      PROTECTED_ROUTE_PREFIXES.some(
+        (route) => pathname === route || pathname?.startsWith(route),
+      );
 
     const isAuth = !!user;
 
     if (!isAuth && isProtectedRoute && !isOnboardingRoute) {
-      router.push(ROUTES.AUTH_LOGIN);
+      router.push(pathname?.startsWith(ROUTES.ADMIN) ? ROUTES.ADMIN_LOGIN : ROUTES.AUTH_LOGIN);
       return;
     }
 

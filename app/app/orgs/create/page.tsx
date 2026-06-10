@@ -87,7 +87,7 @@ export default function CreateOrgPage() {
     <div className="flex flex-col gap-6 p-8 max-w-2xl mx-auto">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/app/orgs">
+          <Link href="/app/orgs" aria-label="Back to organizations">
             <ChevronLeft className="size-4" />
           </Link>
         </Button>

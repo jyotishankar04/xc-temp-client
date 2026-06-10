@@ -97,8 +97,8 @@ export default function ServiceApiKeysPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">API Keys</h1>
-          <p className="text-muted-foreground text-sm mt-1">
+          <h1 className="text-balance text-2xl font-bold tracking-tight">API Keys</h1>
+          <p className="text-pretty text-muted-foreground text-sm mt-1">
             Manage API keys for programmatic access
           </p>
         </div>
@@ -122,7 +122,7 @@ export default function ServiceApiKeysPage() {
                   <p className="text-sm text-muted-foreground mb-2">Your new API key:</p>
                   <code className="text-sm font-mono break-all">{newlyCreatedKey}</code>
                 </div>
-                <p className="text-sm text-severity-medium">
+                <p className="text-pretty text-sm text-severity-medium">
                   Make sure to copy your API key now. You won&apos;t be able to see it again!
                 </p>
                 <div className="flex gap-2">
@@ -172,8 +172,8 @@ export default function ServiceApiKeysPage() {
           {apiKeys?.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Key className="size-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No API keys yet</h3>
-              <p className="text-muted-foreground text-sm mb-4">
+              <h3 className="text-balance text-lg font-semibold mb-2">No API keys yet</h3>
+              <p className="text-pretty text-muted-foreground text-sm mb-4">
                 Create your first API key to start using programmatic access.
               </p>
               <Button onClick={() => setIsCreateOpen(true)}>
@@ -212,6 +212,7 @@ export default function ServiceApiKeysPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleCopy(apiKey.key!)}
+                            aria-label="Copy API key"
                           >
                             {copiedKey === apiKey.key ? (
                               <span className="text-xs text-success">Copied</span>
@@ -226,6 +227,7 @@ export default function ServiceApiKeysPage() {
                           className="text-destructive hover:text-destructive/80"
                           onClick={() => openDeleteConfirm(apiKey.id)}
                           disabled={deleteApiKey.isPending}
+                          aria-label="Delete API key"
                         >
                           <Trash2 className="size-4" />
                         </Button>

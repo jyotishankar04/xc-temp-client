@@ -52,8 +52,8 @@ export default function SettingsPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground text-sm mt-1">
+        <h1 className="text-balance text-2xl font-bold tracking-tight">Settings</h1>
+        <p className="text-pretty text-muted-foreground text-sm mt-1">
           Manage your organization settings and integrations
         </p>
       </div>
@@ -89,10 +89,10 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>Team Size</Label>
+                <Label htmlFor="team-size">Team Size</Label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="w-48 justify-start">
+                    <Button id="team-size" variant="outline" className="w-48 justify-start">
                       {teamSize} members
                     </Button>
                   </DropdownMenuTrigger>
@@ -228,7 +228,7 @@ function GitHubConnection() {
         </div>
         <div>
           <p className="text-sm font-medium">Connect GitHub</p>
-          <p className="text-xs text-muted-foreground">Authorize access to your repositories</p>
+          <p className="text-pretty text-xs text-muted-foreground">Authorize access to your repositories</p>
         </div>
       </div>
       <Button

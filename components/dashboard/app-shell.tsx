@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/hooks/use-auth";
+import { adminApi } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/constants/routes";
 
@@ -73,6 +75,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const displayName = user?.name ?? user?.email ?? "User";
   const avatarSrc = user?.avatarUrl ?? user?.avatar;
   const breadcrumbs = getBreadcrumbs(pathname);
+  const adminAccessQuery = useQuery({
+    queryKey: ["admin", "me"],
+    queryFn: adminApi.me,
+    retry: false,
+    enabled: !!user,
+  });
 
   return (
     <div className="flex flex-1 flex-col">
@@ -144,6 +152,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => router.push(ROUTES.DASHBOARD_PROFILE)}>
+                <User className="mr-2 size-4" />
+                Profile
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => router.push(ROUTES.DASHBOARD_SETTINGS)}>
                 <Settings className="mr-2 size-4" />
                 Settings
@@ -152,6 +164,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <Building2 className="mr-2 size-4" />
                 Organizations
               </DropdownMenuItem>
+              {adminAccessQuery.data && (
+                <DropdownMenuItem onClick={() => router.push(ROUTES.ADMIN)}>
+                  <User className="mr-2 size-4" />
+                  Master Admin Panel
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive focus:bg-destructive/10"

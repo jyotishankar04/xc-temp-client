@@ -6,7 +6,7 @@ export const appConfig = {
     "XecureCode introduces a decision layer between observability and action, making failures understandable, predictable, and recoverable.",
   version: "1.0.0",
   url: process.env.NEXT_PUBLIC_APP_URL || "https://xecurecode.com",
-  apiUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000",
+  apiUrl: "",
   supportEmail: "hello@xecurecode.com",
   features: {
     waitlist: true,

@@ -48,7 +48,7 @@ function StatCard({ title, value, subtitle, icon, trend, className, isLoading }:
         <div className="text-primary/80">{icon}</div>
       </CardHeader>
       <CardContent>
-        <div className="text-3xl font-bold">{value}</div>
+        <div className="text-3xl font-bold tabular-nums">{value}</div>
         {subtitle && (
           <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>
         )}
@@ -64,7 +64,6 @@ function StatCard({ title, value, subtitle, icon, trend, className, isLoading }:
           </p>
         )}
       </CardContent>
-      <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-primary/20 to-primary/5" />
     </Card>
   );
 }

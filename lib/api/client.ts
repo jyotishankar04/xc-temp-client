@@ -42,6 +42,19 @@ const axiosInstance = axios.create({
 });
 
 let refreshPromise: Promise<void> | null = null;
+let adminRefreshPromise: Promise<void> | null = null;
+
+const CLIENT_PROTECTED_PREFIXES = ["/app", "/onboard"];
+
+function isProtectedClientPath(pathname: string) {
+  return CLIENT_PROTECTED_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
+function isProtectedAdminPath(pathname: string) {
+  return pathname === "/admin" || pathname.startsWith("/admin/");
+}
 
 export class OnboardingRequiredError extends Error {
   constructor(public requirement: string) {
@@ -59,23 +72,38 @@ axiosInstance.interceptors.response.use(
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
+      const isAdminRequest = originalRequest.url?.startsWith("/api/v1/admin");
 
       try {
-        refreshPromise ??= axios
-          .post(`${API_URL}/api/v1/auth/refresh`, {}, { withCredentials: true })
-          .then(() => undefined)
-          .finally(() => {
-            refreshPromise = null;
-          });
+        if (isAdminRequest) {
+          adminRefreshPromise ??= axios
+            .post(`${API_URL}/api/v1/auth/admin/refresh`, {}, { withCredentials: true })
+            .then(() => undefined)
+            .finally(() => {
+              adminRefreshPromise = null;
+            });
 
-        await refreshPromise;
+          await adminRefreshPromise;
+        } else {
+          refreshPromise ??= axios
+            .post(`${API_URL}/api/v1/auth/refresh`, {}, { withCredentials: true })
+            .then(() => undefined)
+            .finally(() => {
+              refreshPromise = null;
+            });
+
+          await refreshPromise;
+        }
         return axiosInstance(originalRequest);
       } catch {
-        if (
-          typeof window !== "undefined" &&
-          !window.location.pathname.startsWith("/auth")
-        ) {
-          window.location.href = "/auth/login";
+        if (typeof window !== "undefined") {
+          const pathname = window.location.pathname;
+
+          if (isAdminRequest && isProtectedAdminPath(pathname) && pathname !== "/admin/login") {
+            window.location.href = "/admin/login";
+          } else if (!isAdminRequest && isProtectedClientPath(pathname)) {
+            window.location.href = "/auth/login";
+          }
         }
       }
     }

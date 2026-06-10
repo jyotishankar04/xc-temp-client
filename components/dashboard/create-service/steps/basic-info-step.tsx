@@ -43,12 +43,12 @@ export function BasicInfoStep() {
           </div>
 
           <div className="grid gap-2">
-            <Label>Environment *</Label>
+            <Label htmlFor="env-select">Environment *</Label>
             <Select
               value={state.env}
               onValueChange={(env) => updateState({ env })}
             >
-              <SelectTrigger>
+              <SelectTrigger id="env-select">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

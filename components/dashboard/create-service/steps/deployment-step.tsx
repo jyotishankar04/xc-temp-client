@@ -48,14 +48,14 @@ export function DeploymentStep() {
     <Card>
       <CardContent className="space-y-6 p-6">
         <div>
-          <h2 className="text-lg font-semibold">Branch and deployment</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h2 className="text-balance text-lg font-semibold">Branch and deployment</h2>
+          <p className="text-pretty mt-1 text-sm text-muted-foreground">
             These settings drive setup docs and rollback configuration.
           </p>
         </div>
 
         <div className="grid gap-2">
-          <label className="text-sm font-medium">Production branch</label>
+          <label className="text-sm font-medium" htmlFor="production-branch">Production branch</label>
           {isLoading ? (
             <Skeleton className="h-10 w-full" />
           ) : (
@@ -63,7 +63,7 @@ export function DeploymentStep() {
               value={state.defaultBranch}
               onValueChange={(defaultBranch) => updateState({ defaultBranch })}
             >
-              <SelectTrigger>
+              <SelectTrigger id="production-branch">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

@@ -64,20 +64,20 @@ export default function CorrelatedEventsPage() {
     <div className="flex flex-col h-[calc(100vh-8rem)] gap-6">
       <div className="flex items-center gap-4">
         <Button variant="outline" size="icon" asChild className="hover:bg-muted">
-          <Link href={`/app/dashboard/events/${eventId}`}>
+          <Link href={`/app/dashboard/events/${eventId}`} aria-label="Back to event">
             <ArrowLeft className="size-4" />
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Correlated Events</h1>
-          <p className="text-muted-foreground text-sm">
+          <h1 className="text-balance text-2xl font-bold tracking-tight">Correlated Events</h1>
+          <p className="text-pretty text-muted-foreground text-sm">
             Events related to this incident across all services
           </p>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <Badge className="bg-severity-high text-white">{eventsBySeverity.critical.length} Critical</Badge>
-          <Badge className="bg-severity-medium text-foreground">{eventsBySeverity.warning.length} Warning</Badge>
-          <Badge className="bg-muted text-muted-foreground">{eventsBySeverity.info.length} Info</Badge>
+          <Badge className="bg-severity-high text-white"><span className="tabular-nums">{eventsBySeverity.critical.length}</span> Critical</Badge>
+          <Badge className="bg-severity-medium text-foreground"><span className="tabular-nums">{eventsBySeverity.warning.length}</span> Warning</Badge>
+          <Badge className="bg-muted text-muted-foreground"><span className="tabular-nums">{eventsBySeverity.info.length}</span> Info</Badge>
         </div>
       </div>
 
@@ -85,7 +85,7 @@ export default function CorrelatedEventsPage() {
         <CardHeader className="pb-4 border-b bg-muted/20">
           <CardTitle className="text-base flex items-center gap-2">
             <AlertTriangle className="size-4" />
-            {correlatedEvents.length} Related Events
+            <span className="tabular-nums">{correlatedEvents.length}</span> Related Events
           </CardTitle>
         </CardHeader>
         <CardContent className="flex-1 min-h-0 p-0">
@@ -95,8 +95,8 @@ export default function CorrelatedEventsPage() {
                 <div className="size-16 rounded-xl bg-muted flex items-center justify-center mb-4">
                   <AlertTriangle className="size-8 text-muted-foreground/50" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">No correlated events</h3>
-                <p className="text-muted-foreground text-sm max-w-md">
+                <h3 className="text-balance text-lg font-semibold mb-2">No correlated events</h3>
+                <p className="text-pretty text-muted-foreground text-sm max-w-md">
                   No related events were found for this incident.
                 </p>
               </div>
@@ -104,9 +104,9 @@ export default function CorrelatedEventsPage() {
               <div className="p-4 space-y-4">
                 {eventsBySeverity.critical.length > 0 && (
                   <div className="space-y-2">
-                    <h3 className="text-sm font-semibold text-severity-high flex items-center gap-2">
+                    <h3 className="text-balance text-sm font-semibold text-severity-high flex items-center gap-2">
                       <Zap className="size-3.5" />
-                      Critical ({eventsBySeverity.critical.length})
+                      Critical (<span className="tabular-nums">{eventsBySeverity.critical.length}</span>)
                     </h3>
                     {eventsBySeverity.critical.map((event) => (
                       <EventCard key={event.id} event={event} />
@@ -116,9 +116,9 @@ export default function CorrelatedEventsPage() {
 
                 {eventsBySeverity.warning.length > 0 && (
                   <div className="space-y-2 pt-2">
-                    <h3 className="text-sm font-semibold text-severity-medium flex items-center gap-2">
+                    <h3 className="text-balance text-sm font-semibold text-severity-medium flex items-center gap-2">
                       <Waves className="size-3.5" />
-                      Warning ({eventsBySeverity.warning.length})
+                      Warning (<span className="tabular-nums">{eventsBySeverity.warning.length}</span>)
                     </h3>
                     {eventsBySeverity.warning.map((event) => (
                       <EventCard key={event.id} event={event} />
@@ -128,9 +128,9 @@ export default function CorrelatedEventsPage() {
 
                 {eventsBySeverity.info.length > 0 && (
                   <div className="space-y-2 pt-2">
-                    <h3 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
+                    <h3 className="text-balance text-sm font-semibold text-muted-foreground flex items-center gap-2">
                       <Activity className="size-3.5" />
-                      Info ({eventsBySeverity.info.length})
+                      Info (<span className="tabular-nums">{eventsBySeverity.info.length}</span>)
                     </h3>
                     {eventsBySeverity.info.map((event) => (
                       <EventCard key={event.id} event={event} />
@@ -154,7 +154,7 @@ function EventCard({ event }: { event: Event }) {
   return (
     <Link
       href={`/app/dashboard/events/${event.id}`}
-      className="block p-4 bg-muted/30 rounded-xl border hover:bg-muted/50 transition-all hover:shadow-sm"
+      className="block p-4 bg-muted/30 rounded-xl border hover:bg-muted/50 transition-colors transition-shadow hover:shadow-sm"
     >
       <div className="flex items-start justify-between gap-4 mb-2">
         <div className="flex-1 min-w-0">

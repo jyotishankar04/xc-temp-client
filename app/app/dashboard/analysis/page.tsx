@@ -46,16 +46,22 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
+function normalizeConfidence(confidence: number) {
+  const normalized = confidence <= 10 ? confidence * 10 : confidence;
+  return Math.max(0, Math.min(100, Math.round(normalized)));
+}
+
 export default function AnalysisPage() {
   const { data, isLoading, error } = useAnalysis({ limit: 50 });
   const patterns = data?.patterns ?? [];
   const summary = data?.summary;
+  const avgConfidence = summary ? normalizeConfidence(summary.avgConfidence) : 0;
 
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Analysis</h1>
-        <p className="text-muted-foreground text-sm mt-1">
+        <h1 className="text-balance text-2xl font-bold tracking-tight">Analysis</h1>
+        <p className="text-pretty text-muted-foreground text-sm mt-1">
           AI-powered insights and patterns across failures
         </p>
       </div>
@@ -87,7 +93,7 @@ export default function AnalysisPage() {
               />
               <SummaryStat
                 label="Avg confidence"
-                value={`${summary.avgConfidence}%`}
+                value={`${avgConfidence}%`}
                 color="text-status-open"
               />
             </div>
@@ -99,7 +105,7 @@ export default function AnalysisPage() {
               <Card className="lg:col-span-2">
                 <CardContent className="p-12 text-center">
                   <Info className="size-10 text-muted-foreground mx-auto mb-3" />
-                  <p className="text-sm text-muted-foreground">
+                   <p className="text-pretty text-sm text-muted-foreground">
                     No analysis patterns detected yet. Errors need to be captured and processed first.
                   </p>
                 </CardContent>
@@ -109,6 +115,7 @@ export default function AnalysisPage() {
                 const sev = severityConfig[pattern.severity] ?? severityConfig.LOW;
                 const SevIcon = sev.icon;
                 const cat = categoryConfig[pattern.category] ?? categoryConfig.EXTERNAL;
+                const confidence = normalizeConfidence(pattern.confidence);
 
                 return (
                   <Card
@@ -165,13 +172,13 @@ export default function AnalysisPage() {
                             Confidence
                           </span>
                           <span className="text-xs font-semibold tabular-nums">
-                            {pattern.confidence}%
+                            {confidence}%
                           </span>
                         </div>
                         <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
                           <div
-                            className={`h-full rounded-full transition-all ${sev.bar}`}
-                            style={{ width: `${pattern.confidence}%` }}
+                            className={`h-full rounded-full transition-[width] ${sev.bar}`}
+                            style={{ width: `${confidence}%` }}
                           />
                         </div>
                       </div>

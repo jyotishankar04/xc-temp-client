@@ -36,18 +36,17 @@ export default function Hero() {
         </p>
 
         <div className="mt-12">
-          <Link href="/waitlist">
+          <Link href="/subscribe">
             <Button
               className="rounded-full text-base h-12 px-8 whitespace-nowrap"
               size="lg"
             >
-              Join Early Access <ArrowUpRight className="ml-1 h-5 w-5" />
+              Get Product Updates <ArrowUpRight className="ml-1 h-5 w-5" />
             </Button>
           </Link>
 
-          {/* Social Proof */}
           <p className="mt-4 text-sm text-foreground/60">
-            ⚡️ Join 200+ engineers already on the waitlist
+            Product news, launch notes, and reliability updates in your inbox.
           </p>
         </div>
       </div>

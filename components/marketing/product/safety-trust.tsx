@@ -42,7 +42,7 @@ export const SafetyTrust = () => {
             initial={{ opacity: 0, x: -10 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
+            transition={{ duration: 0.35 }}
           >
             <div className="mb-6">
               <span className="text-sm font-mono text-muted-foreground tracking-wider">
@@ -103,7 +103,7 @@ export const SafetyTrust = () => {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.3, duration: 0.4 }}
+          transition={{ delay: 0.3, duration: 0.35 }}
           className="mt-12 flex flex-wrap justify-center gap-6 items-center"
         >
           {["SOC2", "GDPR", "HIPAA", "ISO 27001"].map((badge, i) => (

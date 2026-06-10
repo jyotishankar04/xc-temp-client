@@ -42,7 +42,7 @@ export default function ServiceSettingsPage() {
     return (
       <div className="flex flex-col gap-6 max-w-2xl">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+          <h1 className="text-balance text-2xl font-bold tracking-tight">Settings</h1>
           <p className="text-muted-foreground text-sm mt-1">
             Service not found.
           </p>
@@ -107,8 +107,8 @@ function ServiceSettingsForm({
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground text-sm mt-1">
+        <h1 className="text-balance text-2xl font-bold tracking-tight">Settings</h1>
+        <p className="text-pretty text-muted-foreground text-sm mt-1">
           Manage your service configuration
         </p>
       </div>
@@ -175,6 +175,7 @@ function ServiceSettingsForm({
                 value={deleteName}
                 onChange={(e) => setDeleteName(e.target.value)}
                 placeholder="Type service name to confirm"
+                aria-label="Type service name to confirm deletion"
               />
               <div className="flex gap-2">
                 <Button

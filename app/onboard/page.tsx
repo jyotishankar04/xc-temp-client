@@ -200,7 +200,7 @@ export default function OnboardPage() {
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
                 >
                   <Step1
                     register={register}
@@ -224,7 +224,7 @@ export default function OnboardPage() {
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
                 >
                   <Step2
                     register={register}
@@ -243,7 +243,7 @@ export default function OnboardPage() {
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
                 >
                   <Step3 />
                 </motion.div>
@@ -360,15 +360,16 @@ function Step1({
         </div>
 
         <div>
-          <Label>Team Size</Label>
+          <Label htmlFor="team-size-0">Team Size</Label>
           <div className="mt-2 grid grid-cols-4 gap-2">
-            {ONBOARDING_TEAM_SIZES.map((size) => (
+            {ONBOARDING_TEAM_SIZES.map((size, idx) => (
               <button
                 key={size.value}
                 type="button"
+                id={idx === 0 ? "team-size-0" : undefined}
                 onClick={() => onTeamSize(size.value)}
                 className={cn(
-                  "rounded-lg border-2 px-3 py-2.5 text-center text-sm transition-all",
+                  "rounded-lg border-2 px-3 py-2.5 text-center text-sm transition-colors",
                   teamSize === size.value
                     ? "border-primary bg-primary/5 text-primary"
                     : "border-border text-muted-foreground hover:border-foreground/20"
@@ -415,8 +416,9 @@ function Step2({
 
       <div className="space-y-5">
         <div>
-          <Label className="text-base">Your Role</Label>
+          <Label className="text-base" htmlFor="role-group">Your Role</Label>
           <RadioGroup
+            id="role-group"
             value={role}
             onValueChange={onRole}
             className="mt-2 space-y-2"
@@ -425,7 +427,7 @@ function Step2({
               <label
                 key={r.value}
                 className={cn(
-                  "flex cursor-pointer items-center gap-3 rounded-lg border p-3.5 transition-all",
+                  "flex cursor-pointer items-center gap-3 rounded-lg border p-3.5 transition-colors",
                   role === r.value
                     ? "border-primary bg-primary/5"
                     : "border-border hover:border-foreground/20"

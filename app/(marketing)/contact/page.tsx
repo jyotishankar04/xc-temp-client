@@ -1,12 +1,12 @@
 "use client";
 
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "motion/react";
 import { Mail, User, Send, CheckCircle2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { appConfig } from "@/lib/config/app";
 import { Textarea } from "@/components/ui/textarea";
 import {
   InputGroup,
@@ -41,7 +41,7 @@ export default function ContactPage() {
   const onSubmit = async (data: FormValues) => {
     setSubmitError(null);
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch(`${appConfig.apiUrl}/api/v1/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -103,7 +103,9 @@ export default function ContactPage() {
                     <User className="h-4 w-4 text-muted-foreground" />
                   </InputGroupAddon>
                   <InputGroupInput
+                    id="contact-name"
                     type="text"
+                    aria-label="Your name"
                     {...register("name", {
                       required: "Name is required",
                       minLength: {
@@ -126,7 +128,9 @@ export default function ContactPage() {
                     <Mail className="h-4 w-4 text-muted-foreground" />
                   </InputGroupAddon>
                   <InputGroupInput
+                    id="contact-email"
                     type="email"
+                    aria-label="Your email"
                     {...register("email", {
                       required: "Email is required",
                       pattern: {
@@ -144,17 +148,19 @@ export default function ContactPage() {
                 )}
 
                 {/* Message */}
-                <Textarea
-                  {...register("message", {
-                    required: "Message is required",
-                    minLength: {
-                      value: 10,
-                      message: "Minimum 10 characters",
-                    },
-                  })}
-                  placeholder="How can we help?"
-                  className="min-h-[120px] resize-none"
-                />
+                  <Textarea
+                    id="contact-message"
+                    aria-label="Your message"
+                    {...register("message", {
+                      required: "Message is required",
+                      minLength: {
+                        value: 10,
+                        message: "Minimum 10 characters",
+                      },
+                    })}
+                    placeholder="How can we help?"
+                    className="min-h-[120px] resize-none"
+                  />
                 {errors.message && (
                   <p className="text-sm text-red-500 -mt-2">
                     {errors.message.message}

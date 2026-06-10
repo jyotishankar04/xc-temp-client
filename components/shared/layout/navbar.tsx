@@ -175,12 +175,29 @@ export default function Navbar() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const firstMobileItemRef = useRef<HTMLAnchorElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const sentinel = document.createElement("div");
+    sentinel.style.position = "absolute";
+    sentinel.style.top = "0";
+    sentinel.style.height = "50px";
+    sentinel.style.width = "1px";
+    sentinel.style.pointerEvents = "none";
+    sentinel.style.visibility = "hidden";
+    document.body.prepend(sentinel);
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsScrolled(!entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(sentinel);
+
+    return () => {
+      observer.disconnect();
+      sentinel.remove();
+    };
   }, []);
 
   useEffect(() => {
@@ -204,6 +221,7 @@ export default function Navbar() {
       };
     }
 
+    toggleRef.current?.focus();
     document.body.style.overflow = "";
     return undefined;
   }, [menuOpen]);
@@ -223,14 +241,23 @@ export default function Navbar() {
 
   return (
     <header>
-      <AnimatePresence>
+      <AnimatePresence mode="wait" initial={false}>
         {activeMenu && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-10"
+            role="button"
+            tabIndex={0}
+            aria-label="Close dropdown menu"
             onClick={() => setActiveMenu(null)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setActiveMenu(null);
+              }
+            }}
           />
         )}
       </AnimatePresence>
@@ -239,9 +266,9 @@ export default function Navbar() {
         <motion.div
           initial={{ y: -18, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.45, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
           className={cn(
-            "mx-auto max-w-6xl px-4 transition-all duration-300 lg:px-6",
+            "mx-auto max-w-6xl px-4 transition-[max-width,border-radius] duration-200 lg:px-6",
             isScrolled || activeMenu ? "max-w-5xl" : "",
           )}
         >
@@ -277,7 +304,7 @@ export default function Navbar() {
                           />
                         </button>
 
-                        <AnimatePresence>
+                        <AnimatePresence mode="wait" initial={false}>
                           {activeMenu === item.label && (
                             <div onMouseEnter={cancelClose} onMouseLeave={scheduleClose}>
                               <DropdownPanel items={item.dropdown} columns={item.columns} />
@@ -329,6 +356,7 @@ export default function Navbar() {
               </div>
 
               <button
+                ref={toggleRef}
                 type="button"
                 onClick={() => setMenuOpen((open) => !open)}
                 aria-label={menuOpen ? "Close menu" : "Open menu"}
@@ -363,17 +391,16 @@ export default function Navbar() {
             </div>
           </div>
 
-          <AnimatePresence>
+          <AnimatePresence mode="wait" initial={false}>
             {menuOpen && (
-              <motion.div
-                id="mobile-menu"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-                className="overflow-hidden lg:hidden"
-              >
-                <div className="mt-2 rounded-2xl border bg-background/95 p-4 shadow-xl backdrop-blur-xl">
+              <div className="overflow-hidden lg:hidden">
+                <motion.div
+                  id="mobile-menu"
+                  initial={{ opacity: 0, y: -16, transition: { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] } }}
+                  animate={{ opacity: 1, y: 0, transition: { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] } }}
+                  exit={{ opacity: 0, y: -16, transition: { duration: 0.12, ease: [0.25, 0.1, 0.25, 1] } }}
+                >
+                  <div className="mt-2 rounded-2xl border bg-background/95 p-4 shadow-xl backdrop-blur-xl">
                   <ul className="space-y-1">
                     {NAV_ITEMS.map((item, index) => (
                       <li key={item.label}>
@@ -433,7 +460,8 @@ export default function Navbar() {
                     )}
                   </div>
                 </div>
-              </motion.div>
+                </motion.div>
+              </div>
             )}
           </AnimatePresence>
         </motion.div>

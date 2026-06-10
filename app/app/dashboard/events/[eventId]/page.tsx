@@ -84,20 +84,20 @@ export default function EventDetailPage() {
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link href="/app/dashboard/events">
+            <Link href="/app/dashboard/events" aria-label="Back to event">
               <ArrowLeft className="size-4" />
             </Link>
           </Button>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Event Not Found</h1>
-            <p className="text-muted-foreground text-sm">
+            <h1 className="text-balance text-2xl font-bold tracking-tight">Event Not Found</h1>
+            <p className="text-pretty text-muted-foreground text-sm">
               This event may have been deleted or does not exist.
             </p>
           </div>
         </div>
         <Card className="border-severity-high/30">
           <CardContent className="pt-6">
-            <p className="text-destructive">Unable to load event details. Please try again.</p>
+            <p className="text-pretty text-destructive">Unable to load event details. Please try again.</p>
           </CardContent>
         </Card>
       </div>
@@ -114,7 +114,7 @@ export default function EventDetailPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button variant="outline" size="icon" asChild className="hover:bg-muted">
-            <Link href="/app/dashboard/events">
+            <Link href="/app/dashboard/events" aria-label="Back to event">
               <ArrowLeft className="size-4" />
             </Link>
           </Button>
@@ -123,7 +123,7 @@ export default function EventDetailPage() {
               <div className={`p-2 rounded-xl ${cfg.bg} ${cfg.color}`}>
                 <SeverityIcon className="size-5" />
               </div>
-              <h1 className="text-2xl font-bold tracking-tight">Event Details</h1>
+              <h1 className="text-balance text-2xl font-bold tracking-tight">Event Details</h1>
             </div>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1.5">
@@ -294,7 +294,7 @@ export default function EventDetailPage() {
                 <CardTitle className="text-base flex items-center gap-2">
                   <Link2 className="size-4" />
                   Correlated Events
-                  <Badge variant="secondary" className="text-xs font-semibold">
+                  <Badge variant="secondary" className="text-xs font-semibold tabular-nums">
                     {correlatedEvents.length}
                   </Badge>
                 </CardTitle>
@@ -310,7 +310,7 @@ export default function EventDetailPage() {
                         <Link
                           key={evt.id}
                           href={`/app/dashboard/events/${evt.id}`}
-                          className="block p-4 bg-muted/30 rounded-xl border hover:bg-muted/50 transition-all hover:shadow-sm"
+                          className="block p-4 bg-muted/30 rounded-xl border hover:bg-muted/50 transition-colors transition-shadow hover:shadow-sm"
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">

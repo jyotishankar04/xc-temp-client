@@ -22,7 +22,7 @@ export function StepIndicator() {
             onClick={() => index <= currentStep && setCurrentStep(index)}
             disabled={index > currentStep}
             className={cn(
-              "flex items-center gap-2 rounded-md border px-3 py-2 text-left text-sm transition-colors",
+              "flex items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors",
               isCurrent && "border-primary bg-primary/5 text-primary",
               isComplete && "border-primary/40 bg-primary/10",
               !isCurrent && !isComplete && "text-muted-foreground",

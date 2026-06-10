@@ -13,7 +13,7 @@ export const HowItWorksHero = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.4 }}
           className="text-center"
         >
           <div className="mb-6">
@@ -25,7 +25,7 @@ export const HowItWorksHero = () => {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.5 }}
+            transition={{ delay: 0.1, duration: 0.4 }}
             className="text-5xl md:text-7xl font-bold mb-6 tracking-tight"
           >
             From detection to recovery
@@ -36,7 +36,7 @@ export const HowItWorksHero = () => {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
+            transition={{ delay: 0.2, duration: 0.4 }}
             className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10"
           >
             Integrate our lightweight SDK in minutes, and let AI handle the rest.
@@ -46,7 +46,7 @@ export const HowItWorksHero = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
             <Link href="/docs">
@@ -66,7 +66,7 @@ export const HowItWorksHero = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.5 }}
+            transition={{ delay: 0.4, duration: 0.4 }}
             className="flex justify-center gap-8 mt-16"
           >
             {[

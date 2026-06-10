@@ -44,7 +44,7 @@ export default function ServiceOverviewPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">{service?.name}</h1>
+          <h1 className="text-balance text-2xl font-bold tracking-tight">{service?.name}</h1>
           <p className="text-muted-foreground text-sm mt-1">
             Service overview and quick stats
           </p>
@@ -83,7 +83,7 @@ export default function ServiceOverviewPage() {
             <Users className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{members.length}</div>
+            <div className="text-2xl font-bold tabular-nums">{members.length}</div>
             <p className="text-xs text-muted-foreground">
               <Link
                 href={`/app/dashboard/services/${serviceId}/members`}
@@ -101,7 +101,7 @@ export default function ServiceOverviewPage() {
             <Key className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{apiKeys.length}</div>
+            <div className="text-2xl font-bold tabular-nums">{apiKeys.length}</div>
             <p className="text-xs text-muted-foreground">
               <Link
                 href={`/app/dashboard/services/${serviceId}/api-keys`}

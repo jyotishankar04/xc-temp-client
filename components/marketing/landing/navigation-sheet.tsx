@@ -86,6 +86,19 @@ export const NavigationSheet = ({ isAuthenticated = false, isLoading = false }: 
     };
   }, [isOpen]);
 
+  // Focus management for accessibility
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        const firstLink = menuRef.current?.querySelector<HTMLAnchorElement>("a");
+        firstLink?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    } else {
+      buttonRef.current?.focus();
+    }
+  }, [isOpen]);
+
   // Calculate scrollbar width to prevent layout shift
   useEffect(() => {
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
@@ -128,7 +141,7 @@ export const NavigationSheet = ({ isAuthenticated = false, isLoading = false }: 
         </AnimatePresence>
       </Button>
 
-      <AnimatePresence>
+      <AnimatePresence mode="wait" initial={false}>
         {isOpen && (
           <>
             {/* Backdrop with blur effect */}
@@ -138,19 +151,26 @@ export const NavigationSheet = ({ isAuthenticated = false, isLoading = false }: 
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+              role="button"
+              tabIndex={0}
+              aria-label="Close menu"
               onClick={() => setIsOpen(false)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setIsOpen(false);
+                }
+              }}
             />
 
             {/* Dropdown menu from top */}
             <motion.div
               ref={menuRef}
-              initial={{ opacity: 0, y: -20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.95 }}
-              transition={{
-                duration: 0.25,
-                ease: [0.4, 0, 0.2, 1], // Custom easing for smooth motion
-              }}
+              role="dialog"
+              aria-modal="true"
+              initial={{ opacity: 0, y: -20, scale: 0.95, transition: { duration: 0.25, ease: [0.4, 0, 0.2, 1] } }}
+              animate={{ opacity: 1, y: 0, scale: 1, transition: { duration: 0.25, ease: [0.4, 0, 0.2, 1] } }}
+              exit={{ opacity: 0, y: -20, scale: 0.95, transition: { duration: 0.15, ease: [0.4, 0, 0.2, 1] } }}
               className="fixed left-0 right-0 top-[88px] z-50 mx-auto w-[calc(100%-2rem)] sm:w-[95%] max-w-2xl"
               style={{
                 filter: "drop-shadow(0 20px 30px -10px rgba(0, 0, 0, 0.2))",
@@ -199,11 +219,13 @@ export const NavigationSheet = ({ isAuthenticated = false, isLoading = false }: 
                     ) : isAuthenticated ? (
                       <Link href="/app/dashboard" onClick={() => setIsOpen(false)}>
                         <Button
-                          className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:shadow-md shadow-md group"
+                            className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors transition-transform transition-shadow hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:shadow-md shadow-md group"
+
                         >
                           <span className="relative">
                             Go to Dashboard
-                            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white/50 group-hover:w-full transition-all duration-300" />
+                              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white/50 group-hover:w-full transition-[width] duration-300" />
+
                           </span>
                         </Button>
                       </Link>
@@ -219,11 +241,13 @@ export const NavigationSheet = ({ isAuthenticated = false, isLoading = false }: 
                         </Link>
                         <Link href="/auth/signup" onClick={() => setIsOpen(false)} className="flex-1">
                           <Button
-                            className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:shadow-md shadow-md group"
+                          className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors transition-transform transition-shadow hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:shadow-md shadow-md group"
+
                           >
                             <span className="relative">
                               Sign Up
-                              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white/50 group-hover:w-full transition-all duration-300" />
+                            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white/50 group-hover:w-full transition-[width] duration-300" />
+
                             </span>
                           </Button>
                         </Link>

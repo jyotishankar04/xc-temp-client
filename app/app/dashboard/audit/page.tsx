@@ -31,8 +31,8 @@ export default function AuditPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Audit Log</h1>
-        <p className="text-muted-foreground text-sm mt-1">
+        <h1 className="text-balance text-2xl font-bold tracking-tight">Audit Log</h1>
+        <p className="text-pretty text-muted-foreground text-sm mt-1">
           Complete history of all actions and AI outputs
         </p>
       </div>

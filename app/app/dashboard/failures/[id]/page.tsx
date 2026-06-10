@@ -15,7 +15,8 @@ import {
   CheckCircle,
   AlertTriangle,
   GitBranch,
-  Zap
+  Zap,
+  Fingerprint
 } from "lucide-react";
 import { ROUTES } from "@/lib/constants/routes";
 
@@ -82,15 +83,15 @@ export default function FailureDetailPage() {
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link href={ROUTES.DASHBOARD_FAILURES}>
+            <Link href={ROUTES.DASHBOARD_FAILURES} aria-label="Back to failures">
               <ArrowLeft className="size-4" />
             </Link>
           </Button>
-          <h1 className="text-2xl font-bold tracking-tight">Case Not Found</h1>
+          <h1 className="text-balance text-2xl font-bold tracking-tight">Case Not Found</h1>
         </div>
         <Card>
           <CardContent className="pt-6">
-            <p className="text-muted-foreground">Failed to load case details. Please try again.</p>
+            <p className="text-pretty text-muted-foreground">Failed to load case details. Please try again.</p>
           </CardContent>
         </Card>
       </div>
@@ -101,13 +102,13 @@ export default function FailureDetailPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href={ROUTES.DASHBOARD_FAILURES}>
+          <Link href={ROUTES.DASHBOARD_FAILURES} aria-label="Back to failures">
             <ArrowLeft className="size-4" />
           </Link>
         </Button>
         <div className="flex flex-col">
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold tracking-tight">
+            <h1 className="text-balance text-xl font-bold tracking-tight">
               Case — {failureCase.id.slice(0, 8)}...
             </h1>
             <Badge variant={severityVariants[failureCase.severity] || "outline"} className="capitalize">
@@ -119,7 +120,7 @@ export default function FailureDetailPage() {
           </div>
           <p className="text-sm text-muted-foreground mt-0.5">
             {failureCase.service.name} &middot; {failureCase.environment || "Unknown environment"} &middot;{" "}
-            {failureCase._count?.events || 0} events &middot; Created {formatDate(failureCase.createdAt)}
+            <span className="tabular-nums">{failureCase._count?.events || 0}</span> events &middot; Created {formatDate(failureCase.createdAt)}
           </p>
         </div>
       </div>
@@ -171,15 +172,15 @@ export default function FailureDetailPage() {
                   <Separator />
                   <div className="grid grid-cols-3 gap-4">
                     <div className="text-center p-3 rounded-lg bg-muted">
-                      <p className="text-2xl font-bold">{failureCase._count.events || 0}</p>
+                      <p className="text-2xl font-bold tabular-nums">{failureCase._count.events || 0}</p>
                       <p className="text-xs text-muted-foreground">Events</p>
                     </div>
                     <div className="text-center p-3 rounded-lg bg-muted">
-                      <p className="text-2xl font-bold">{failureCase._count.possibleCauses || 0}</p>
+                      <p className="text-2xl font-bold tabular-nums">{failureCase._count.possibleCauses || 0}</p>
                       <p className="text-xs text-muted-foreground">Possible Causes</p>
                     </div>
                     <div className="text-center p-3 rounded-lg bg-muted">
-                      <p className="text-2xl font-bold">{failureCase._count.followUps || 0}</p>
+                      <p className="text-2xl font-bold tabular-nums">{failureCase._count.followUps || 0}</p>
                       <p className="text-xs text-muted-foreground">Follow-ups</p>
                     </div>
                   </div>
@@ -222,7 +223,7 @@ export default function FailureDetailPage() {
                 </div>
               ) : (
                 <>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-pretty text-sm text-muted-foreground">
                     No AI analysis available for this case yet. Generate an RCA report to analyze this case.
                   </p>
                   <Button
@@ -370,6 +371,19 @@ export default function FailureDetailPage() {
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Updated</span>
                 <span>{new Date(failureCase.updatedAt).toLocaleDateString()}</span>
+              </div>
+              <Separator />
+              <div className="rounded-lg bg-fingerprint/5 border border-fingerprint/15 p-3">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Fingerprint className="size-4 text-fingerprint" />
+                  <span className="text-xs font-semibold text-fingerprint">Error Fingerprint</span>
+                </div>
+                <p className="font-mono text-xs text-fingerprint break-all leading-relaxed">
+                  {failureCase.fingerprint || "—"}
+                </p>
+                <p className="text-[10px] text-muted-foreground mt-1.5 leading-relaxed">
+                  Cryptographic hash of the error signature. Identical hashes mean identical root causes — deduplicating noise into signal.
+                </p>
               </div>
             </CardContent>
           </Card>

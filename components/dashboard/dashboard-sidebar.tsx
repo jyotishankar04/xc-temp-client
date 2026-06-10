@@ -127,7 +127,7 @@ export function DashboardSidebar() {
                   {user?.email || ""}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="gap-2 p-2 cursor-pointer" onClick={() => router.push("/app/dashboard/settings")}>
+                <DropdownMenuItem className="gap-2 p-2 cursor-pointer" onClick={() => router.push("/app/dashboard/profile")}>
                   <User className="size-4" />
                   Profile
                 </DropdownMenuItem>
@@ -143,7 +143,7 @@ export function DashboardSidebar() {
                   {currentTheme === "dark" ? "Light Mode" : "Dark Mode"}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="gap-2 p-2 cursor-pointer" onClick={() => router.push("/app/dashboard/settings")}>
+                <DropdownMenuItem className="gap-2 p-2 cursor-pointer" onClick={() => router.push("/app/dashboard/profile")}>
                   <Settings className="size-4" />
                   Preferences
                 </DropdownMenuItem>
