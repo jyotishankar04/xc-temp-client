@@ -1,5 +1,25 @@
 import { apiClient, type ApiResponse } from "../client";
 
+export interface RCAReportMetadata {
+  status?: string;
+  graphStatus?: string;
+  threadId?: string;
+  modelName?: string;
+  failureDetails?: unknown;
+  eventAnalysis?: unknown;
+  rootCauseResult?: unknown;
+  rollbackApprovalGenerated?: boolean;
+  rollbackApprovalCreationStatus?: string;
+  rollbackRecommendationId?: string;
+  rollbackActionId?: string;
+  rollbackThreshold?: number;
+  normalizedConfidence?: number;
+  rollbackRationale?: string;
+  notes?: string;
+  reviewed?: boolean;
+  [key: string]: unknown;
+}
+
 export interface RCAReport {
   id: string;
   caseId: string;
@@ -16,7 +36,7 @@ export interface RCAReport {
   affectedServices: string[];
   userImpact?: string | null;
   duration?: string | null;
-  metadata?: Record<string, unknown>;
+  metadata?: RCAReportMetadata;
   notes?: string;
   reviewed: boolean;
   createdAt: string;
@@ -41,7 +61,7 @@ interface RawRCAReport {
   affectedServices: string[];
   userImpact?: string | null;
   duration?: string | null;
-  metadata?: Record<string, unknown>;
+  metadata?: RCAReportMetadata;
   createdAt: string;
   case?: {
     id: string;
@@ -57,13 +77,23 @@ interface RawRCAReport {
 
 function transformRCAReport(raw: RawRCAReport): RCAReport {
   // Use only metadata.status — never string-match explanation text
-  const rcaStatus = (raw.metadata?.status as string) || "PENDING";
+  const graphStatus = raw.metadata?.graphStatus as string | undefined;
+  const rcaStatus =
+    graphStatus === "FAILED" || graphStatus === "INSUFFICIENT_EVIDENCE"
+      ? graphStatus
+      : (raw.metadata?.status as string) || graphStatus || "PENDING";
   const isFailed = rcaStatus === "FAILED";
 
-  // detailedAnalysis is stored in metadata by the RCA worker
-  const detailedAnalysis = raw.metadata?.detailedAnalysis as
-    | { mechanism?: string; why_this_cause?: string }
+  // Detailed analysis is stored in metadata by the RCA worker.
+  const rootCauseResult = raw.metadata?.rootCauseResult as
+    | {
+        detailed_analysis?: {
+          mechanism?: string;
+          why_this_cause?: string;
+        };
+      }
     | undefined;
+  const detailedAnalysis = rootCauseResult?.detailed_analysis;
 
   return {
     id: raw.id,
