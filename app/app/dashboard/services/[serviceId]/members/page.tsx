@@ -139,8 +139,8 @@ export default function ServiceMembersPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Members</h1>
-          <p className="text-muted-foreground text-sm mt-1">
+          <h1 className="text-balance text-2xl font-bold tracking-tight">Members</h1>
+          <p className="text-pretty text-muted-foreground text-sm mt-1">
             Manage service members and invitations
           </p>
         </div>
@@ -150,11 +150,11 @@ export default function ServiceMembersPage() {
         <TabsList variant="line" className="h-auto p-0 border-b bg-transparent gap-1">
           <TabsTrigger value="members" className="px-3 py-2 border-b-2 border-transparent rounded-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none gap-2">
             <Users className="size-4" />
-            Members ({members.length})
+            Members (<span className="tabular-nums">{members.length}</span>)
           </TabsTrigger>
           <TabsTrigger value="invitations" className="px-3 py-2 border-b-2 border-transparent rounded-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none gap-2">
             <Mail className="size-4" />
-            Invitations ({invitations.length})
+            Invitations (<span className="tabular-nums">{invitations.length}</span>)
           </TabsTrigger>
         </TabsList>
 
@@ -164,8 +164,8 @@ export default function ServiceMembersPage() {
               {members.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <Users className="size-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No members yet</h3>
-                  <p className="text-muted-foreground text-sm">
+                  <h3 className="text-balance text-lg font-semibold mb-2">No members yet</h3>
+                  <p className="text-pretty text-muted-foreground text-sm">
                     Invite members to collaborate on this service.
                   </p>
                 </div>
@@ -323,7 +323,7 @@ export default function ServiceMembersPage() {
               {invitations.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <Mail className="size-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No pending invitations</h3>
+                  <h3 className="text-balance text-lg font-semibold mb-2">No pending invitations</h3>
                   <p className="text-muted-foreground text-sm">
                     All team members have been invited.
                   </p>

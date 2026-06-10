@@ -82,63 +82,67 @@ export default function FailuresPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Failure Cases</h1>
-        <p className="text-muted-foreground text-sm mt-1">
+        <h1 className="text-balance text-2xl font-bold tracking-tight">Failure Cases</h1>
+        <p className="text-pretty text-muted-foreground text-sm mt-1">
           Track and manage all detected failure cases
         </p>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-48">
-          <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-          <Input
-            placeholder="Search cases..."
-            aria-label="Search failures"
-            className="pl-9 h-9"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-        <Select value={environment} onValueChange={setEnvironment}>
-          <SelectTrigger className="h-9 w-36">
-            <SelectValue placeholder="Environment" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All environments</SelectItem>
-            <SelectItem value="production">Production</SelectItem>
-            <SelectItem value="staging">Staging</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={severity} onValueChange={setSeverity}>
-          <SelectTrigger className="h-9 w-32">
-            <SelectValue placeholder="Severity" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All severity</SelectItem>
-            <SelectItem value="HIGH">High</SelectItem>
-            <SelectItem value="MEDIUM">Medium</SelectItem>
-            <SelectItem value="LOW">Low</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={status} onValueChange={setStatus}>
-          <SelectTrigger className="h-9 w-32">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All status</SelectItem>
-            <SelectItem value="OPEN">Open</SelectItem>
-            <SelectItem value="RESOLVED">Resolved</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative flex-1 min-w-48">
+              <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              <Input
+                placeholder="Search cases..."
+                aria-label="Search failures"
+                className="pl-9 h-9"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <Select value={environment} onValueChange={setEnvironment}>
+              <SelectTrigger className="h-9 w-36">
+                <SelectValue placeholder="Environment" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All environments</SelectItem>
+                <SelectItem value="production">Production</SelectItem>
+                <SelectItem value="staging">Staging</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={severity} onValueChange={setSeverity}>
+              <SelectTrigger className="h-9 w-32">
+                <SelectValue placeholder="Severity" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All severity</SelectItem>
+                <SelectItem value="HIGH">High</SelectItem>
+                <SelectItem value="MEDIUM">Medium</SelectItem>
+                <SelectItem value="LOW">Low</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger className="h-9 w-32">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All status</SelectItem>
+                <SelectItem value="OPEN">Open</SelectItem>
+                <SelectItem value="RESOLVED">Resolved</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Table */}
       <Card>
         <CardContent className="p-0">
           {pagination && (
             <div className="border-b px-4 py-2 text-xs text-muted-foreground">
-              Showing {cases.length} of {pagination.total} cases
+              Showing <span className="tabular-nums">{cases.length}</span> of <span className="tabular-nums">{pagination.total}</span> cases
             </div>
           )}
           <Table>

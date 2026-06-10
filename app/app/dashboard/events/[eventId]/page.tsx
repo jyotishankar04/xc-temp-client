@@ -89,15 +89,15 @@ export default function EventDetailPage() {
             </Link>
           </Button>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Event Not Found</h1>
-            <p className="text-muted-foreground text-sm">
+            <h1 className="text-balance text-2xl font-bold tracking-tight">Event Not Found</h1>
+            <p className="text-pretty text-muted-foreground text-sm">
               This event may have been deleted or does not exist.
             </p>
           </div>
         </div>
         <Card className="border-severity-high/30">
           <CardContent className="pt-6">
-            <p className="text-destructive">Unable to load event details. Please try again.</p>
+            <p className="text-pretty text-destructive">Unable to load event details. Please try again.</p>
           </CardContent>
         </Card>
       </div>
@@ -123,7 +123,7 @@ export default function EventDetailPage() {
               <div className={`p-2 rounded-xl ${cfg.bg} ${cfg.color}`}>
                 <SeverityIcon className="size-5" />
               </div>
-              <h1 className="text-2xl font-bold tracking-tight">Event Details</h1>
+              <h1 className="text-balance text-2xl font-bold tracking-tight">Event Details</h1>
             </div>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1.5">
@@ -294,7 +294,7 @@ export default function EventDetailPage() {
                 <CardTitle className="text-base flex items-center gap-2">
                   <Link2 className="size-4" />
                   Correlated Events
-                  <Badge variant="secondary" className="text-xs font-semibold">
+                  <Badge variant="secondary" className="text-xs font-semibold tabular-nums">
                     {correlatedEvents.length}
                   </Badge>
                 </CardTitle>

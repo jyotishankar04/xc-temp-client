@@ -36,14 +36,14 @@ export default function ServicesPage() {
     return (
       <div className="flex flex-col gap-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Services</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h1 className="text-balance text-2xl font-bold tracking-tight">Services</h1>
+          <p className="text-pretty mt-1 text-sm text-muted-foreground">
             Manage your connected services and integrations
           </p>
         </div>
         <Card>
           <CardContent className="pt-6">
-            <p className="text-destructive">Failed to load services. Please try again.</p>
+            <p className="text-pretty text-destructive">Failed to load services. Please try again.</p>
           </CardContent>
         </Card>
       </div>
@@ -54,8 +54,8 @@ export default function ServicesPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Services</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h1 className="text-balance text-2xl font-bold tracking-tight">Services</h1>
+          <p className="text-pretty mt-1 text-sm text-muted-foreground">
             Manage connected services, SDK keys, and rollback policies
           </p>
         </div>
@@ -76,8 +76,8 @@ export default function ServicesPage() {
           ) : services.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Boxes className="mb-4 size-12 text-muted-foreground" />
-              <h3 className="mb-2 text-lg font-semibold">No services yet</h3>
-              <p className="mb-4 text-sm text-muted-foreground">
+              <h3 className="text-balance mb-2 text-lg font-semibold">No services yet</h3>
+              <p className="text-pretty mb-4 text-sm text-muted-foreground">
                 Connect your first repository-backed service to start monitoring.
               </p>
               <Button asChild>

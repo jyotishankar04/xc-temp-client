@@ -94,7 +94,7 @@ export default function ServiceRollbackPage() {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-sm font-medium">Auto-rollback signal</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
+                  <p className="text-pretty mt-1 text-xs text-muted-foreground">
                     Keeps production rollback gated by approval.
                   </p>
                 </div>
@@ -180,7 +180,7 @@ export default function ServiceRollbackPage() {
           <CardTitle>Manual Rollback</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-pretty text-sm text-muted-foreground">
             Trigger rollback for a specific case after approval.
           </p>
 

@@ -134,8 +134,8 @@ function EventsPageContent() {
     <div className="flex flex-col h-[calc(100vh-8rem)] gap-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Events</h1>
-          <p className="text-muted-foreground text-sm mt-1">
+          <h1 className="text-balance text-2xl font-bold tracking-tight">Events</h1>
+          <p className="text-pretty text-muted-foreground text-sm mt-1">
             Monitor and investigate system events across all services
           </p>
         </div>
@@ -143,14 +143,14 @@ function EventsPageContent() {
           {criticalCount > 0 && (
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-severity-high/10 border border-severity-high/30 rounded-full">
               <Zap className="size-3.5 text-severity-high" />
-              <span className="text-sm font-semibold text-severity-high">{criticalCount}</span>
+              <span className="text-sm font-semibold text-severity-high tabular-nums">{criticalCount}</span>
               <span className="text-xs text-severity-high/70">critical</span>
             </div>
           )}
           {warningCount > 0 && (
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-severity-medium/10 border border-severity-medium/30 rounded-full">
               <AlertTriangle className="size-3.5 text-severity-medium" />
-              <span className="text-sm font-semibold text-severity-medium">{warningCount}</span>
+              <span className="text-sm font-semibold text-severity-medium tabular-nums">{warningCount}</span>
               <span className="text-xs text-severity-medium/70">warning</span>
             </div>
           )}
@@ -213,7 +213,7 @@ function EventsPageContent() {
           ) : events.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-center">
               <Activity className="size-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No events found</h3>
+              <h3 className="text-balance text-lg font-semibold mb-2">No events found</h3>
               <p className="text-muted-foreground text-sm">
                 {hasActiveFilters ? "No events match your current filters." : "No events recorded yet."}
               </p>
@@ -369,10 +369,10 @@ function EventsPageContent() {
                           {/* Correlated events */}
                           {correlatedEvents.length > 0 && (
                             <div>
-                              <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+                              <h4 className="text-balance text-sm font-medium mb-2 flex items-center gap-2">
                                 <Activity className="size-4" />
                                 Correlated Events
-                                <span className="text-xs font-normal text-muted-foreground">
+                                <span className="text-xs font-normal text-muted-foreground tabular-nums">
                                   ({correlatedEvents.length})
                                 </span>
                               </h4>

@@ -64,10 +64,10 @@ const setupGuideSteps: SetupGuideStep[] = [
 export default function SetupPage() {
   return (
     <div className="mx-auto max-w-(--breakpoint-md) px-0 py-2 sm:py-6">
-      <h1 className="text-2xl font-medium tracking-normal sm:text-3xl">
+      <h1 className="text-balance text-2xl font-medium tracking-normal sm:text-3xl">
         Connect your service
       </h1>
-      <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+      <p className="text-pretty mt-2 text-sm text-muted-foreground sm:text-base">
         Use the dashboard and SDK documentation to start sending reliability
         events.
       </p>
@@ -112,7 +112,7 @@ export default function SetupPage() {
 
             <div className="flex grow flex-col justify-between gap-3 sm:flex-row sm:items-center sm:gap-5">
               <div className="min-w-0 flex-1">
-                <h2 className="font-medium">{step.title}</h2>
+                <h2 className="text-balance font-medium">{step.title}</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {step.description}
                 </p>

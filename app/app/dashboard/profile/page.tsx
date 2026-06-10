@@ -144,8 +144,8 @@ export default function ProfilePage() {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Profile</h1>
-        <p className="text-muted-foreground text-sm mt-1">
+        <h1 className="text-balance text-2xl font-bold tracking-tight">Profile</h1>
+        <p className="text-pretty text-muted-foreground text-sm mt-1">
           Manage your personal information and preferences
         </p>
       </div>
@@ -163,7 +163,7 @@ export default function ProfilePage() {
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col items-center gap-1 text-center sm:items-start sm:text-left">
-              <h2 className="text-xl font-semibold">{displayName}</h2>
+              <h2 className="text-balance text-xl font-semibold">{displayName}</h2>
               <div className="flex flex-col gap-0.5 text-sm text-muted-foreground">
                 <span className="inline-flex items-center gap-1.5">
                   <Mail className="size-3.5" />
@@ -305,7 +305,7 @@ export default function ProfilePage() {
             <div className="flex items-center justify-between rounded-lg border p-4">
               <div>
                 <p className="text-sm font-medium">Email notifications</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-pretty text-xs text-muted-foreground">
                   Receive alerts and updates via email
                 </p>
               </div>
@@ -318,7 +318,7 @@ export default function ProfilePage() {
             <div className="flex items-center justify-between rounded-lg border p-4">
               <div>
                 <p className="text-sm font-medium">Push notifications</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-pretty text-xs text-muted-foreground">
                   Receive real-time alerts in your browser
                 </p>
               </div>
