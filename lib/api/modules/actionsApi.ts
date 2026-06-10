@@ -4,7 +4,7 @@ export interface Action {
   id: string;
   caseId: string;
   recommendationId: string;
-  approvedBy: string;
+  approvedBy: string | null;
   actionType: "ROLLBACK" | "WAIT" | "SCALE" | "MANUAL";
   status: "PENDING" | "APPROVED" | "REJECTED" | "EXECUTED" | "FAILED";
   createdAt: string;
@@ -16,6 +16,11 @@ export interface Action {
       name: string;
     };
     severity: "LOW" | "MEDIUM" | "HIGH";
+    reports?: Array<{
+      id: string;
+      confidenceScore: number;
+      metadata?: Record<string, unknown> | null;
+    }>;
   };
   recommendation: {
     id: string;
@@ -27,7 +32,7 @@ export interface Action {
     id: string;
     name: string;
     avatarUrl: string | null;
-  };
+  } | null;
 }
 
 export interface ListActionsParams {
