@@ -75,8 +75,8 @@ SDKs send structured failure events to `POST /api/v1/ingest`.
 | Events | `/api/v1/events/*` | Lists events, reads an event, and fetches correlations. |
 | Cases | `/api/v1/cases/*` | Lists, reads, updates, and merges failure cases. |
 | RCA | `/api/v1/rca/*` | Lists, reads, generates, and updates RCA reports. |
-| Actions | `/api/v1/actions/*` | Lists, reads, approves, and rejects recovery actions. |
-| Rollback | `/api/v1/services/:serviceId/rollback/*` | Reads rollback config, updates config, lists history, and triggers rollback. |
+| Actions | `/api/v1/actions/*` | Lists, reads, approves, and rejects recovery actions. Approving a pending rollback action queues rollback execution. |
+| Rollback | `/api/v1/services/:serviceId/rollback/*` | Reads rollback config, updates config, lists history, and exposes the owner/admin manual rollback trigger. |
 | Dashboard | `GET /api/v1/dashboard/stats` | Returns dashboard metrics for a time range. |
 | Audit | `GET /api/v1/audit` | Lists organization audit logs. |
 | Analysis | `GET /api/v1/analysis` | Lists detected failure patterns. |
