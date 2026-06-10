@@ -48,8 +48,8 @@ export function DeploymentStep() {
     <Card>
       <CardContent className="space-y-6 p-6">
         <div>
-          <h2 className="text-lg font-semibold">Branch and deployment</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h2 className="text-balance text-lg font-semibold">Branch and deployment</h2>
+          <p className="text-pretty mt-1 text-sm text-muted-foreground">
             These settings drive setup docs and rollback configuration.
           </p>
         </div>

@@ -77,7 +77,7 @@ export function MajorLaunchPage({
         maxOpacity={0.08}
         numSquares={30}
       />
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait" initial={false}>
         {isLive ? (
           <div className="pointer-events-none fixed inset-0 z-20 overflow-hidden opacity-50" aria-hidden="true">
             {subtleSparkles.map((sparkle) => (

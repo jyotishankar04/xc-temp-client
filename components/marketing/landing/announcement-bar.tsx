@@ -110,7 +110,7 @@ export function AnnouncementBar({
 
   return (
     <>
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait" initial={false}>
         {showLiveLaunch ? (
           <motion.div
             className="fixed inset-0 z-40 flex items-center justify-center overflow-hidden bg-background px-6 py-16 text-foreground"

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ArrowUpRight, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/hooks/use-auth";
@@ -7,6 +8,45 @@ import Link from "next/link";
 
 const CTA = () => {
   const { isAuthenticated, isLoading } = useAuth();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Defer rendering buttons until client mount to avoid hydration mismatch
+  if (!mounted || isLoading) {
+    return (
+      <div className="mx-auto flex max-w-screen-xl flex-col px-6 py-24 sm:py-32">
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-primary/5 via-transparent to-transparent p-12 text-center sm:p-16 lg:p-20">
+          <div className="absolute inset-0 -z-10">
+            <div className="absolute left-1/2 top-0 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-primary/5 blur-3xl" />
+            <div className="absolute bottom-0 right-0 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
+          </div>
+
+          <div className="relative z-10">
+            <h2 className="text-balance font-bold text-4xl tracking-tight sm:text-5xl lg:text-6xl">
+              Be ready before{" "}
+              <span className="text-primary">your next outage</span>
+            </h2>
+
+            <p className="mx-auto mt-6 max-w-2xl text-balance text-muted-foreground text-lg sm:text-xl">
+              Transform your infrastructure with enterprise-grade reliability
+            </p>
+
+            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <div className="h-12 w-48 animate-pulse rounded-full bg-muted" />
+              <div className="h-12 w-48 animate-pulse rounded-full bg-muted" />
+            </div>
+
+            <p className="mt-8 text-sm text-muted-foreground">
+              ✦ No credit card required ✦ Free during beta ✦
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto flex max-w-screen-xl flex-col px-6 py-24 sm:py-32">

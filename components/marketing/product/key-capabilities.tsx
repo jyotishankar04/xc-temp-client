@@ -39,7 +39,7 @@ const capabilities = [
   {
     icon: Shield,
     title: "Controlled Recovery",
-    description: "Trigger automated rollbacks and recovery actions with human approval gates at every critical step.",
+    description: "Recommend rollback and recovery actions with human approval gates before critical execution.",
     color: "from-green-500/20 to-green-500/5",
     border: "border-green-500/20",
     iconColor: "text-green-500",
@@ -66,7 +66,7 @@ export const KeyCapabilities = () => {
 
         <div className="grid md:grid-cols-2 gap-6">
           {capabilities.map((capability, index) => (
-            <Card className="gap-0">
+            <Card key={capability.title} className="gap-0">
               {/* Icon */}
               <CardHeader>
 

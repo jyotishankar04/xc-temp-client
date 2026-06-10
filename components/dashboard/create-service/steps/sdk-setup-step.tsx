@@ -31,8 +31,8 @@ initReliability({
         <div className="flex items-start gap-3">
           <CheckCircle2 className="mt-1 size-6 text-primary" />
           <div>
-            <h2 className="text-xl font-semibold">Service created successfully</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <h2 className="text-balance text-xl font-semibold">Service created successfully</h2>
+            <p className="text-pretty mt-1 text-sm text-muted-foreground">
               Install the SDK and initialize it with the key below.
             </p>
           </div>

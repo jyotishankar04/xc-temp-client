@@ -241,7 +241,7 @@ export default function Navbar() {
 
   return (
     <header>
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait" initial={false}>
         {activeMenu && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -391,7 +391,7 @@ export default function Navbar() {
             </div>
           </div>
 
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait" initial={false}>
             {menuOpen && (
               <div className="overflow-hidden lg:hidden">
                 <motion.div

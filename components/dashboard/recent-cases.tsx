@@ -95,7 +95,7 @@ export function RecentCases() {
               </div>
               <p className="text-sm text-muted-foreground truncate">{c.service.name}</p>
               <p className="text-xs text-muted-foreground">
-                {c.service.name} &middot; {c._count?.events || 0} events
+                {c.service.name} &middot; <span className="tabular-nums">{c._count?.events || 0}</span> events
               </p>
             </div>
             <span className="text-xs text-muted-foreground shrink-0">

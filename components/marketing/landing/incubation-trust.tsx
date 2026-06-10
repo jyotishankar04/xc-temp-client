@@ -54,7 +54,7 @@ export default function IncubationTrust() {
                   />
                   <img
                     alt={supporter.name}
-                    className="size-9"
+                    className="size-9 ring-1 ring-black/[0.08] dark:ring-white/[0.08]"
                     src={supporter.name != "IIT Patna" ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(supporter.url)}&sz=64` : "https://upload.wikimedia.org/wikipedia/en/5/52/Indian_Institute_of_Technology%2C_Patna.svg"}
                   />
                 </div>

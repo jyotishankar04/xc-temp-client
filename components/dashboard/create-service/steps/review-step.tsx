@@ -14,8 +14,8 @@ export function ReviewStep() {
     <Card>
       <CardContent className="space-y-6 p-6">
         <div>
-          <h2 className="text-lg font-semibold">Review configuration</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h2 className="text-balance text-lg font-semibold">Review configuration</h2>
+          <p className="text-pretty mt-1 text-sm text-muted-foreground">
             Confirm the service mapping before creating the SDK key.
           </p>
         </div>
@@ -82,7 +82,7 @@ function ReviewSection({
   return (
     <div className="rounded-md border p-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold">{title}</h3>
+        <h3 className="text-balance text-sm font-semibold">{title}</h3>
         <Button variant="ghost" size="sm" onClick={onEdit}>
           Edit
         </Button>
