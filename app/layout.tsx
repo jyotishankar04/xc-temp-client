@@ -13,6 +13,7 @@ import { getPublicPlatformState } from "@/lib/api/platform";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
