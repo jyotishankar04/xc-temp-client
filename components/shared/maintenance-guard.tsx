@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { MaintenancePage } from "@/components/marketing/landing/maintenance-page";
+import { MaintenanceBanner } from "@/components/shared/maintenance-banner";
 
 const BLOCKED_PREFIXES = ["/auth", "/app", "/onboard", "/launch"];
 
@@ -22,5 +23,10 @@ export function MaintenanceGuard({
     return <MaintenancePage message={maintenanceMessage} />;
   }
 
-  return children;
+  return (
+    <>
+      <MaintenanceBanner message={maintenanceMessage} />
+      {children}
+    </>
+  );
 }
