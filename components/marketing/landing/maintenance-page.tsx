@@ -12,7 +12,7 @@ export function MaintenancePage({ message }: { message?: string | null }) {
         variant="maintenance"
         icon={Wrench}
         title="XecureCode is under maintenance"
-        subtitle={message || "We're making a few updates and will be back shortly."}
+        subtitle={message || "Something's cooking..."}
       >
         <motion.div
           animate={{ opacity: [0.5, 1, 0.5] }}
