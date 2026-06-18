@@ -62,6 +62,13 @@ export const servicesApi = {
     return response.data;
   },
 
+  getMyInvitations: async (): Promise<ApiResponse<ServiceInvitation[]>> => {
+    const response = await apiClient.get<ApiResponse<ServiceInvitation[]>>(
+      "/api/v1/services/invitations/me"
+    );
+    return response.data;
+  },
+
   createInvitation: async (
     serviceId: string,
     data: CreateInvitationInput

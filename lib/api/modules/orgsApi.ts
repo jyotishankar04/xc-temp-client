@@ -50,6 +50,10 @@ export interface InviteInput {
   role: string;
 }
 
+export interface UpdateMemberRoleInput {
+  role: string;
+}
+
 export const orgsApi = {
   createOrg: async (data: CreateOrgInput): Promise<ApiResponse<Org>> => {
     const response = await apiClient.post<ApiResponse<Org>>(
@@ -110,6 +114,42 @@ export const orgsApi = {
     const response = await apiClient.post<ApiResponse<void>>(
       `/api/v1/orgs/${orgId}/invite`,
       data
+    );
+    return response.data;
+  },
+
+  acceptInvite: async (orgId: string): Promise<ApiResponse<void>> => {
+    const response = await apiClient.post<ApiResponse<void>>(
+      `/api/v1/orgs/${orgId}/accept`
+    );
+    return response.data;
+  },
+
+  rejectInvite: async (orgId: string): Promise<ApiResponse<void>> => {
+    const response = await apiClient.post<ApiResponse<void>>(
+      `/api/v1/orgs/${orgId}/reject`
+    );
+    return response.data;
+  },
+
+  updateMemberRole: async (
+    orgId: string,
+    userId: string,
+    data: UpdateMemberRoleInput
+  ): Promise<ApiResponse<OrgMember>> => {
+    const response = await apiClient.patch<ApiResponse<OrgMember>>(
+      `/api/v1/orgs/${orgId}/members/${userId}`,
+      data
+    );
+    return response.data;
+  },
+
+  removeMember: async (
+    orgId: string,
+    userId: string
+  ): Promise<ApiResponse<void>> => {
+    const response = await apiClient.delete<ApiResponse<void>>(
+      `/api/v1/orgs/${orgId}/members/${userId}`
     );
     return response.data;
   },

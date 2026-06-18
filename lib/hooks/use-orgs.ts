@@ -1,7 +1,12 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { orgsApi, type CreateOrgInput, type UpdateOrgInput, type InviteInput } from "@/lib/api";
+import {
+  orgsApi,
+  type CreateOrgInput,
+  type UpdateOrgInput,
+  type InviteInput,
+} from "@/lib/api";
 
 export function useOrgs() {
   return useQuery({
@@ -122,6 +127,54 @@ export function useInviteMember() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["orgs", "members", variables.orgId] });
+      queryClient.invalidateQueries({ queryKey: ["orgs", "current"] });
+      queryClient.invalidateQueries({ queryKey: ["orgs"] });
+    },
+  });
+}
+
+export function useUpdateOrgMemberRole() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      orgId,
+      userId,
+      role,
+    }: {
+      orgId: string;
+      userId: string;
+      role: string;
+    }) => {
+      const res = await orgsApi.updateMemberRole(orgId, userId, { role });
+      if (!res.success) {
+        throw new Error(res.message || "Failed to update member role");
+      }
+      return res.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["orgs", "members", variables.orgId] });
+      queryClient.invalidateQueries({ queryKey: ["orgs", "current"] });
+      queryClient.invalidateQueries({ queryKey: ["orgs"] });
+    },
+  });
+}
+
+export function useRemoveOrgMember() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ orgId, userId }: { orgId: string; userId: string }) => {
+      const res = await orgsApi.removeMember(orgId, userId);
+      if (!res.success) {
+        throw new Error(res.message || "Failed to remove member");
+      }
+      return res.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["orgs", "members", variables.orgId] });
+      queryClient.invalidateQueries({ queryKey: ["orgs", "current"] });
+      queryClient.invalidateQueries({ queryKey: ["orgs"] });
     },
   });
 }

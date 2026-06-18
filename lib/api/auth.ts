@@ -48,8 +48,9 @@ const ONBOARDING_ENDPOINT = "/api/v1/onboarding";
 const USER_ENDPOINT = "/api/v1/users";
 
 export const authApi = {
-  loginWithGitHub: () => {
-    window.location.href = `${AUTH_ENDPOINT}/github?redirect_url=${window.location.origin}`;
+  loginWithGitHub: (redirectUrl?: string) => {
+    const target = redirectUrl ?? window.location.origin;
+    window.location.href = `${AUTH_ENDPOINT}/github?redirect_url=${encodeURIComponent(target)}`;
   },
 
   loginAdmin: async (data: {

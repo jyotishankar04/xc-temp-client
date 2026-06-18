@@ -31,6 +31,7 @@ export const ROUTES = {
 
   AUTH_LOGIN: "/auth/login",
   AUTH_SIGNUP: "/auth/signup",
+  AUTH_INVITE: "/auth/invite",
   AUTH_FORGOT_PASSWORD: "/auth/forgot-password",
   AUTH_VERIFY_EMAIL: "/auth/verify-email",
 
