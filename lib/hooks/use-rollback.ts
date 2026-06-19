@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { rollbackApi } from "@/lib/api";
+import type { RollbackConfigUpdate } from "@/lib/api/modules/rollbackApi";
 
 export const useRollbackConfig = (serviceId: string) => {
   return useQuery({
@@ -40,7 +41,7 @@ export const useUpdateRollbackConfig = () => {
       data,
     }: {
       serviceId: string;
-      data: { autoRollbackEnabled?: boolean; autoRollbackThreshold?: number; rollbackWorkflow?: string | null };
+      data: RollbackConfigUpdate;
     }) => {
       const res = await rollbackApi.updateConfig(serviceId, data);
       if (!res.success) {

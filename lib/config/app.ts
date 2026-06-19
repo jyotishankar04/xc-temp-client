@@ -11,9 +11,9 @@ export const appConfig = {
   features: {
     waitlist: true,
     contact: true,
-    blog: false,
+    blog: true,
     dashboard: false,
-    docs: false,
+    docs: true,
   },
 } as const;
 

@@ -4,8 +4,8 @@ import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useServiceById, useServiceMembers, useApiKeys } from "@/lib/hooks";
-import { ExternalLink, Github, Key, Loader2, Settings2, Users } from "lucide-react";
+import { useServiceById, useServiceMembers, useApiKeys, useServicePipelineStatus } from "@/lib/hooks";
+import { ExternalLink, Github, Key, Loader2, Settings2, Users, Workflow } from "lucide-react";
 import Link from "next/link";
 
 const statusConfig = {
@@ -27,6 +27,7 @@ export default function ServiceOverviewPage() {
   const { data: service, isLoading: serviceLoading } = useServiceById(serviceId);
   const { data: members = [] } = useServiceMembers(serviceId);
   const { data: apiKeys = [] } = useApiKeys(serviceId);
+  const { data: pipelineStatus } = useServicePipelineStatus(serviceId);
 
   if (serviceLoading) {
     return (
@@ -110,6 +111,33 @@ export default function ServiceOverviewPage() {
                 Manage keys
               </Link>
             </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">CI/CD</CardTitle>
+            <Workflow className="size-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Badge variant="outline">
+              {pipelineStatus?.status === "completed"
+                ? pipelineStatus.conclusion ?? "completed"
+                : pipelineStatus?.status ?? "unknown"}
+            </Badge>
+            <p className="text-xs text-muted-foreground">
+              {pipelineStatus?.workflowName
+                ? `${pipelineStatus.workflowName} · ${pipelineStatus.branch}`
+                : "No recent workflow run found"}
+            </p>
+            {pipelineStatus?.htmlUrl && (
+              <Button variant="ghost" size="sm" asChild className="-ml-2 px-2">
+                <a href={pipelineStatus.htmlUrl} target="_blank" rel="noreferrer">
+                  Open workflow
+                  <ExternalLink className="ml-2 size-4" />
+                </a>
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>

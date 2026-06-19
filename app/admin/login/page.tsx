@@ -145,6 +145,20 @@ export default function AdminLoginPage() {
               >
                 User login
               </Link>
+              <div className="flex items-center gap-4">
+                <Link
+                  href={ROUTES.AUTH_FORGOT_PASSWORD}
+                  className="text-muted-foreground underline underline-offset-4"
+                >
+                  Forgot password
+                </Link>
+                <Link
+                  href={ROUTES.AUTH_VERIFY_EMAIL}
+                  className="text-muted-foreground underline underline-offset-4"
+                >
+                  Verify email
+                </Link>
+              </div>
               <Link
                 href={ROUTES.HOME}
                 className="text-muted-foreground underline underline-offset-4"

@@ -43,6 +43,7 @@ const axiosInstance = axios.create({
 
 let refreshPromise: Promise<void> | null = null;
 let adminRefreshPromise: Promise<void> | null = null;
+let csrfPromise: Promise<void> | null = null;
 
 const CLIENT_PROTECTED_PREFIXES = ["/app", "/onboard"];
 
@@ -54,6 +55,33 @@ function isProtectedClientPath(pathname: string) {
 
 function isProtectedAdminPath(pathname: string) {
   return pathname === "/admin" || pathname.startsWith("/admin/");
+}
+
+function isUnsafeMethod(method?: string) {
+  return !!method && !["get", "head", "options"].includes(method.toLowerCase());
+}
+
+function readCookie(name: string) {
+  if (typeof document === "undefined") return null;
+  const escapedName = name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  const match = document.cookie.match(new RegExp(`(?:^|; )${escapedName}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+async function ensureCsrfToken() {
+  const existingToken = readCookie("csrfToken");
+  if (existingToken) return existingToken;
+
+  csrfPromise ??= axios
+    .get(`${API_URL}/api/v1/auth/csrf`, { withCredentials: true })
+    .then(() => undefined)
+    .finally(() => {
+      csrfPromise = null;
+    });
+
+  await csrfPromise;
+
+  return readCookie("csrfToken");
 }
 
 export class OnboardingRequiredError extends Error {
@@ -111,6 +139,22 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+axiosInstance.interceptors.request.use(async (config) => {
+  const method = config.method?.toLowerCase();
+  const url = config.url ?? "";
+  const isCsrfRequest = url.startsWith("/api/v1/auth/csrf");
+
+  if (typeof window !== "undefined" && isUnsafeMethod(method) && !isCsrfRequest) {
+    const token = await ensureCsrfToken();
+    if (token) {
+      config.headers = config.headers ?? {};
+      config.headers["x-csrf-token"] = token;
+    }
+  }
+
+  return config;
+});
 
 export const apiClient = axiosInstance;
 

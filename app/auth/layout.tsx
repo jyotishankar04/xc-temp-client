@@ -6,10 +6,10 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="relative w-full max-w-sm overflow-hidden rounded-xl border bg-gradient-to-b from-muted/50 to-card px-8 py-8 shadow-lg/5 dark:from-transparent dark:shadow-xl">
+    <div className="flex min-h-screen items-center justify-center px-4 py-8 sm:px-6">
+      <div className="relative w-full max-w-[520px] overflow-hidden rounded-[28px] border border-border/70 bg-gradient-to-b from-muted/50 to-card px-6 py-7 shadow-2xl shadow-cyan-950/10 dark:from-transparent dark:shadow-xl sm:px-8">
         <div
-          className="absolute inset-0 -top-px -left-px z-0"
+          className="absolute inset-0 z-0"
           style={{
             backgroundImage: `
         linear-gradient(to right, color-mix(in srgb, var(--card-foreground) 8%, transparent) 1px, transparent 1px),
@@ -57,7 +57,9 @@ export default function AuthLayout({
         />
 
         <div className="relative isolate flex flex-col items-center">
-          <Logo className="h-9 w-9" />
+          <div className="mb-6 rounded-full border border-border/70 bg-background/80 p-2 shadow-sm">
+            <Logo className="h-10 w-10" />
+          </div>
 
           {children}
         </div>

@@ -8,17 +8,18 @@ import type {
   CreateInvitationInput,
   UpdateMemberInput,
   CreateApiKeyInput,
+  ServiceApiUsage,
 } from "@/lib/types/service";
 
 export function useServices() {
   return useQuery({
     queryKey: ["services"],
     queryFn: async () => {
-      const res = await servicesApi.getAll();
+      const res = await servicesApi.getAll({ page: 1, limit: 50 });
       if (!res.success) {
         throw new Error(res.message || "Failed to fetch services");
       }
-      return res.data ?? [];
+      return res.data?.items ?? [];
     },
   });
 }
@@ -30,6 +31,20 @@ export function useServiceById(serviceId: string) {
       const res = await servicesApi.getById(serviceId);
       if (!res.success) {
         throw new Error(res.message || "Failed to fetch service");
+      }
+      return res.data;
+    },
+    enabled: !!serviceId,
+  });
+}
+
+export function useServicePipelineStatus(serviceId: string) {
+  return useQuery({
+    queryKey: ["services", serviceId, "pipeline-status"],
+    queryFn: async () => {
+      const res = await servicesApi.getPipelineStatus(serviceId);
+      if (!res.success) {
+        throw new Error(res.message || "Failed to fetch pipeline status");
       }
       return res.data;
     },
@@ -251,6 +266,20 @@ export function useApiKeys(serviceId: string) {
         throw new Error(res.message || "Failed to fetch API keys");
       }
       return res.data ?? [];
+    },
+    enabled: !!serviceId,
+  });
+}
+
+export function useApiUsage(serviceId: string) {
+  return useQuery<ServiceApiUsage>({
+    queryKey: ["services", serviceId, "api-usage"],
+    queryFn: async () => {
+      const res = await servicesApi.getApiUsage(serviceId);
+      if (!res.success) {
+        throw new Error(res.message || "Failed to fetch API usage");
+      }
+      return res.data as ServiceApiUsage;
     },
     enabled: !!serviceId,
   });

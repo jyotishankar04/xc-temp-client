@@ -178,54 +178,56 @@ export default function InvitePage() {
   const dashboardHref = invite.redirect || ROUTES.DASHBOARD;
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative w-full overflow-hidden">
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-[radial-gradient(circle_at_top,rgba(124,92,255,0.35),transparent_40%),radial-gradient(circle_at_70%_20%,rgba(0,183,255,0.24),transparent_32%)]" />
 
-      <Card className="border-border/70 bg-card/95 shadow-2xl shadow-cyan-950/20 backdrop-blur">
-        <CardHeader className="space-y-4">
-          <div className="flex items-center gap-3">
-            <Logo className="h-10 w-10" />
+      <Card className="w-full border-border/70 bg-card/95 shadow-2xl shadow-cyan-950/20 backdrop-blur">
+        <CardHeader className="space-y-5 border-b border-border/60 bg-background/35 pb-6">
+          <div className="flex items-center gap-4">
+            <div className="rounded-2xl border border-border/70 bg-background/80 p-2 shadow-sm">
+              <Logo className="h-8 w-8" />
+            </div>
             <div className="min-w-0">
               <div className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
                 XecureCode invite
               </div>
-              <CardTitle className="mt-1 text-balance text-2xl">
+              <CardTitle className="mt-2 text-balance text-[28px] font-semibold leading-tight sm:text-[32px]">
                 Join {inviteTitle}
               </CardTitle>
             </div>
           </div>
-          <CardDescription className="text-sm leading-6 text-muted-foreground">
+          <CardDescription className="max-w-[52ch] text-sm leading-6 text-muted-foreground">
             Invitations are tied to the target email address. If you do not
             have an account yet, GitHub sign-in will create one first and then
             return you here to finish joining.
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 pt-6">
           <div className="grid gap-3 rounded-2xl border border-border/70 bg-background/60 p-4 sm:grid-cols-2">
             <div className="space-y-1">
-              <div className="text-xs uppercase tracking-wide text-muted-foreground">
+              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
                 Invite type
               </div>
               <div className="font-medium capitalize">{invite.type}</div>
             </div>
             <div className="space-y-1">
-              <div className="text-xs uppercase tracking-wide text-muted-foreground">
+              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
                 Target email
               </div>
-              <div className="font-medium">{invite.email || "Not specified"}</div>
+              <div className="break-all font-medium">{invite.email || "Not specified"}</div>
             </div>
             <div className="space-y-1">
-              <div className="text-xs uppercase tracking-wide text-muted-foreground">
+              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
                 Role
               </div>
               <div className="font-medium">{invite.role || "Member"}</div>
             </div>
             <div className="space-y-1">
-              <div className="text-xs uppercase tracking-wide text-muted-foreground">
+              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
                 Current account
               </div>
-              <div className="font-medium">{user?.email ?? "Not signed in"}</div>
+              <div className="break-all font-medium">{user?.email ?? "Not signed in"}</div>
             </div>
           </div>
 
@@ -281,10 +283,10 @@ export default function InvitePage() {
 
           <Separator />
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-3">
             {!user ? (
               <Button
-                className="w-full gap-2"
+                className="w-full gap-2 rounded-xl py-6"
                 onClick={() => authApi.loginWithGitHub(currentUrl)}
               >
                 <GitHubLogo className="size-4" />
@@ -294,7 +296,7 @@ export default function InvitePage() {
 
             {user && status !== "accepted" ? (
               <Button
-                className="w-full gap-2"
+                className="w-full gap-2 rounded-xl py-6"
                 onClick={() => void acceptInvite()}
                 disabled={status === "accepting"}
               >
@@ -309,7 +311,7 @@ export default function InvitePage() {
 
             {user ? (
               <Button
-                className="w-full gap-2"
+                className="w-full gap-2 rounded-xl py-6"
                 variant="secondary"
                 onClick={() => void switchAccount()}
                 disabled={status === "accepting"}
@@ -321,7 +323,7 @@ export default function InvitePage() {
 
             {user && status !== "accepted" ? (
               <Button
-                className="w-full gap-2"
+                className="w-full gap-2 rounded-xl py-6"
                 variant="outline"
                 onClick={() => void declineInvite()}
                 disabled={status === "accepting"}
@@ -341,7 +343,7 @@ export default function InvitePage() {
                 You are already in the right workspace. Continue to the
                 dashboard or open the invited area directly.
               </p>
-              <Button asChild className="w-fit gap-2">
+              <Button asChild className="w-full gap-2 rounded-xl py-6 sm:w-fit">
                 <a href={dashboardHref}>
                   Continue
                   <ArrowRight className="size-4" />

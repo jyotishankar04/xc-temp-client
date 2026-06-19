@@ -2,6 +2,7 @@ export * from "./client";
 export * from "./auth";
 export * from "./platform";
 export * from "./modules/dashboardApi";
+export * from "./modules/notificationsApi";
 export * from "./modules/adminApi";
 export * from "./modules/orgsApi";
 export * from "./modules/usersApi";

@@ -43,6 +43,10 @@ export interface AdminLoginResponse {
   };
 }
 
+export interface RecoveryResponse {
+  requested: true;
+}
+
 const AUTH_ENDPOINT = `${appConfig.apiUrl}/api/v1/auth`;
 const ONBOARDING_ENDPOINT = "/api/v1/onboarding";
 const USER_ENDPOINT = "/api/v1/users";
@@ -62,6 +66,44 @@ export const authApi = {
       data,
     );
     return response.data.data as AdminLoginResponse;
+  },
+
+  requestAdminPasswordReset: async (data: {
+    email: string;
+  }): Promise<RecoveryResponse> => {
+    const response = await apiClient.post<ApiResponse<RecoveryResponse>>(
+      "/api/v1/auth/admin/forgot-password",
+      data,
+    );
+    return response.data.data as RecoveryResponse;
+  },
+
+  resetAdminPassword: async (data: {
+    token: string;
+    password: string;
+  }): Promise<RecoveryResponse> => {
+    const response = await apiClient.post<ApiResponse<RecoveryResponse>>(
+      "/api/v1/auth/admin/reset-password",
+      data,
+    );
+    return response.data.data as RecoveryResponse;
+  },
+
+  requestAdminEmailVerification: async (data: {
+    email: string;
+  }): Promise<RecoveryResponse> => {
+    const response = await apiClient.post<ApiResponse<RecoveryResponse>>(
+      "/api/v1/auth/admin/request-verification",
+      data,
+    );
+    return response.data.data as RecoveryResponse;
+  },
+
+  verifyAdminEmail: async (token: string): Promise<ApiResponse<{ email: string; verified: true }>> => {
+    const response = await apiClient.get<ApiResponse<{ email: string; verified: true }>>(
+      `/api/v1/auth/admin/verify-email?token=${encodeURIComponent(token)}`,
+    );
+    return response.data;
   },
 
   logout: async (): Promise<void> => {

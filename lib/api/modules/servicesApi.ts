@@ -7,22 +7,40 @@ import type {
   GitHubRepo,
   GitHubWorkflow,
   Service,
+  ServicePipelineStatus,
   ServiceInvitation,
   ServiceMember,
   UpdateMemberInput,
   UpdateServiceInput,
   ApiKey,
+  ServiceApiUsage,
 } from "@/lib/types/service";
 
 export const servicesApi = {
-  getAll: async (): Promise<ApiResponse<Service[]>> => {
-    const response = await apiClient.get<ApiResponse<Service[]>>("/api/v1/services");
+  getAll: async (
+    params?: { page?: number; limit?: number },
+  ): Promise<ApiResponse<{ items: Service[]; pagination: { page: number; limit: number; total: number; totalPages: number } }>> => {
+    const response = await apiClient.get<
+      ApiResponse<{
+        items: Service[];
+        pagination: { page: number; limit: number; total: number; totalPages: number };
+      }>
+    >("/api/v1/services", { params });
     return response.data;
   },
 
   getById: async (serviceId: string): Promise<ApiResponse<Service>> => {
     const response = await apiClient.get<ApiResponse<Service>>(
       `/api/v1/services/${serviceId}`
+    );
+    return response.data;
+  },
+
+  getPipelineStatus: async (
+    serviceId: string
+  ): Promise<ApiResponse<ServicePipelineStatus>> => {
+    const response = await apiClient.get<ApiResponse<ServicePipelineStatus>>(
+      `/api/v1/services/${serviceId}/pipeline-status`
     );
     return response.data;
   },
@@ -142,6 +160,13 @@ export const servicesApi = {
   getApiKeys: async (serviceId: string): Promise<ApiResponse<ApiKey[]>> => {
     const response = await apiClient.get<ApiResponse<ApiKey[]>>(
       `/api/v1/services/${serviceId}/apikeys`
+    );
+    return response.data;
+  },
+
+  getApiUsage: async (serviceId: string): Promise<ApiResponse<ServiceApiUsage>> => {
+    const response = await apiClient.get<ApiResponse<ServiceApiUsage>>(
+      `/api/v1/services/${serviceId}/apikeys/usage`
     );
     return response.data;
   },

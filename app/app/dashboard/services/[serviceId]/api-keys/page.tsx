@@ -27,16 +27,18 @@ import {
 import { ConfirmDialog } from "@/components/ui/alert-dialog";
 import {
   useApiKeys,
+  useApiUsage,
   useCreateApiKey,
   useDeleteApiKey,
 } from "@/lib/hooks";
-import { Loader2, Plus, Trash2, Copy, Key, Check } from "lucide-react";
+import { Loader2, Plus, Trash2, Copy, Key, Check, Activity } from "lucide-react";
 
 export default function ServiceApiKeysPage() {
   const params = useParams();
   const serviceId = params?.serviceId as string;
 
   const { data: apiKeys = [], isLoading } = useApiKeys(serviceId);
+  const { data: apiUsage } = useApiUsage(serviceId);
   const createApiKey = useCreateApiKey();
   const deleteApiKey = useDeleteApiKey();
 
@@ -167,6 +169,41 @@ export default function ServiceApiKeysPage() {
         </Dialog>
       </div>
 
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardContent className="flex items-center justify-between p-6">
+            <div>
+              <p className="text-sm text-muted-foreground">Total requests</p>
+              <p className="mt-1 text-3xl font-semibold tabular-nums">
+                {apiUsage?.totalRequests ?? 0}
+              </p>
+            </div>
+            <Activity className="size-5 text-muted-foreground" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex items-center justify-between p-6">
+            <div>
+              <p className="text-sm text-muted-foreground">API keys</p>
+              <p className="mt-1 text-3xl font-semibold tabular-nums">
+                {apiKeys.length}
+              </p>
+            </div>
+            <Key className="size-5 text-muted-foreground" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <p className="text-sm text-muted-foreground">Last request</p>
+            <p className="mt-1 text-sm font-medium">
+              {apiUsage?.lastSeenAt
+                ? new Date(apiUsage.lastSeenAt).toLocaleString()
+                : "No traffic yet"}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
       <Card>
         <CardContent className="p-0">
           {apiKeys?.length === 0 ? (
@@ -182,23 +219,38 @@ export default function ServiceApiKeysPage() {
               </Button>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Key</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {apiKeys?.map((apiKey) => (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Key</TableHead>
+                    <TableHead>Usage</TableHead>
+                    <TableHead>Last seen</TableHead>
+                    <TableHead>Created</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                {apiKeys?.map((apiKey) => {
+                  const usage = apiUsage?.keys.find((item) => item.id === apiKey.id);
+                  return (
                   <TableRow key={apiKey.id}>
                     <TableCell className="font-medium">{apiKey.name}</TableCell>
                     <TableCell>
                       <code className="text-sm font-mono bg-muted px-2 py-1 rounded">
                         {apiKey.prefix || "••••••••••••••••"}
                       </code>
+                    </TableCell>
+                    <TableCell className="tabular-nums">
+                      {usage?.totalRequests ?? 0}
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        requests
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {usage?.lastSeenAt
+                        ? new Date(usage.lastSeenAt).toLocaleString()
+                        : "Never"}
                     </TableCell>
                     <TableCell>
                       {apiKey.createdAt
@@ -234,12 +286,36 @@ export default function ServiceApiKeysPage() {
                       </div>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
+                  );
+                })}
+                </TableBody>
+              </Table>
+            )}
         </CardContent>
       </Card>
+
+      {apiUsage && apiUsage.recentRequests.length > 0 && (
+        <Card>
+          <CardContent className="p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-semibold">Recent usage</h3>
+                <p className="text-sm text-muted-foreground">
+                  Requests across this service for the last 7 days
+                </p>
+              </div>
+            </div>
+            <div className="grid gap-3 md:grid-cols-7">
+              {apiUsage.recentRequests.map((point) => (
+                <div key={point.date} className="rounded-lg border bg-muted/30 p-3">
+                  <p className="text-xs text-muted-foreground">{point.date}</p>
+                  <p className="mt-1 text-xl font-semibold tabular-nums">{point.count}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <ConfirmDialog
         open={deleteConfirm.open}

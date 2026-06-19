@@ -3,7 +3,7 @@ export const ROUTES = {
   ABOUT: "/about",
   PRODUCT: "/product",
   HOW_IT_WORKS: "/how-it-works",
-  BLOG: "/blog",
+  BLOG: "/blogs",
   SOLUTIONS: "/solutions",
   CONTACT: "/contact",
   WAITLIST: "/subscribe",
