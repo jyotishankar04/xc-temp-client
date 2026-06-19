@@ -46,6 +46,22 @@ export interface DashboardSearchResults {
     };
     href: string;
   }>;
+  deployments: Array<{
+    id: string;
+    version: string | null;
+    release: string | null;
+    commitHash: string | null;
+    branch: string | null;
+    environment: string;
+    status: string;
+    isStable: boolean;
+    service: {
+      id: string;
+      name: string;
+      env: string;
+    };
+    href: string;
+  }>;
 }
 
 interface RawApiResponse {

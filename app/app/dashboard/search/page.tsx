@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { Search, Loader2, AlertTriangle, Activity } from "lucide-react";
+import { Search, Loader2, AlertTriangle, Activity, Package } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { dashboardApi } from "@/lib/api";
@@ -33,8 +33,8 @@ export default function DashboardSearchPage() {
         <h1 className="text-balance text-2xl font-bold tracking-tight">Search results</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {query
-            ? `Searching for "${query}" across services, cases, and events.`
-            : "Use the header search bar to look up failures and services."}
+            ? `Searching for "${query}" across services, incidents, events, and deployments.`
+            : "Use the header search bar to look up incidents, services, and deployments."}
         </p>
       </div>
 
@@ -94,8 +94,8 @@ export default function DashboardSearchPage() {
                 ))
               ) : (
                 <div className="py-8 text-center text-sm text-muted-foreground">
-                  No matching services.
-                </div>
+                No matching services.
+              </div>
               )}
             </CardContent>
           </Card>
@@ -104,7 +104,7 @@ export default function DashboardSearchPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <AlertTriangle className="size-4" />
-                Failure Cases
+                Incidents
                 <Badge variant="secondary" className="ml-auto">
                   {data?.failureCases.length ?? 0}
                 </Badge>
@@ -136,7 +136,7 @@ export default function DashboardSearchPage() {
                 ))
               ) : (
                 <div className="py-8 text-center text-sm text-muted-foreground">
-                  No matching cases.
+                  No matching incidents.
                 </div>
               )}
             </CardContent>
@@ -176,6 +176,50 @@ export default function DashboardSearchPage() {
               ) : (
                 <div className="py-8 text-center text-sm text-muted-foreground">
                   No matching events.
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="xl:col-span-3">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Package className="size-4" />
+                Deployments
+                <Badge variant="secondary" className="ml-auto">
+                  {data?.deployments.length ?? 0}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {data?.deployments.length ? (
+                data.deployments.map((deployment) => (
+                  <Link
+                    key={deployment.id}
+                    href={deployment.href}
+                    className="block rounded-lg border p-3 transition-colors hover:bg-muted/50"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-medium">
+                          {deployment.version || deployment.release || deployment.commitHash || "Deployment"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {deployment.service.name} · {deployment.environment}
+                        </p>
+                      </div>
+                      <Badge variant="outline" className="text-[11px] uppercase">
+                        {deployment.status}
+                      </Badge>
+                    </div>
+                    <p className="mt-2 text-xs text-muted-foreground uppercase">
+                      {deployment.isStable ? "Stable" : "Unstable"}
+                    </p>
+                  </Link>
+                ))
+              ) : (
+                <div className="py-8 text-center text-sm text-muted-foreground">
+                  No matching deployments.
                 </div>
               )}
             </CardContent>

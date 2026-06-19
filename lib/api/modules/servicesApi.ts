@@ -14,6 +14,7 @@ import type {
   UpdateServiceInput,
   ApiKey,
   ServiceApiUsage,
+  ServiceDeployment,
 } from "@/lib/types/service";
 
 export const servicesApi = {
@@ -167,6 +168,24 @@ export const servicesApi = {
   getApiUsage: async (serviceId: string): Promise<ApiResponse<ServiceApiUsage>> => {
     const response = await apiClient.get<ApiResponse<ServiceApiUsage>>(
       `/api/v1/services/${serviceId}/apikeys/usage`
+    );
+    return response.data;
+  },
+
+  getDeployments: async (serviceId: string): Promise<ApiResponse<ServiceDeployment[]>> => {
+    const response = await apiClient.get<ApiResponse<ServiceDeployment[]>>(
+      `/api/v1/services/${serviceId}/deployments`
+    );
+    return response.data;
+  },
+
+  createDeployment: async (
+    serviceId: string,
+    data: Partial<ServiceDeployment> & { environment: string }
+  ): Promise<ApiResponse<ServiceDeployment>> => {
+    const response = await apiClient.post<ApiResponse<ServiceDeployment>>(
+      `/api/v1/services/${serviceId}/deployments`,
+      data
     );
     return response.data;
   },

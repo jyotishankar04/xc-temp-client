@@ -13,6 +13,8 @@ export const ROUTES = {
 
   DASHBOARD: "/app/dashboard",
   DASHBOARD_OVERVIEW: "/app/dashboard",
+  DASHBOARD_INCIDENTS: "/app/dashboard/incidents",
+  DASHBOARD_INCIDENT_DETAIL: "/app/dashboard/incidents",
   DASHBOARD_FAILURES: "/app/dashboard/failures",
   DASHBOARD_FAILURE_DETAIL: "/app/dashboard/failures",
   DASHBOARD_ANALYSIS: "/app/dashboard/analysis",
@@ -24,6 +26,7 @@ export const ROUTES = {
   DASHBOARD_AUDIT: "/app/dashboard/audit",
   DASHBOARD_PROFILE: "/app/dashboard/profile",
   DASHBOARD_SETTINGS: "/app/dashboard/settings",
+  DASHBOARD_NOTIFICATIONS: "/app/dashboard/notifications",
 
   ORGS: "/app/orgs",
   ORGS_CREATE: "/app/orgs/create",

@@ -87,9 +87,9 @@ export default function FailuresPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-balance text-2xl font-bold tracking-tight">Failure Cases</h1>
+        <h1 className="text-balance text-2xl font-bold tracking-tight">Incidents</h1>
         <p className="text-pretty text-muted-foreground text-sm mt-1">
-          Track and manage all detected failure cases
+          Track and manage all detected incidents
         </p>
       </div>
 
@@ -101,7 +101,7 @@ export default function FailuresPage() {
               <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <Input
                 placeholder="Search cases..."
-                aria-label="Search failures"
+                aria-label="Search incidents"
                 className="pl-9 h-9"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -157,7 +157,7 @@ export default function FailuresPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-24 pl-4">Case ID</TableHead>
+                <TableHead className="w-24 pl-4">Incident ID</TableHead>
                 <TableHead>Error / Fingerprint</TableHead>
                 <TableHead>Service</TableHead>
                 <TableHead className="w-28">Severity</TableHead>
@@ -171,7 +171,7 @@ export default function FailuresPage() {
               {cases.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
-                    No cases found matching your filters.
+                    No incidents found matching your filters.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -183,7 +183,7 @@ export default function FailuresPage() {
                     {/* Case ID */}
                     <TableCell className="pl-4">
                       <Link
-                        href={`${ROUTES.DASHBOARD_FAILURES}/${c.id}`}
+                        href={`${ROUTES.DASHBOARD_INCIDENTS}/${c.id}`}
                         className="font-mono text-xs font-semibold text-primary hover:underline"
                       >
                         {c.id.slice(0, 8)}…

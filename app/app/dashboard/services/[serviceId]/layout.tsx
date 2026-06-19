@@ -4,13 +4,14 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Boxes, LayoutDashboard, Settings2, Key, Users, ChevronRight, RotateCcw } from "lucide-react";
+import { Boxes, LayoutDashboard, Settings2, Key, Users, ChevronRight, RotateCcw, Package } from "lucide-react";
 import { useServiceById } from "@/lib/hooks";
 import { Loader2 } from "lucide-react";
 
 const tabs = [
   { id: "overview", label: "Overview", href: "/overview", icon: LayoutDashboard },
   { id: "settings", label: "Settings", href: "/settings", icon: Settings2 },
+  { id: "deployments", label: "Deployments", href: "/deployments", icon: Package },
   { id: "api-keys", label: "API Keys", href: "/api-keys", icon: Key },
   { id: "rollback", label: "Rollback", href: "/rollback", icon: RotateCcw },
   { id: "members", label: "Members", href: "/members", icon: Users },

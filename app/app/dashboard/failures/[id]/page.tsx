@@ -87,15 +87,15 @@ export default function FailureDetailPage() {
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link href={ROUTES.DASHBOARD_FAILURES} aria-label="Back to failures">
+            <Link href={ROUTES.DASHBOARD_INCIDENTS} aria-label="Back to incidents">
               <ArrowLeft className="size-4" />
             </Link>
           </Button>
-          <h1 className="text-balance text-2xl font-bold tracking-tight">Case Not Found</h1>
+          <h1 className="text-balance text-2xl font-bold tracking-tight">Incident Not Found</h1>
         </div>
         <Card>
           <CardContent className="pt-6">
-            <p className="text-pretty text-muted-foreground">Failed to load case details. Please try again.</p>
+            <p className="text-pretty text-muted-foreground">Failed to load incident details. Please try again.</p>
           </CardContent>
         </Card>
       </div>
@@ -104,16 +104,16 @@ export default function FailureDetailPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href={ROUTES.DASHBOARD_FAILURES} aria-label="Back to failures">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" asChild>
+          <Link href={ROUTES.DASHBOARD_INCIDENTS} aria-label="Back to incidents">
             <ArrowLeft className="size-4" />
           </Link>
         </Button>
         <div className="flex flex-col">
           <div className="flex items-center gap-3">
             <h1 className="text-balance text-xl font-bold tracking-tight">
-              Case — {failureCase.id.slice(0, 8)}...
+              Incident — {failureCase.id.slice(0, 8)}...
             </h1>
             <Badge variant={severityVariants[failureCase.severity] || "outline"} className="capitalize">
               {failureCase.severity.toLowerCase()}
@@ -135,7 +135,7 @@ export default function FailureDetailPage() {
             <CardHeader>
               <CardTitle className="text-base font-semibold flex items-center gap-2">
                 <Boxes className="size-4" />
-                Case Details
+                Incident Details
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">

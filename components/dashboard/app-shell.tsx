@@ -43,6 +43,9 @@ const segmentLabels: Record<string, string> = {
   analysis: "Analysis",
   audit: "Audit Log",
   services: "Services",
+  deployments: "Deployments",
+  incidents: "Incidents",
+  notifications: "Notifications",
   settings: "Settings",
   team: "Team",
   setup: "Setup",
@@ -150,8 +153,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="relative w-full max-w-sm">
             <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
-              aria-label="Search failures and services"
-              placeholder="Search failures, services..."
+              aria-label="Search incidents, services, and deployments"
+              placeholder="Search incidents, services..."
               className="pl-9 h-9 bg-muted/50 border-0 w-full max-w-sm"
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
@@ -240,7 +243,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                             <div className="mb-2 flex items-center justify-between px-2 text-xs font-medium text-muted-foreground">
                               <span className="flex items-center gap-1.5">
                                 <AlertTriangle className="size-3.5" />
-                                Failure cases
+                                Incidents
                               </span>
                               <Badge variant="secondary" className="h-5 px-1.5 text-[10px]">
                                 {searchData.failureCases.length}
@@ -293,6 +296,39 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                                     </p>
                                     <p className="truncate text-xs text-muted-foreground">
                                       {event.errorMessage}
+                                    </p>
+                                  </div>
+                                  <ArrowRight className="size-3.5 shrink-0 text-muted-foreground" />
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {searchData.deployments.length > 0 && (
+                          <div>
+                            <div className="mb-2 flex items-center justify-between px-2 text-xs font-medium text-muted-foreground">
+                              <span className="flex items-center gap-1.5">
+                                <Activity className="size-3.5" />
+                                Deployments
+                              </span>
+                              <Badge variant="secondary" className="h-5 px-1.5 text-[10px]">
+                                {searchData.deployments.length}
+                              </Badge>
+                            </div>
+                            <div className="space-y-1">
+                              {searchData.deployments.map((deployment) => (
+                                <Link
+                                  key={deployment.id}
+                                  href={deployment.href}
+                                  className="flex items-center justify-between rounded-xl px-3 py-2 transition-colors hover:bg-muted/60"
+                                >
+                                  <div className="min-w-0">
+                                    <p className="truncate text-sm font-medium">
+                                      {deployment.version || deployment.release || deployment.commitHash || "Deployment"}
+                                    </p>
+                                    <p className="truncate text-xs text-muted-foreground">
+                                      {deployment.service.name} · {deployment.environment} · {deployment.status}
                                     </p>
                                   </div>
                                   <ArrowRight className="size-3.5 shrink-0 text-muted-foreground" />
@@ -370,6 +406,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       No new notifications
                     </div>
                   )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href={ROUTES.DASHBOARD_NOTIFICATIONS} className="w-full">
+                      View all notifications
+                    </Link>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 

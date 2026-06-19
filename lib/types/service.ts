@@ -129,6 +129,40 @@ export interface ServiceApiUsage {
   keys: ApiKeyUsage[];
 }
 
+export interface ServiceDeployment {
+  id: string;
+  serviceId: string;
+  version: string | null;
+  release: string | null;
+  commitHash: string | null;
+  branch: string | null;
+  environment: string;
+  status: string;
+  isStable: boolean;
+  deployedAt: string;
+  completedAt: string | null;
+  metadata?: Record<string, unknown> | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DashboardSearchDeployment {
+  id: string;
+  version: string | null;
+  release: string | null;
+  commitHash: string | null;
+  branch: string | null;
+  environment: string;
+  status: string;
+  isStable: boolean;
+  service: {
+    id: string;
+    name: string;
+    env: string;
+  };
+  href: string;
+}
+
 export interface CreateApiKeyInput {
   name: string;
 }
