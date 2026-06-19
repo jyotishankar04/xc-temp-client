@@ -15,7 +15,7 @@ export interface Action {
       id: string;
       name: string;
     };
-    severity: "LOW" | "MEDIUM" | "HIGH";
+    severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
     reports?: Array<{
       id: string;
       confidenceScore: number;

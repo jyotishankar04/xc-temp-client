@@ -12,6 +12,8 @@ const statusConfig = {
   healthy: { variant: "outline" as const, label: "Healthy", dot: "bg-status-healthy" },
   degraded: { variant: "secondary" as const, label: "Degraded", dot: "bg-severity-medium" },
   down: { variant: "destructive" as const, label: "Down", dot: "bg-severity-high" },
+  unhealthy: { variant: "destructive" as const, label: "Unhealthy", dot: "bg-severity-high" },
+  unknown: { variant: "outline" as const, label: "Unknown", dot: "bg-muted-foreground" },
 };
 
 const envConfig: Record<string, { variant: "outline" | "secondary" | "default"; label: string }> = {
@@ -37,7 +39,7 @@ export default function ServiceOverviewPage() {
     );
   }
 
-  const status = (service?.status as keyof typeof statusConfig) || "healthy";
+  const status = (service?.status?.toLowerCase() as keyof typeof statusConfig) || "healthy";
   const statusConfigItem = statusConfig[status] || statusConfig.healthy;
   const envConfigItem = envConfig[service?.env || "DEVELOPMENT"] || envConfig.DEVELOPMENT;
 

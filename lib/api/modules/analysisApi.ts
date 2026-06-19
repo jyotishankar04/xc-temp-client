@@ -8,7 +8,7 @@ export interface Pattern {
   occurrences: number;
   services: string[];
   confidence: number;
-  severity: "LOW" | "MEDIUM" | "HIGH";
+  severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
   firstSeenAt: string;
   lastSeenAt: string;
 }
@@ -32,7 +32,7 @@ export interface AnalysisResponse {
 
 export interface ListAnalysisParams {
   serviceId?: string;
-  severity?: "LOW" | "MEDIUM" | "HIGH";
+  severity?: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
   page?: number;
   limit?: number;
 }

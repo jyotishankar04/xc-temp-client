@@ -13,3 +13,4 @@ export * from "./use-actions";
 export * from "./use-analysis";
 export * from "./use-audit";
 export * from "./use-rollback";
+export * from "./use-notifications-realtime";

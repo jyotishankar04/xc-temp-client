@@ -16,11 +16,12 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { adminApi, dashboardApi, notificationsApi } from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/constants/routes";
 import { useDebounce } from "@/lib/hooks";
 import { Badge } from "@/components/ui/badge";
+import { useNotificationsRealtime } from "@/lib/hooks";
 
 function getInitials(name?: string | null): string {
   if (!name) return "?";
@@ -128,6 +129,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     },
     enabled: !!user,
   });
+  const queryClient = useQueryClient();
+  useNotificationsRealtime();
 
   const handleSearchSubmit = () => {
     const trimmed = searchQuery.trim();
@@ -138,6 +141,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const showSearchPanel =
     mounted && searchFocused && searchQuery.trim().length >= 2;
   const searchData = searchResultsQuery.data;
+  const unreadNotifications = notificationsQuery.data?.filter((item) => !item.read).length ?? 0;
 
   return (
     <div className="flex flex-1 flex-col">
@@ -318,6 +322,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     aria-label="Notifications"
                   >
                     <BellIcon className="size-4" />
+                    {unreadNotifications > 0 && (
+                      <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-destructive" />
+                    )}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-72">
@@ -332,13 +339,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       <DropdownMenuItem key={notification.id} asChild>
                         <Link
                           href={notification.href}
+                          onClick={() => {
+                            void notificationsApi.markRead(notification.id).then(() => {
+                              void queryClient.invalidateQueries({ queryKey: ["notifications", "recent"] });
+                            });
+                          }}
                           className="flex items-start gap-3 py-3"
                         >
                           <div className="flex size-8 shrink-0 items-center justify-center rounded-full border bg-muted text-[10px] font-semibold uppercase">
                             {notification.type.slice(0, 1)}
                           </div>
                           <div className="flex min-w-0 flex-col gap-0.5">
-                            <span className="text-sm font-medium leading-tight">
+                            <span
+                              className={`text-sm font-medium leading-tight ${notification.read ? "text-muted-foreground" : ""}`}
+                            >
                               {notification.title}
                             </span>
                             <span className="text-xs text-muted-foreground leading-tight">

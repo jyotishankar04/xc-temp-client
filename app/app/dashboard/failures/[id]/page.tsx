@@ -21,6 +21,7 @@ import {
 import { ROUTES } from "@/lib/constants/routes";
 
 const severityVariants: Record<string, "destructive" | "secondary" | "outline"> = {
+  CRITICAL: "destructive",
   HIGH: "destructive",
   MEDIUM: "secondary",
   LOW: "outline",
@@ -28,6 +29,9 @@ const severityVariants: Record<string, "destructive" | "secondary" | "outline"> 
 
 const statusVariants: Record<string, "default" | "outline"> = {
   OPEN: "default",
+  INVESTIGATING: "default",
+  ROLLED_BACK: "outline",
+  IGNORED: "outline",
   RESOLVED: "outline",
   MERGED: "outline",
 };
@@ -62,7 +66,7 @@ export default function FailureDetailPage() {
     }
   };
 
-  const handleStatusChange = async (newStatus: "OPEN" | "RESOLVED") => {
+  const handleStatusChange = async (newStatus: "OPEN" | "INVESTIGATING" | "ROLLED_BACK" | "IGNORED" | "RESOLVED") => {
     try {
       await updateCase.mutateAsync({ caseId, data: { status: newStatus } });
     } catch (e) {
