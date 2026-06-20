@@ -132,6 +132,8 @@ export interface ServiceApiUsage {
 export interface ServiceDeployment {
   id: string;
   serviceId: string;
+  source: string | null;
+  externalId: string | null;
   version: string | null;
   release: string | null;
   commitHash: string | null;

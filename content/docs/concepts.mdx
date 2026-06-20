@@ -33,6 +33,36 @@ backend API.
 5. A human reviews actions before rollback execution.
 6. The system links the case to the latest stable deployment when it can.
 
+## Deployment sources
+
+Deployments can come from SDK payload metadata, manual API records, rollback
+workflows, GitHub webhooks, or GitHub Actions sync. Each deployment can include
+a source and external ID so the backend can process provider events
+idempotently.
+
+GitHub deployment records use these source values:
+
+- `github_deployment` for GitHub deployment and deployment status events.
+- `github_workflow_run` for GitHub Actions workflow run events and sync.
+
+XecureCode does not treat a successful GitHub workflow as a stable release by
+itself. A successful GitHub run becomes `ACTIVE`; it becomes `STABLE` only when
+there is a healthy service check after the deployment time.
+
+## Incident-to-deployment linking
+
+The ingest worker links new events to deployments in this order:
+
+1. Use the explicit `deploymentId` from the SDK payload when it belongs to the
+   same service.
+2. Match the payload `commitHash` to the latest deployment for the same service
+   and environment.
+3. Fall back to the latest `ACTIVE` or `STABLE` deployment for the same service
+   and environment.
+
+This linking gives RCA and rollback enough release context even when an SDK
+doesn't send a deployment ID with every event.
+
 ## Access model
 
 - Organization owners create services, manage organization settings, and control

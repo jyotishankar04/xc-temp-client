@@ -45,3 +45,26 @@ Check `GET /health` first. It verifies database and Redis connectivity.
 - Approve the recovery action before triggering rollback.
 - Make sure a deployment exists so rollback can resolve a stable commit.
 - Check the rollback history page for a blocked, failed, or cooldown status.
+
+## GitHub deployments do not appear
+
+- Confirm the service is mapped to the same `owner/repo` that sends the GitHub
+  webhook.
+- Confirm the webhook payload URL is
+  `https://your-api-domain.com/api/v1/github/webhooks`.
+- Confirm the webhook secret matches the organization's
+  `GitHubIntegration.webhookSecret`.
+- Enable the `deployment`, `deployment_status`, and `workflow_run` events in
+  GitHub.
+- Use **Sync GitHub** on the deployments page to backfill recent GitHub Actions
+  runs.
+- Check that the mapped branch matches the branch used by the workflow run.
+
+## Deployments stay active instead of stable
+
+GitHub workflow success proves that a workflow completed, not that the live
+service is healthy. XecureCode marks GitHub deployments as `ACTIVE` until it
+has a `HEALTHY` service health check at or after the deployment time.
+
+Record a health check after deployment if you want the deployment to become a
+stable rollback candidate.

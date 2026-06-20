@@ -190,6 +190,17 @@ export const servicesApi = {
     return response.data;
   },
 
+  syncGitHubDeployments: async (
+    serviceId: string,
+    data: { limit?: number } = {}
+  ): Promise<ApiResponse<ServiceDeployment[]>> => {
+    const response = await apiClient.post<ApiResponse<ServiceDeployment[]>>(
+      `/api/v1/services/${serviceId}/deployments/sync/github`,
+      data
+    );
+    return response.data;
+  },
+
   createApiKey: async (
     serviceId: string,
     data: CreateApiKeyInput

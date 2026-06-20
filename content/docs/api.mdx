@@ -88,14 +88,63 @@ buffer multiple events.
 | Users | `/api/v1/users/*` | Reads and updates the current user and settings. |
 | Organizations | `/api/v1/orgs/*` | Manages organizations, members, switching, and GitHub integration. |
 | Services | `/api/v1/services/*` | Manages services, API keys, members, invitations, GitHub repo metadata, deployments, and rollback settings. |
+| GitHub webhooks | `POST /api/v1/github/webhooks` | Receives signed GitHub deployment, deployment status, and workflow run events. |
 | Events | `/api/v1/events/*` | Lists events, reads an event, and fetches correlations. |
 | Cases | `/api/v1/cases/*` | Lists, reads, updates, and merges failure cases. |
 | RCA | `/api/v1/rca/*` | Lists, reads, generates, and updates RCA reports. |
 | Actions | `/api/v1/actions/*` | Lists, reads, approves, and rejects recovery actions. Approving a pending rollback action queues rollback execution. |
 | Rollback | `/api/v1/services/:serviceId/rollback/*` | Reads rollback config, updates config, lists history, and exposes the owner/admin manual rollback trigger. |
-| Deployments | `/api/v1/services/:serviceId/deployments` | Lists deployment history for a service. |
+| Deployments | `/api/v1/services/:serviceId/deployments` | Lists and records deployment history for a service. |
+| GitHub deployment sync | `POST /api/v1/services/:serviceId/deployments/sync/github` | Imports recent GitHub Actions workflow runs into deployment history. |
 | Notifications | `/api/v1/notifications/*` | Lists notifications and marks them as read. |
 | Health checks | `/api/v1/services/:serviceId/health-checks` | Stores and reads service health observations. |
 | Dashboard | `GET /api/v1/dashboard/stats` | Returns dashboard metrics for a time range. |
 | Audit | `GET /api/v1/audit` | Lists organization audit logs. |
 | Analysis | `GET /api/v1/analysis` | Lists detected failure patterns. |
+
+## GitHub deployment webhooks
+
+GitHub can become a deployment signal source when a service is mapped to a
+repository. The webhook endpoint verifies GitHub's signature with the
+organization webhook secret, maps `repository.full_name` to the service's
+repository mapping, and upserts deployment records.
+
+Configure the GitHub webhook with these values:
+
+- Payload URL: `https://your-api-domain.com/api/v1/github/webhooks`
+- Content type: `application/json`
+- Secret: the organization's `GitHubIntegration.webhookSecret`
+- Events: `deployment`, `deployment_status`, and `workflow_run`
+
+The backend accepts these GitHub event types:
+
+| GitHub event | Deployment source | Behavior |
+| --- | --- | --- |
+| `deployment` | `github_deployment` | Creates or updates a pending deployment for the GitHub deployment ID. |
+| `deployment_status` | `github_deployment` | Updates the matching deployment status from GitHub's deployment state. |
+| `workflow_run` | `github_workflow_run` | Creates or updates a deployment from a GitHub Actions workflow run. |
+
+Successful GitHub runs become `ACTIVE` by default. They become `STABLE` only
+when XecureCode has a `HEALTHY` service health check at or after the deployment
+time.
+
+## GitHub deployment sync
+
+Use the sync endpoint when you want to backfill recent GitHub Actions runs for a
+mapped service.
+
+```http
+POST /api/v1/services/:serviceId/deployments/sync/github
+Content-Type: application/json
+```
+
+```json
+{
+  "limit": 50
+}
+```
+
+The endpoint reads the service repository mapping, fetches recent workflow runs
+for the mapped branch, and upserts deployment records using the GitHub workflow
+run ID. Re-running the sync updates existing rows instead of creating
+duplicates.

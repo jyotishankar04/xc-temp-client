@@ -1,10 +1,11 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { Package, Loader2, GitCommit, ShieldCheck, Clock3 } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Package, Loader2, GitCommit, ShieldCheck, Clock3, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { servicesApi } from "@/lib/api";
 
 function formatDate(value: string | null) {
@@ -15,6 +16,7 @@ function formatDate(value: string | null) {
 export default function ServiceDeploymentsPage() {
   const params = useParams();
   const serviceId = params?.serviceId as string;
+  const queryClient = useQueryClient();
 
   const deploymentsQuery = useQuery({
     queryKey: ["services", serviceId, "deployments"],
@@ -28,6 +30,19 @@ export default function ServiceDeploymentsPage() {
     enabled: !!serviceId,
   });
 
+  const syncMutation = useMutation({
+    mutationFn: async () => {
+      const res = await servicesApi.syncGitHubDeployments(serviceId, { limit: 50 });
+      if (!res.success) {
+        throw new Error(res.message || "Failed to sync GitHub deployments");
+      }
+      return res.data ?? [];
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["services", serviceId, "deployments"] });
+    },
+  });
+
   if (deploymentsQuery.isLoading) {
     return (
       <div className="flex min-h-80 items-center justify-center">
@@ -38,12 +53,35 @@ export default function ServiceDeploymentsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Deployments</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Deployment history, release context, and stable version tracking for this service.
-        </p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Deployments</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Deployment history, release context, and stable version tracking for this service.
+          </p>
+        </div>
+        <Button
+          className="w-fit gap-2"
+          disabled={syncMutation.isPending || !serviceId}
+          onClick={() => syncMutation.mutate()}
+          variant="outline"
+        >
+          {syncMutation.isPending ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <RefreshCw className="size-4" />
+          )}
+          Sync GitHub
+        </Button>
       </div>
+
+      {syncMutation.isError && (
+        <Card className="border-destructive/40">
+          <CardContent className="py-3 text-sm text-destructive">
+            {syncMutation.error instanceof Error ? syncMutation.error.message : "Failed to sync GitHub deployments"}
+          </CardContent>
+        </Card>
+      )}
 
       {deploymentsQuery.data?.length ? (
         <div className="grid gap-4">
@@ -57,6 +95,7 @@ export default function ServiceDeploymentsPage() {
                   </CardTitle>
                   <p className="mt-1 text-sm text-muted-foreground">
                     {deployment.branch || "main"} · {deployment.environment}
+                    {deployment.source ? ` · ${deployment.source}` : ""}
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
