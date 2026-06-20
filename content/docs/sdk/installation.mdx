@@ -4,7 +4,7 @@ description: Install the XecureCode SDK for your runtime.
 ---
 
 Choose the SDK that matches the service runtime. Keep API keys in server-side
-environment variables.
+environment variables and point the SDK at your backend API URL.
 
 ## Python
 
@@ -36,3 +36,10 @@ Use [Node.js Express](/docs/sdk/node/express) or
 
 Read the [Java SDK guide](/docs/sdk/java) for manual capture and Spring Boot
 configuration.
+
+## Production settings
+
+- Set the API URL to your backend host, not `localhost`.
+- Pass the service ID and API key from server-side secrets.
+- Include the deployment version and commit hash when you deploy a release.
+- Keep request and header redaction enabled in production.

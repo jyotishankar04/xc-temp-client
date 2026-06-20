@@ -1,11 +1,12 @@
 ---
 title: Concepts
-description: Understand the XecureCode data model.
+description: Understand the XecureCode incident model.
 ---
 
-XecureCode organizes reliability work around organizations, services, failure
-events, grouped cases, RCA reports, recovery actions, and audit logs. These
-concepts appear in the dashboard, SDK payloads, and backend API.
+XecureCode organizes reliability work around organizations, services,
+incident events, grouped cases, deployments, RCA reports, recovery actions,
+and audit logs. These concepts appear in the dashboard, SDK payloads, and
+backend API.
 
 ## Core concepts
 
@@ -14,20 +15,23 @@ concepts appear in the dashboard, SDK payloads, and backend API.
 | Organization | The top-level workspace that owns services, memberships, audit logs, and GitHub integration. |
 | Service | An application plus environment. Services own API keys, events, cases, members, and rollback settings. |
 | API key | A service-scoped secret used by SDKs to send failure events to the ingest API. |
-| Failure event | A single captured error payload with stack trace, severity, service context, and optional request context. |
-| Failure case | A grouped incident created from related events, usually by fingerprint and service context. |
+| Incident event | A single captured error payload with stack trace, severity, deployment metadata, service context, and optional request context. |
+| Failure case | A grouped incident created from related events, usually by fingerprint, deployment, and service context. |
+| Deployment | A versioned release record that ties incidents to commit hashes, release metadata, and stable versions. |
 | RCA report | An asynchronous AI-assisted explanation for a case, with evidence and reviewer notes. |
 | Action | A recommended recovery action that can be approved or rejected by a human reviewer. |
-| Rollback | A GitHub workflow-backed recovery path that uses service rollback configuration and human approval. |
+| Rollback | A GitHub workflow-backed recovery path that uses deployment history, rollback configuration, and human approval. |
+| Notification | A per-user inbox item that tracks incident updates, approvals, and recovery progress. |
 | Audit log | An append-only record of important user, system, and AI actions across the organization. |
 
 ## Event lifecycle
 
-1. The SDK captures and sends a failure event.
+1. The SDK captures and sends an incident event.
 2. The backend fingerprints and stores the event.
 3. Workers group events into cases and queue analysis.
 4. RCA and actions are generated asynchronously.
 5. A human reviews actions before rollback execution.
+6. The system links the case to the latest stable deployment when it can.
 
 ## Access model
 

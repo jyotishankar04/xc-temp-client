@@ -16,7 +16,9 @@ Check `GET /health` first. It verifies database and Redis connectivity.
 - Confirm the SDK is initialized on the server, not in browser code.
 - Check that the API URL points to the backend host.
 - Verify that the service ID matches the service you created.
+- Confirm that the SDK can reach `POST /api/v1/ingest` or `POST /api/v1/ingest/batch`.
 - Call `flush()` before process shutdown in short-lived scripts.
+- If you buffer events, make sure the process stays alive long enough to flush.
 
 ## Ingest returns unauthorized
 
@@ -24,6 +26,7 @@ Check `GET /health` first. It verifies database and Redis connectivity.
 - Store the key without extra quotes, spaces, or shell escaping.
 - Use the key only for `POST /api/v1/ingest`.
 - Rotate the key if it was exposed in a client bundle or log file.
+- Confirm that the service ID belongs to the same service as the key.
 
 ## Dashboard requests redirect to login
 
@@ -31,6 +34,8 @@ Check `GET /health` first. It verifies database and Redis connectivity.
 - Set `NEXT_PUBLIC_API_URL` to the backend base URL.
 - Confirm the backend CORS origin matches the frontend URL.
 - Use the refresh route when a session expires.
+- If the user keeps signing out after a restart, confirm the JWT secrets are
+  identical across runs.
 
 ## Rollback does not run
 
@@ -38,3 +43,5 @@ Check `GET /health` first. It verifies database and Redis connectivity.
 - Map the service to the correct repository and branch.
 - Set the rollback workflow name on the service rollback page.
 - Approve the recovery action before triggering rollback.
+- Make sure a deployment exists so rollback can resolve a stable commit.
+- Check the rollback history page for a blocked, failed, or cooldown status.

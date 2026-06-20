@@ -1,9 +1,9 @@
 ---
 title: XecureCode documentation
-description: Build reliable services with clear failure intelligence.
+description: Build reliable services with clear incident intelligence.
 ---
 
-XecureCode helps you capture production failures, group repeated incidents,
+XecureCode helps you capture production incidents, group repeated signals,
 generate root cause analysis, recommend recovery actions, and keep humans in
 control of rollback decisions.
 
@@ -12,17 +12,17 @@ control of rollback decisions.
 1. Create an organization and finish onboarding.
 2. Create a service for each application and environment.
 3. Generate an API key for the service.
-4. Install an SDK and send failure events to XecureCode.
-5. Use cases, RCA reports, actions, and audit logs to review recovery.
+4. Install an SDK and send incident events to XecureCode.
+5. Review incidents, RCA reports, actions, deployments, and audit logs.
 
 ## Main docs
 
 | Area | What you learn |
 | --- | --- |
 | [Getting started](/docs/getting-started) | Set up an organization, service, API key, and SDK. |
-| [Concepts](/docs/concepts) | Understand organizations, services, events, cases, RCA, and actions. |
-| [API reference](/docs/api) | Review backend route groups and the ingest payload. |
-| [Dashboard](/docs/dashboard) | Operate incidents, services, rollback, and audit workflows. |
+| [Concepts](/docs/concepts) | Understand organizations, services, incidents, deployments, RCA, and actions. |
+| [API reference](/docs/api) | Review backend route groups, ingest payloads, and approval flows. |
+| [Dashboard](/docs/dashboard) | Operate incidents, services, rollback, notifications, and audit workflows. |
 | [Troubleshooting](/docs/troubleshooting) | Debug setup, ingestion, auth, and rollback issues. |
 
 ## Safety model
@@ -30,6 +30,7 @@ control of rollback decisions.
 - SDK delivery is non-blocking.
 - AI analysis runs asynchronously.
 - Recovery actions need human approval.
+- Rollback resolves the latest stable deployment before it runs.
 - Audit logs preserve critical decisions.
 
 ## Authentication surfaces
@@ -37,4 +38,4 @@ control of rollback decisions.
 Dashboard users sign in with GitHub OAuth. The frontend sends cookie-based
 requests to authenticated `/api/v1` routes.
 
-SDKs use service API keys when they send failure events to `/api/v1/ingest`.
+SDKs use service API keys when they send incident events to `/api/v1/ingest`.

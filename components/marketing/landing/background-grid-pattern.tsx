@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -57,7 +57,7 @@ export default function AnimatedGridPattern({
   duration = 4,
   ...props
 }: AnimatedGridPatternProps) {
-  const id = useId();
+  const id = `animated-grid-pattern-${width}-${height}-${x}-${y}-${String(strokeDasharray).replace(/[^a-zA-Z0-9_-]/g, "-")}`;
   const containerRef = useRef<SVGSVGElement | null>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 

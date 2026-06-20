@@ -4,7 +4,8 @@ description: Integrate XecureCode into backend services.
 ---
 
 XecureCode SDKs capture structured runtime errors and send non-blocking
-telemetry to the ingest API.
+telemetry to the ingest API. They also carry deployment metadata, fingerprint
+data, and occurrence counts so the backend can group incidents correctly.
 
 ## Supported SDKs
 
@@ -21,4 +22,6 @@ telemetry to the ingest API.
 - Classify common error types.
 - Detect severity.
 - Send telemetry without blocking the host application.
+- Support batched delivery when the host generates multiple errors quickly.
+- Include deployment metadata when you have it.
 - Keep recovery assistive and human-approved.
