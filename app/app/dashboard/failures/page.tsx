@@ -26,12 +26,14 @@ import { ROUTES } from "@/lib/constants/routes";
 
 // ── Severity ──────────────────────────────────────────────────────────────────
 const severityBadge: Record<string, string> = {
+  CRITICAL: "bg-severity-high/20 text-severity-high border border-severity-high/40",
   HIGH:   "bg-severity-high/15 text-severity-high border border-severity-high/30",
   MEDIUM: "bg-severity-medium/15 text-severity-medium border border-severity-medium/30",
   LOW:    "bg-severity-low/15 text-severity-low border border-severity-low/30",
 };
 
 const severityRowBorder: Record<string, string> = {
+  CRITICAL: "border-l-2 border-l-severity-high",
   HIGH:   "border-l-2 border-l-severity-high",
   MEDIUM: "border-l-2 border-l-severity-medium",
   LOW:    "border-l-2 border-l-severity-low",
@@ -39,6 +41,9 @@ const severityRowBorder: Record<string, string> = {
 
 const statusBadge: Record<string, string> = {
   OPEN:     "bg-status-open/15 text-status-open border border-status-open/30",
+  INVESTIGATING: "bg-status-open/15 text-status-open border border-status-open/30",
+  ROLLED_BACK: "bg-status-resolved/15 text-status-resolved border border-status-resolved/30",
+  IGNORED: "bg-muted/30 text-muted-foreground border border-border",
   RESOLVED: "bg-status-resolved/15 text-status-resolved border border-status-resolved/30",
 };
 
@@ -82,9 +87,9 @@ export default function FailuresPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-balance text-2xl font-bold tracking-tight">Failure Cases</h1>
+        <h1 className="text-balance text-2xl font-bold tracking-tight">Incidents</h1>
         <p className="text-pretty text-muted-foreground text-sm mt-1">
-          Track and manage all detected failure cases
+          Track and manage all detected incidents
         </p>
       </div>
 
@@ -96,7 +101,7 @@ export default function FailuresPage() {
               <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <Input
                 placeholder="Search cases..."
-                aria-label="Search failures"
+                aria-label="Search incidents"
                 className="pl-9 h-9"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -118,6 +123,7 @@ export default function FailuresPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All severity</SelectItem>
+                <SelectItem value="CRITICAL">Critical</SelectItem>
                 <SelectItem value="HIGH">High</SelectItem>
                 <SelectItem value="MEDIUM">Medium</SelectItem>
                 <SelectItem value="LOW">Low</SelectItem>
@@ -130,6 +136,9 @@ export default function FailuresPage() {
               <SelectContent>
                 <SelectItem value="all">All status</SelectItem>
                 <SelectItem value="OPEN">Open</SelectItem>
+                <SelectItem value="INVESTIGATING">Investigating</SelectItem>
+                <SelectItem value="ROLLED_BACK">Rolled back</SelectItem>
+                <SelectItem value="IGNORED">Ignored</SelectItem>
                 <SelectItem value="RESOLVED">Resolved</SelectItem>
               </SelectContent>
             </Select>
@@ -148,7 +157,7 @@ export default function FailuresPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-24 pl-4">Case ID</TableHead>
+                <TableHead className="w-24 pl-4">Incident ID</TableHead>
                 <TableHead>Error / Fingerprint</TableHead>
                 <TableHead>Service</TableHead>
                 <TableHead className="w-28">Severity</TableHead>
@@ -162,7 +171,7 @@ export default function FailuresPage() {
               {cases.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
-                    No cases found matching your filters.
+                    No incidents found matching your filters.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -174,7 +183,7 @@ export default function FailuresPage() {
                     {/* Case ID */}
                     <TableCell className="pl-4">
                       <Link
-                        href={`${ROUTES.DASHBOARD_FAILURES}/${c.id}`}
+                        href={`${ROUTES.DASHBOARD_INCIDENTS}/${c.id}`}
                         className="font-mono text-xs font-semibold text-primary hover:underline"
                       >
                         {c.id.slice(0, 8)}…
@@ -207,9 +216,9 @@ export default function FailuresPage() {
 
                     {/* Severity */}
                     <TableCell>
-                      <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${severityBadge[c.severity] ?? ""}`}>
-                        <span className={`size-1.5 rounded-full ${
-                          c.severity === "HIGH" ? "bg-severity-high" :
+                        <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${severityBadge[c.severity] ?? ""}`}>
+                          <span className={`size-1.5 rounded-full ${
+                          c.severity === "CRITICAL" || c.severity === "HIGH" ? "bg-severity-high" :
                           c.severity === "MEDIUM" ? "bg-severity-medium" : "bg-severity-low"
                         }`} />
                         {c.severity}

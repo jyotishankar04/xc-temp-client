@@ -4,14 +4,16 @@ import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useServiceById, useServiceMembers, useApiKeys } from "@/lib/hooks";
-import { ExternalLink, Github, Key, Loader2, Settings2, Users } from "lucide-react";
+import { useServiceById, useServiceMembers, useApiKeys, useServicePipelineStatus } from "@/lib/hooks";
+import { ExternalLink, Github, Key, Loader2, Settings2, Users, Workflow } from "lucide-react";
 import Link from "next/link";
 
 const statusConfig = {
   healthy: { variant: "outline" as const, label: "Healthy", dot: "bg-status-healthy" },
   degraded: { variant: "secondary" as const, label: "Degraded", dot: "bg-severity-medium" },
   down: { variant: "destructive" as const, label: "Down", dot: "bg-severity-high" },
+  unhealthy: { variant: "destructive" as const, label: "Unhealthy", dot: "bg-severity-high" },
+  unknown: { variant: "outline" as const, label: "Unknown", dot: "bg-muted-foreground" },
 };
 
 const envConfig: Record<string, { variant: "outline" | "secondary" | "default"; label: string }> = {
@@ -27,6 +29,7 @@ export default function ServiceOverviewPage() {
   const { data: service, isLoading: serviceLoading } = useServiceById(serviceId);
   const { data: members = [] } = useServiceMembers(serviceId);
   const { data: apiKeys = [] } = useApiKeys(serviceId);
+  const { data: pipelineStatus } = useServicePipelineStatus(serviceId);
 
   if (serviceLoading) {
     return (
@@ -36,7 +39,7 @@ export default function ServiceOverviewPage() {
     );
   }
 
-  const status = (service?.status as keyof typeof statusConfig) || "healthy";
+  const status = (service?.status?.toLowerCase() as keyof typeof statusConfig) || "healthy";
   const statusConfigItem = statusConfig[status] || statusConfig.healthy;
   const envConfigItem = envConfig[service?.env || "DEVELOPMENT"] || envConfig.DEVELOPMENT;
 
@@ -110,6 +113,33 @@ export default function ServiceOverviewPage() {
                 Manage keys
               </Link>
             </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">CI/CD</CardTitle>
+            <Workflow className="size-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Badge variant="outline">
+              {pipelineStatus?.status === "completed"
+                ? pipelineStatus.conclusion ?? "completed"
+                : pipelineStatus?.status ?? "unknown"}
+            </Badge>
+            <p className="text-xs text-muted-foreground">
+              {pipelineStatus?.workflowName
+                ? `${pipelineStatus.workflowName} · ${pipelineStatus.branch}`
+                : "No recent workflow run found"}
+            </p>
+            {pipelineStatus?.htmlUrl && (
+              <Button variant="ghost" size="sm" asChild className="-ml-2 px-2">
+                <a href={pipelineStatus.htmlUrl} target="_blank" rel="noreferrer">
+                  Open workflow
+                  <ExternalLink className="ml-2 size-4" />
+                </a>
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>

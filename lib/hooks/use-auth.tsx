@@ -31,7 +31,7 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   requiresOnboarding: boolean;
-  login: () => void;
+  login: (redirectUrl?: string) => void;
   logout: () => Promise<void>;
   onboard: (data: {
     orgName: string;
@@ -106,8 +106,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [isLoading, user, requiresOnboarding, pathname, router]);
 
-  const login = () => {
-    authApi.loginWithGitHub();
+  const login = (redirectUrl?: string) => {
+    authApi.loginWithGitHub(redirectUrl);
   };
 
   const logoutMutation = useMutation({

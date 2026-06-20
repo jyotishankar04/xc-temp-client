@@ -101,7 +101,7 @@ export default function ServicesPage() {
               </TableHeader>
               <TableBody>
                 {services.map((service) => {
-                  const status = service.status || "healthy";
+                  const status = service.status?.toLowerCase() || "healthy";
                   const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.healthy;
                   const env = envConfig[service.env] || envConfig.DEVELOPMENT;
 

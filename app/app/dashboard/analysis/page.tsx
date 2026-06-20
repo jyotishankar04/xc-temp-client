@@ -9,6 +9,13 @@ import { useAnalysis } from "@/lib/hooks";
 
 // ── Severity ──────────────────────────────────────────────────────────────────
 const severityConfig = {
+  CRITICAL: {
+    badge: "bg-severity-high/20 text-severity-high border-severity-high/40",
+    dot: "bg-severity-high",
+    bar: "bg-severity-high",
+    icon: AlertTriangle,
+    label: "Critical",
+  },
   HIGH: {
     badge: "bg-severity-high/15 text-severity-high border-severity-high/30",
     dot: "bg-severity-high",

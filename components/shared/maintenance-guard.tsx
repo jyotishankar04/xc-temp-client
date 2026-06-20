@@ -2,11 +2,12 @@
 
 import { usePathname } from "next/navigation";
 import { MaintenancePage } from "@/components/marketing/landing/maintenance-page";
+import { MaintenanceBanner } from "@/components/shared/maintenance-banner";
 
-const EXEMPT_PREFIXES = ["/admin", "/docs"];
+const BLOCKED_PREFIXES = ["/auth", "/app", "/onboard", "/launch"];
 
-function isExempt(pathname: string) {
-  return EXEMPT_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"));
+function isBlocked(pathname: string) {
+  return BLOCKED_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"));
 }
 
 export function MaintenanceGuard({
@@ -18,9 +19,14 @@ export function MaintenanceGuard({
 }) {
   const pathname = usePathname();
 
-  if (isExempt(pathname)) {
-    return children;
+  if (isBlocked(pathname)) {
+    return <MaintenancePage message={maintenanceMessage} />;
   }
 
-  return <MaintenancePage message={maintenanceMessage} />;
+  return (
+    <>
+      <MaintenanceBanner message={maintenanceMessage} />
+      {children}
+    </>
+  );
 }

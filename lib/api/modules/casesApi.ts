@@ -10,8 +10,8 @@ export interface CaseService {
 export interface Case {
   id: string;
   fingerprint: string;
-  severity: "HIGH" | "MEDIUM" | "LOW";
-  status: "OPEN" | "RESOLVED";
+  severity: "HIGH" | "MEDIUM" | "LOW" | "CRITICAL";
+  status: "OPEN" | "INVESTIGATING" | "ROLLED_BACK" | "IGNORED" | "RESOLVED";
   environment?: string;
   service: CaseService;
   createdAt: string;
@@ -40,8 +40,8 @@ export interface CaseListResponse {
 }
 
 export interface UpdateCaseInput {
-  status?: "OPEN" | "RESOLVED" | "MERGED";
-  severity?: "HIGH" | "MEDIUM" | "LOW";
+  status?: "OPEN" | "INVESTIGATING" | "ROLLED_BACK" | "IGNORED" | "RESOLVED" | "MERGED";
+  severity?: "HIGH" | "MEDIUM" | "LOW" | "CRITICAL";
 }
 
 interface RawApiResponse {
@@ -62,7 +62,6 @@ export const casesApi = {
     const searchParams = new URLSearchParams();
     if (params?.page) searchParams.set("page", String(params.page));
     if (params?.limit) searchParams.set("limit", String(params.limit));
-    // backend only accepts OPEN | RESOLVED
     if (params?.status && params.status !== "all") searchParams.set("status", params.status);
     if (params?.severity && params.severity !== "all") searchParams.set("severity", params.severity);
     // search and environment are not supported by the backend schema — omitted

@@ -4,8 +4,8 @@ description: Operate incidents from the dashboard.
 ---
 
 The dashboard is the human review surface for XecureCode. Use it to connect
-services, inspect failure evidence, generate RCA reports, approve actions,
-configure rollback, and audit decisions.
+services, inspect incident evidence, generate RCA reports, approve actions,
+review deployments, configure rollback, and audit decisions.
 
 ## Workflows
 
@@ -13,12 +13,29 @@ configure rollback, and audit decisions.
 | --- | --- |
 | Overview | Use dashboard stats and recent activity to identify current reliability pressure. |
 | Services | Create services, map GitHub repositories, configure environments, and manage API keys. |
-| Events | Filter raw failure events by service, fingerprint, and time range. |
-| Cases | Review grouped failures, update status or severity, and merge related cases. |
-| RCA | Generate, review, and annotate root cause reports for failure cases. |
+| Events | Filter raw incident events by service, fingerprint, and time range. |
+| Incidents | Review grouped incidents, update status or severity, and merge related cases. |
+| RCA | Generate, review, and annotate root cause reports for incident groups. |
 | Actions | Approve or reject recommended recovery actions. Rollback approvals queue execution. |
 | Rollback | Set rollback thresholds, workflow names, and review rollback history per service. |
+| Deployments | Inspect release history, stable versions, and deployment metadata. |
+| Notifications | Review incident updates, approval requests, and rollback progress. |
 | Audit | Review user, system, and AI activity across the organization. |
+
+## GitHub deployment history
+
+The deployments page can show deployment records created by GitHub webhooks,
+manual API calls, rollback records, and SDK-linked incidents. For GitHub-backed
+services, use **Sync GitHub** on the deployments page to import recent GitHub
+Actions workflow runs for the mapped repository branch.
+
+The sync action is idempotent. It uses the GitHub workflow run ID as the
+external identity, so repeated syncs update existing deployments instead of
+creating duplicates.
+
+Successful GitHub workflow runs show as `ACTIVE` until the service reports a
+healthy check after deployment time. Once that health signal exists, the
+deployment can be marked `STABLE` and used as a safer rollback target.
 
 ## Service setup checklist
 
@@ -26,7 +43,11 @@ configure rollback, and audit decisions.
 - Generate API keys from the service detail page.
 - Invite service members when access differs from organization access.
 - Connect GitHub before configuring workflow-backed rollback.
+- Configure the GitHub webhook if you want continuous deployment updates.
 - Keep rollback disabled until the workflow and review process are tested.
+- Create or sync deployments for each release so rollback can resolve a stable
+  commit.
+- Use the notifications inbox when you need to review action approvals later.
 
 ## Team workflow
 
@@ -34,3 +55,4 @@ configure rollback, and audit decisions.
 2. Add service-specific members when a service needs narrower access.
 3. Give rollback permissions only to trusted service admins or owners.
 4. Use audit logs after approvals, rejections, and rollback attempts.
+5. Review the deployments page before you approve a rollback in production.

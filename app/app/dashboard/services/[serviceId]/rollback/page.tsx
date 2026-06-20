@@ -7,27 +7,41 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import {
   useRollbackConfig,
   useRollbackHistory,
   useUpdateRollbackConfig,
   useTriggerRollback,
+  useGitHubWorkflows,
 } from "@/lib/hooks";
-import { AlertTriangle, ExternalLink, Loader2, RotateCcw, Save, XCircle } from "lucide-react";
+import { AlertTriangle, ExternalLink, Loader2, RotateCcw, Save, ShieldCheck, XCircle } from "lucide-react";
 import { handleApiError } from "@/lib/api";
+import type { RollbackWorkflowMode } from "@/lib/api/modules/rollbackApi";
 
 export default function ServiceRollbackPage() {
   const params = useParams();
   const serviceId = params?.serviceId as string;
   const { data: config, isLoading } = useRollbackConfig(serviceId);
   const { data: history = [] } = useRollbackHistory(serviceId, 10);
+  const { data: repoWorkflows = [] } = useGitHubWorkflows(config?.repoMapping?.repoId ?? undefined);
   const updateConfig = useUpdateRollbackConfig();
   const triggerRollback = useTriggerRollback();
   const [draft, setDraft] = useState<{
     enabled?: boolean;
     threshold?: number;
+    workflowMode?: RollbackWorkflowMode;
     workflow?: string;
+    templateKey?: string | null;
+    customYaml?: string | null;
   }>({});
   const [caseId, setCaseId] = useState("");
 
@@ -36,7 +50,12 @@ export default function ServiceRollbackPage() {
 
   const enabled = draft.enabled ?? config?.autoRollbackEnabled ?? false;
   const threshold = draft.threshold ?? config?.autoRollbackThreshold ?? 85;
+  const workflowMode = draft.workflowMode ?? config?.rollbackWorkflowMode ?? "TEMPLATE";
   const workflow = draft.workflow ?? config?.rollbackWorkflow ?? "";
+  const templateKey = draft.templateKey ?? config?.rollbackTemplateKey ?? config?.templates?.[0]?.key ?? "";
+  const customYaml = draft.customYaml ?? config?.rollbackCustomYaml ?? "";
+  const selectedTemplate = config?.templates?.find((template) => template.key === templateKey);
+  const isCustomPathValid = !workflow || /^\.github\/workflows\/[A-Za-z0-9._-]+\.(ya?ml)$/.test(workflow);
 
   const saveConfig = async () => {
     await updateConfig.mutateAsync({
@@ -44,7 +63,10 @@ export default function ServiceRollbackPage() {
       data: {
         autoRollbackEnabled: enabled,
         autoRollbackThreshold: threshold,
-        rollbackWorkflow: workflow || null,
+        rollbackWorkflowMode: workflowMode,
+        rollbackTemplateKey: workflowMode === "TEMPLATE" ? templateKey || null : null,
+        rollbackWorkflow: workflowMode === "CUSTOM" ? workflow || null : null,
+        rollbackCustomYaml: workflowMode === "CUSTOM" && customYaml.trim() ? customYaml : null,
       },
     });
     setDraft({});
@@ -78,17 +100,136 @@ export default function ServiceRollbackPage() {
               </div>
             )}
 
-            <div className="grid gap-2">
-              <Label htmlFor="workflow">Rollback workflow</Label>
-                <Input
-                id="workflow"
-                value={workflow}
-                onChange={(event) =>
-                  setDraft((current) => ({ ...current, workflow: event.target.value }))
-                }
-                placeholder=".github/workflows/rollback.yml"
-              />
+            <div className="grid gap-3">
+              <Label>Workflow source</Label>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <Button
+                  type="button"
+                  variant={workflowMode === "TEMPLATE" ? "default" : "outline"}
+                  onClick={() => setDraft((current) => ({ ...current, workflowMode: "TEMPLATE" }))}
+                >
+                  Template workflow
+                </Button>
+                <Button
+                  type="button"
+                  variant={workflowMode === "CUSTOM" ? "default" : "outline"}
+                  onClick={() => setDraft((current) => ({ ...current, workflowMode: "CUSTOM" }))}
+                >
+                  Custom workflow
+                </Button>
+              </div>
             </div>
+
+            {workflowMode === "TEMPLATE" ? (
+              <div className="space-y-4 rounded-md border p-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="rollback-template">Production template</Label>
+                  <Select
+                    value={templateKey}
+                    onValueChange={(value) =>
+                      setDraft((current) => ({ ...current, templateKey: value }))
+                    }
+                  >
+                    <SelectTrigger id="rollback-template">
+                      <SelectValue placeholder="Select rollback template" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(config?.templates ?? []).map((template) => (
+                        <SelectItem key={template.key} value={template.key}>
+                          {template.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {selectedTemplate && (
+                  <div className="space-y-3 text-sm">
+                    <div className="rounded-md bg-muted/50 p-3">
+                      <div className="flex items-start gap-2">
+                        <ShieldCheck className="mt-0.5 size-4 shrink-0 text-success" />
+                        <div>
+                          <p className="font-medium">{selectedTemplate.workflowPath}</p>
+                          <p className="mt-1 text-muted-foreground">{selectedTemplate.description}</p>
+                        </div>
+                      </div>
+                    </div>
+                    {selectedTemplate.requiredSecrets.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {selectedTemplate.requiredSecrets.map((secret) => (
+                          <Badge key={secret} variant="outline">
+                            {secret}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                    <ul className="space-y-1 text-xs text-muted-foreground">
+                      {selectedTemplate.recommendations.map((recommendation) => (
+                        <li key={recommendation}>- {recommendation}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-4 rounded-md border p-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="workflow">Custom workflow path</Label>
+                  {repoWorkflows.length > 0 ? (
+                    <Select
+                      value={workflow || "manual"}
+                      onValueChange={(value) =>
+                        setDraft((current) => ({
+                          ...current,
+                          workflow: value === "manual" ? "" : value,
+                        }))
+                      }
+                    >
+                      <SelectTrigger id="workflow">
+                        <SelectValue placeholder="Select workflow" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="manual">Enter path manually</SelectItem>
+                        {repoWorkflows.map((repoWorkflow) => (
+                          <SelectItem key={repoWorkflow.id} value={repoWorkflow.path}>
+                            {repoWorkflow.name} - {repoWorkflow.path}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : null}
+                  <Input
+                    value={workflow}
+                    onChange={(event) =>
+                      setDraft((current) => ({ ...current, workflow: event.target.value }))
+                    }
+                    placeholder=".github/workflows/rollback.yml"
+                    className={!isCustomPathValid ? "border-destructive" : ""}
+                  />
+                  {!isCustomPathValid && (
+                    <p className="text-xs text-destructive">
+                      Use a path like .github/workflows/rollback.yml.
+                    </p>
+                  )}
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="custom-yaml">Custom workflow YAML</Label>
+                  <Textarea
+                    id="custom-yaml"
+                    value={customYaml}
+                    onChange={(event) =>
+                      setDraft((current) => ({ ...current, customYaml: event.target.value }))
+                    }
+                    placeholder={"name: Production rollback\non:\n  workflow_dispatch:\n    inputs:\n      commit_sha:\n        required: true\njobs:\n  rollback:\n    runs-on: ubuntu-latest"}
+                    className="min-h-56 font-mono text-xs"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Leave YAML empty to dispatch an existing workflow file. Custom YAML must define workflow_dispatch and jobs.
+                  </p>
+                </div>
+              </div>
+            )}
 
             <div className="rounded-md border p-4">
               <div className="flex items-center justify-between gap-4">
@@ -123,7 +264,10 @@ export default function ServiceRollbackPage() {
             {updateConfig.isError && (
               <p className="text-xs text-destructive">{handleApiError(updateConfig.error)}</p>
             )}
-            <Button onClick={saveConfig} disabled={updateConfig.isPending}>
+            <Button
+              onClick={saveConfig}
+              disabled={updateConfig.isPending || (workflowMode === "CUSTOM" && !isCustomPathValid)}
+            >
               {updateConfig.isPending ? (
                 <Loader2 className="mr-2 size-4 animate-spin" />
               ) : (

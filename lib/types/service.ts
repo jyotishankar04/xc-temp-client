@@ -6,6 +6,8 @@ export type DeploymentType =
   | "MANUAL"
   | "OTHER";
 
+export type RollbackWorkflowMode = "TEMPLATE" | "CUSTOM";
+
 export interface Service {
   id: string;
   name: string;
@@ -18,11 +20,24 @@ export interface Service {
   defaultBranch?: string | null;
   deploymentType?: DeploymentType | null;
   rollbackWorkflow?: string | null;
+  rollbackWorkflowMode?: RollbackWorkflowMode;
+  rollbackTemplateKey?: string | null;
+  rollbackCustomYaml?: string | null;
   autoRollbackEnabled?: boolean;
   autoRollbackThreshold?: number;
   lastStableCommit?: string | null;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface ServicePipelineStatus {
+  status: "queued" | "in_progress" | "completed" | "unknown";
+  conclusion: string | null;
+  workflowName: string | null;
+  htmlUrl: string | null;
+  branch: string;
+  createdAt: string | null;
+  updatedAt: string | null;
 }
 
 export interface CreateServiceInput {
@@ -35,6 +50,9 @@ export interface CreateServiceInput {
   defaultBranch?: string;
   deploymentType?: DeploymentType;
   rollbackWorkflow?: string;
+  rollbackWorkflowMode?: RollbackWorkflowMode;
+  rollbackTemplateKey?: string;
+  rollbackCustomYaml?: string;
   autoRollbackEnabled?: boolean;
   autoRollbackThreshold?: number;
 }
@@ -46,6 +64,9 @@ export interface UpdateServiceInput {
   defaultBranch?: string;
   deploymentType?: DeploymentType | null;
   rollbackWorkflow?: string | null;
+  rollbackWorkflowMode?: RollbackWorkflowMode;
+  rollbackTemplateKey?: string | null;
+  rollbackCustomYaml?: string | null;
   autoRollbackEnabled?: boolean;
   autoRollbackThreshold?: number;
 }
@@ -85,6 +106,63 @@ export interface ApiKey {
   key?: string;
   prefix?: string;
   createdAt?: string;
+}
+
+export interface ApiUsagePoint {
+  date: string;
+  count: number;
+}
+
+export interface ApiKeyUsage {
+  id: string;
+  name: string;
+  totalRequests: number;
+  lastSeenAt: string | null;
+  recentRequests: ApiUsagePoint[];
+}
+
+export interface ServiceApiUsage {
+  serviceId: string;
+  totalRequests: number;
+  lastSeenAt: string | null;
+  recentRequests: ApiUsagePoint[];
+  keys: ApiKeyUsage[];
+}
+
+export interface ServiceDeployment {
+  id: string;
+  serviceId: string;
+  source: string | null;
+  externalId: string | null;
+  version: string | null;
+  release: string | null;
+  commitHash: string | null;
+  branch: string | null;
+  environment: string;
+  status: string;
+  isStable: boolean;
+  deployedAt: string;
+  completedAt: string | null;
+  metadata?: Record<string, unknown> | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DashboardSearchDeployment {
+  id: string;
+  version: string | null;
+  release: string | null;
+  commitHash: string | null;
+  branch: string | null;
+  environment: string;
+  status: string;
+  isStable: boolean;
+  service: {
+    id: string;
+    name: string;
+    env: string;
+  };
+  href: string;
 }
 
 export interface CreateApiKeyInput {
